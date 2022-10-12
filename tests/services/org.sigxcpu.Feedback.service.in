@@ -1,4 +1,0 @@
-[D-BUS Service]
-Name=org.sigxcpu.Feedback
-Exec=@ABS_BUILDDIR@/run
-

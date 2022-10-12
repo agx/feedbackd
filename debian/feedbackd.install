@@ -1,6 +1,0 @@
-debian/modules-load.d etc/
-/usr/bin/
-/usr/libexec/
-/usr/share/dbus-1/
-/usr/share/feedbackd/
-/usr/share/man/
