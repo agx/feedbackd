@@ -30,6 +30,16 @@
           "effect"     : "camera-shutter"
         },
         {
+          "event-name" : "key-pressed",
+          "type"       : "Sound",
+          "effect"     : "key-pressed"
+        },
+        {
+          "event-name" : "key-released",
+          "type"       : "Sound",
+          "effect"     : "key-released"
+        },
+        {
           "event-name" : "message-new-cellbroadcast",
           "type"       : "Sound",
           "effect"     : "cellbroadcast"
@@ -113,6 +123,17 @@
         },
         {
           "event-name" : "button-released",
+          "type"       : "VibraRumble",
+          "duration"   : 12
+        },
+        {
+          "event-name" : "key-pressed",
+          "type"       : "VibraPattern",
+          "magnitudes" : [ 0.2 ],
+          "durations"  : [ 7 ]
+        },
+        {
+          "event-name" : "key-released",
           "type"       : "VibraRumble",
           "duration"   : 12
         },
