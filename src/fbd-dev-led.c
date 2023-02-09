@@ -85,7 +85,7 @@ fbd_dev_led_probe_default (FbdDevLed *led, GError **error)
   if (!success) {
     g_set_error (error,
                  G_FILE_ERROR, G_FILE_ERROR_FAILED,
-                 "%s not usable as RBG LED", name);
+                 "%s not usable as RGB LED", name);
   }
 
   return success;
@@ -127,6 +127,7 @@ fbd_dev_led_start_periodic_default (FbdDevLed *led,
   gdouble t;
 
   g_return_val_if_fail (FBD_IS_DEV_LED (led), FALSE);
+  g_return_val_if_fail (max_brightness_percentage <= 100, FALSE);
   priv = fbd_dev_led_get_instance_private (led);
 
   max =  priv->max_brightness * (max_brightness_percentage / 100.0);
