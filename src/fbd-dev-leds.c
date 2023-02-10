@@ -12,6 +12,8 @@
 #include "fbd-enums.h"
 #include "fbd-dev-led.h"
 #include "fbd-dev-led-multicolor.h"
+#include "fbd-dev-led-qcom.h"
+#include "fbd-dev-led-qcom-multicolor.h"
 #include "fbd-dev-leds.h"
 #include "fbd-feedback-led.h"
 #include "fbd-udev.h"
@@ -55,6 +57,43 @@ find_led_by_color (FbdDevLeds *self, FbdFeedbackLedColor color)
   return self->leds->data;
 }
 
+
+static FbdDevLed*
+probe_led (GUdevDevice *dev, GError **error) {
+  FbdDevLed *led = NULL;
+
+  led = fbd_dev_led_qcom_multicolor_new (dev, error);
+  if (led != NULL) {
+    g_debug ("Discovered QCOM multicolor LED");
+    return led;
+  }
+  g_clear_error (error);
+
+  led = fbd_dev_led_qcom_new (dev, error);
+  if (led != NULL) {
+    g_debug ("Discovered QCOM single color LED");
+    return led;
+  }
+  g_clear_error (error);
+
+  led = fbd_dev_led_multicolor_new (dev, error);
+  if (led != NULL) {
+    g_debug ("Discovered multicolor LED");
+    return led;
+  }
+  g_clear_error (error);
+
+  led = fbd_dev_led_new (dev, error);
+  if (led != NULL) {
+    g_debug ("Discovered single color LED");
+    return led;
+  }
+
+  g_debug ("Unable to determine LED driver");
+  return NULL;
+}
+
+
 static gboolean
 initable_init (GInitable    *initable,
                GCancellable *cancellable,
@@ -79,14 +118,7 @@ initable_init (GInitable    *initable,
       continue;
     }
 
-    /* Try multicolor first, fall back to single color */
-    led = fbd_dev_led_multicolor_new (dev, &err);
-    if (led == NULL) {
-      g_debug ("Led not usable as multicolor: '%s'", err->message);
-      led = fbd_dev_led_new (dev, &err);
-      if (led == NULL)
-        g_debug ("Led not usable as single color: '%s'", err->message);
-    }
+    led = probe_led (dev, &err);
 
     if (led) {
       self->leds = g_slist_append (self->leds, led);
