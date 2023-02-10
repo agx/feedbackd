@@ -6,7 +6,7 @@
  * See Documentation/ABI/testing/sysfs-class-led-trigger-pattern
  */
 
-#define G_LOG_DOMAIN "fbd-dev-led"
+#define G_LOG_DOMAIN "fbd-dev-led-multicolor"
 
 #include "fbd-dev-led-priv.h"
 #include "fbd-dev-led-multicolor.h"
