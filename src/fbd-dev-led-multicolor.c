@@ -37,7 +37,7 @@ G_DEFINE_TYPE_WITH_PRIVATE (FbdDevLedMulticolor, fbd_dev_led_multicolor, FBD_TYP
 
 
 static gboolean
-fbd_dev_led_probe_multicolor (FbdDevLed *led, GError **error)
+fbd_dev_led_multicolor_probe (FbdDevLed *led, GError **error)
 {
   FbdDevLedMulticolor *self = FBD_DEV_LED_MULTICOLOR (led);
   FbdDevLedMulticolorPrivate *priv = fbd_dev_led_multicolor_get_instance_private (self);
@@ -90,7 +90,7 @@ fbd_dev_led_probe_multicolor (FbdDevLed *led, GError **error)
 
 
 static gboolean
-fbd_dev_led_start_periodic_multicolor (FbdDevLed           *led,
+fbd_dev_led_multicolor_start_periodic (FbdDevLed           *led,
                                        FbdFeedbackLedColor  color,
                                        guint                max_brightness_percentage,
                                        guint                freq)
@@ -160,8 +160,8 @@ fbd_dev_led_multicolor_class_init (FbdDevLedMulticolorClass *klass)
 {
   FbdDevLedClass *fbd_dev_led_class = FBD_DEV_LED_CLASS (klass);
 
-  fbd_dev_led_class->probe = fbd_dev_led_probe_multicolor;
-  fbd_dev_led_class->start_periodic = fbd_dev_led_start_periodic_multicolor;
+  fbd_dev_led_class->probe = fbd_dev_led_multicolor_probe;
+  fbd_dev_led_class->start_periodic = fbd_dev_led_multicolor_start_periodic;
   fbd_dev_led_class->has_color = fbd_dev_led_has_color_multicolor;
 }
 
