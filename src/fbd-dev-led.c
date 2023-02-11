@@ -16,11 +16,6 @@
 #include <gio/gio.h>
 
 #define LED_BRIGHTNESS_ATTR      "brightness"
-#define LED_MULTI_INDEX_ATTR     "multi_index"
-#define LED_MULTI_INDEX_RED      "red"
-#define LED_MULTI_INDEX_GREEN    "green"
-#define LED_MULTI_INDEX_BLUE     "blue"
-#define LED_MULTI_INTENSITY_ATTR "multi_intensity"
 #define LED_PATTERN_ATTR         "pattern"
 
 enum {
@@ -98,10 +93,31 @@ fbd_dev_led_probe_default (FbdDevLed *led, GError **error)
 
 
 static gboolean
-fbd_dev_led_start_periodic_default (FbdDevLed           *led,
-                                    FbdFeedbackLedColor  color,
-                                    guint                max_brightness_percentage,
-                                    guint                freq)
+fbd_dev_led_set_color_default (FbdDevLed           *led,
+                               FbdFeedbackLedColor  color)
+{
+  /* Ignore setting color as we have a single color only */
+  return TRUE;
+}
+
+
+static gboolean
+fbd_dev_led_supports_color_default (FbdDevLed           *led,
+                                    FbdFeedbackLedColor  color)
+{
+  FbdDevLedPrivate *priv;
+
+  g_return_val_if_fail (FBD_IS_DEV_LED (led), FALSE);
+  priv = fbd_dev_led_get_instance_private (led);
+
+  return priv->color == color;
+}
+
+
+static gboolean
+fbd_dev_led_start_periodic_default (FbdDevLed *led,
+                                    guint      max_brightness_percentage,
+                                    guint      freq)
 {
   FbdDevLedPrivate *priv;
   g_autoptr (GError) err = NULL;
@@ -124,18 +140,6 @@ fbd_dev_led_start_periodic_default (FbdDevLed           *led,
     g_warning ("Failed to set led pattern: %s", err->message);
 
   return success;
-}
-
-
-static gboolean
-fbd_dev_led_has_color_default (FbdDevLed *led, FbdFeedbackLedColor color)
-{
-  FbdDevLedPrivate *priv;
-
-  g_return_val_if_fail (FBD_IS_DEV_LED (led), FALSE);
-  priv = fbd_dev_led_get_instance_private (led);
-
-  return priv->color == color;
 }
 
 
@@ -221,7 +225,8 @@ fbd_dev_led_class_init (FbdDevLedClass *klass)
 
   fbd_dev_led_class->probe = fbd_dev_led_probe_default;
   fbd_dev_led_class->start_periodic = fbd_dev_led_start_periodic_default;
-  fbd_dev_led_class->has_color = fbd_dev_led_has_color_default;
+  fbd_dev_led_class->set_color = fbd_dev_led_set_color_default;
+  fbd_dev_led_class->supports_color = fbd_dev_led_supports_color_default;
 
   props[PROP_DEV] =
     g_param_spec_object ("dev", "", "",
@@ -265,7 +270,6 @@ fbd_dev_led_set_brightness (FbdDevLed *led, guint brightness)
 
 gboolean
 fbd_dev_led_start_periodic (FbdDevLed           *led,
-                            FbdFeedbackLedColor  color,
                             guint                max_brightness_percentage,
                             guint                freq)
 {
@@ -273,18 +277,30 @@ fbd_dev_led_start_periodic (FbdDevLed           *led,
 
   g_return_val_if_fail (FBD_IS_DEV_LED (led), FALSE);
 
-  return fbd_dev_led_class->start_periodic (led, color, max_brightness_percentage, freq);
+  return fbd_dev_led_class->start_periodic (led, max_brightness_percentage, freq);
 }
 
 
 gboolean
-fbd_dev_led_has_color (FbdDevLed *led, FbdFeedbackLedColor color)
+fbd_dev_led_set_color (FbdDevLed *led,
+                       FbdFeedbackLedColor color)
 {
   FbdDevLedClass *fbd_dev_led_class = FBD_DEV_LED_GET_CLASS (led);
 
   g_return_val_if_fail (FBD_IS_DEV_LED (led), FALSE);
 
-  return fbd_dev_led_class->has_color (led, color);
+  return fbd_dev_led_class->set_color (led, color);
+}
+
+
+gboolean
+fbd_dev_led_supports_color (FbdDevLed *led, FbdFeedbackLedColor color)
+{
+  FbdDevLedClass *fbd_dev_led_class = FBD_DEV_LED_GET_CLASS (led);
+
+  g_return_val_if_fail (FBD_IS_DEV_LED (led), FALSE);
+
+  return fbd_dev_led_class->supports_color (led, color);
 }
 
 
@@ -314,7 +330,7 @@ fbd_dev_led_get_device (FbdDevLed *led)
 
 
 void
-fbd_dev_led_set_color (FbdDevLed *led, FbdFeedbackLedColor color)
+fbd_dev_led_set_supported_color (FbdDevLed *led, FbdFeedbackLedColor color)
 {
   FbdDevLedPrivate *priv;
 

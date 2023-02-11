@@ -33,8 +33,8 @@ test_fbd_dev_led_simple (FbdUmockdevFixture *fixture, gconstpointer unused)
   led = fbd_dev_led_new (dev, &err);
   g_assert_no_error (err);
   g_assert_cmpint (fbd_dev_led_get_max_brightness (led), ==, 255);
-  g_assert_true (fbd_dev_led_has_color (led, FBD_FEEDBACK_LED_COLOR_BLUE));
-  g_assert_true (fbd_dev_led_start_periodic (led, FBD_FEEDBACK_LED_COLOR_BLUE, 50, 50));
+  g_assert_true (fbd_dev_led_supports_color (led, FBD_FEEDBACK_LED_COLOR_BLUE));
+  g_assert_true (fbd_dev_led_start_periodic (led, 50, 50));
   g_assert_finalize_object (led);
 }
 
@@ -60,8 +60,8 @@ test_fbd_dev_led_multicolor (FbdUmockdevFixture *fixture, gconstpointer unused)
   led = fbd_dev_led_multicolor_new (dev, &err);
   g_assert_no_error (err);
   g_assert_cmpint (fbd_dev_led_get_max_brightness (led), ==, 248);
-  g_assert_true (fbd_dev_led_has_color (led, FBD_FEEDBACK_LED_COLOR_RGB));
-  g_assert_true (fbd_dev_led_start_periodic (led, FBD_FEEDBACK_LED_COLOR_BLUE, 50, 50));
+  g_assert_true (fbd_dev_led_supports_color (led, FBD_FEEDBACK_LED_COLOR_RGB));
+  g_assert_true (fbd_dev_led_start_periodic (led, 50, 50));
 
   g_assert_finalize_object (led);
 }

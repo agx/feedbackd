@@ -47,7 +47,7 @@ find_led_by_color (FbdDevLeds *self, FbdFeedbackLedColor color)
 
   for (GSList *l = self->leds; l != NULL; l = l->next) {
     FbdDevLed *led = l->data;
-    if (fbd_dev_led_has_color (led, color))
+    if (fbd_dev_led_supports_color (led, color))
       return led;
   }
 
@@ -165,7 +165,9 @@ fbd_dev_leds_start_periodic (FbdDevLeds *self, FbdFeedbackLedColor color,
   led = find_led_by_color (self, color);
   g_return_val_if_fail (led, FALSE);
 
-  return fbd_dev_led_start_periodic (led, color, max_brightness_percentage, freq);
+  fbd_dev_led_set_color (led, color);
+
+  return fbd_dev_led_start_periodic (led, max_brightness_percentage, freq);
 }
 
 gboolean

@@ -65,7 +65,7 @@ fbd_dev_led_multicolor_probe (FbdDevLed *led, GError **error)
     return FALSE;
   }
   fbd_dev_led_set_max_brightness (led, max_brightness);
-  fbd_dev_led_set_color (led, FBD_FEEDBACK_LED_COLOR_RGB);
+  fbd_dev_led_set_supported_color (led, FBD_FEEDBACK_LED_COLOR_RGB);
 
   for (int i = 0; index[i] != NULL; i++) {
     g_debug ("Index: %s", index[i]);
@@ -90,10 +90,8 @@ fbd_dev_led_multicolor_probe (FbdDevLed *led, GError **error)
 
 
 static gboolean
-fbd_dev_led_multicolor_start_periodic (FbdDevLed           *led,
-                                       FbdFeedbackLedColor  color,
-                                       guint                max_brightness_percentage,
-                                       guint                freq)
+fbd_dev_led_multicolor_set_color (FbdDevLed           *led,
+                                  FbdFeedbackLedColor  color)
 {
   FbdDevLedMulticolor *self = FBD_DEV_LED_MULTICOLOR (led);
   FbdDevLedMulticolorPrivate *priv = fbd_dev_led_multicolor_get_instance_private (self);
@@ -142,16 +140,7 @@ fbd_dev_led_multicolor_start_periodic (FbdDevLed           *led,
     return FALSE;
   }
 
-  /* Chain up to parent class to set the pattern */
-  return FBD_DEV_LED_CLASS (fbd_dev_led_multicolor_parent_class)->start_periodic (
-    led, color, max_brightness_percentage, freq);
-}
-
-
-static gboolean
-fbd_dev_led_has_color_multicolor (FbdDevLed *led, FbdFeedbackLedColor color)
-{
-  return color == FBD_FEEDBACK_LED_COLOR_RGB;
+  return TRUE;
 }
 
 
@@ -161,8 +150,7 @@ fbd_dev_led_multicolor_class_init (FbdDevLedMulticolorClass *klass)
   FbdDevLedClass *fbd_dev_led_class = FBD_DEV_LED_CLASS (klass);
 
   fbd_dev_led_class->probe = fbd_dev_led_multicolor_probe;
-  fbd_dev_led_class->start_periodic = fbd_dev_led_multicolor_start_periodic;
-  fbd_dev_led_class->has_color = fbd_dev_led_has_color_multicolor;
+  fbd_dev_led_class->set_color = fbd_dev_led_multicolor_set_color;
 }
 
 
