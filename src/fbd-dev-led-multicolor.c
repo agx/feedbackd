@@ -144,6 +144,26 @@ fbd_dev_led_multicolor_set_color (FbdDevLed           *led,
 }
 
 
+static gboolean
+fbd_dev_led_multicolor_supports_color (FbdDevLed           *led,
+                                       FbdFeedbackLedColor  color)
+{
+  switch(color) {
+    case FBD_FEEDBACK_LED_COLOR_WHITE:
+      return TRUE;
+    case FBD_FEEDBACK_LED_COLOR_RED:
+      return TRUE;
+    case FBD_FEEDBACK_LED_COLOR_GREEN:
+      return TRUE;
+    case FBD_FEEDBACK_LED_COLOR_BLUE:
+      return TRUE;
+    default:
+      g_warning ("Color unsupported: %d", color);
+      return FALSE;
+  }
+}
+
+
 static void
 fbd_dev_led_multicolor_class_init (FbdDevLedMulticolorClass *klass)
 {
@@ -151,6 +171,7 @@ fbd_dev_led_multicolor_class_init (FbdDevLedMulticolorClass *klass)
 
   fbd_dev_led_class->probe = fbd_dev_led_multicolor_probe;
   fbd_dev_led_class->set_color = fbd_dev_led_multicolor_set_color;
+  fbd_dev_led_class->supports_color = fbd_dev_led_multicolor_supports_color;
 }
 
 
