@@ -50,16 +50,16 @@ fbd_dev_led_probe_multicolor (FbdDevLed *led, GError **error)
   index = g_udev_device_get_sysfs_attr_as_strv (dev, LED_MULTI_INDEX_ATTR);
   if (index == NULL) {
     g_set_error (error,
-               G_FILE_ERROR, G_FILE_ERROR_FAILED,
-               "%s is no multicololor LED", name);
+                 G_FILE_ERROR, G_FILE_ERROR_FAILED,
+                 "%s is no multicololor LED", name);
     return FALSE;
   }
 
   max_brightness = g_udev_device_get_sysfs_attr_as_int (dev, LED_MAX_BRIGHTNESS_ATTR);
   if (!max_brightness) {
     g_set_error (error,
-               G_FILE_ERROR, G_FILE_ERROR_FAILED,
-               "%s has no max_brightness", name);
+                 G_FILE_ERROR, G_FILE_ERROR_FAILED,
+                 "%s has no max_brightness", name);
     return FALSE;
   }
   fbd_dev_led_set_max_brightness (led, max_brightness);
