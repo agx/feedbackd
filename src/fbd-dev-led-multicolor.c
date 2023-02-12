@@ -37,7 +37,6 @@ G_DEFINE_TYPE (FbdDevLedMulticolor, fbd_dev_led_multicolor, FBD_TYPE_DEV_LED)
 static gboolean
 fbd_dev_led_probe_multicolor (FbdDevLed *led, GError **error)
 {
-  g_autoptr (GError) err = NULL;
   FbdDevLedMulticolor *self = FBD_DEV_LED_MULTICOLOR (led);
   GUdevDevice *dev = fbd_dev_led_get_device (led);
   const gchar *name, *path;
