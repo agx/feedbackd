@@ -1,8 +1,19 @@
+feedback 0.2.0
+--------------
+Released April 2023
+* lfbevent: Add api to set app-id
+* lfbevent: Change signature of get_feedback_profile().
+  (API change but no known users)
+* Contributors:
+    * Guido Günther
+
 feedbackd 0.1.1
 ---------------
 Released March 2023
 * Fix test failure exposed by glib 2.76
 * Leak fixes
+* Contributors:
+    * Guido Günther
 
 feedbackd 0.1.0
 ---------------
