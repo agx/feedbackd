@@ -1,3 +1,15 @@
+feedbackd (0.2.1) experimental; urgency=medium
+
+  * Update NEWS
+  * event: Fix doc link
+  * treewide: Drop superfluous '()' after functions in doc strings.
+    Otherwise we have that doubled in the docs
+  * doc: Better cross reference manpages
+  * doc: Add manpage for feedback themes.
+    This should direct users to the documentation.
+
+ -- Guido Günther <agx@sigxcpu.org>  Tue, 29 Aug 2023 18:32:09 +0200
+
 feedbackd (0.2.0) experimental; urgency=medium
 
   * build: Bump version to 0.2.0. We have a slight api change.
