@@ -789,8 +789,8 @@ lfb_event_set_app_id (LfbEvent *self, const gchar *app_id)
  * @self: The event
  *
  * Returns the app-id for this event. If no app-id has been explicitly
- * set, %NULL is returned. The event uses the app-id returns by
- * [func@lfb_get_app_id] in this case.
+ * set, %NULL is returned. The event uses the app-id returned by
+ * [func@Lfb.get_app_id] in this case.
  *
  * Returns:(transfer none): The set app-id for this event or %NULL.
  */
