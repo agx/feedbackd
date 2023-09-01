@@ -1,7 +1,7 @@
 .. _feedback-themes(5):
 
 ===============
-feedback themes
+feedback-themes
 ===============
 
 ---------------------------------
