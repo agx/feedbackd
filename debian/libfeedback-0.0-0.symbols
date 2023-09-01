@@ -1,4 +1,5 @@
 libfeedback-0.0.so.0 libfeedback-0.0-0 #MINVER#
+* Build-Depends-Package: libfeedback-dev
  LIBFEEDBACK_0_0_0@LIBFEEDBACK_0_0_0 0.1.1
  lfb_event_end_feedback@LIBFEEDBACK_0_0_0 0.1.1
  lfb_event_end_feedback_async@LIBFEEDBACK_0_0_0 0.1.1
