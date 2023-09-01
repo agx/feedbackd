@@ -18,6 +18,7 @@ docroot := $(CURDIR)/debian/tmp/usr/share/doc/
 	dh $@ --builddirectory=_build
 
 override_dh_installdocs:
+	dh_installdocs -p$(COMMON_PKG) NEWS
 ifeq ($(filter nodoc,$(DEB_BUILD_PROFILES)),)
 	mkdir -p $(docroot)/libfeedback-dev/libfeedback-0
 	mv $(docroot)/libfeedback-0 $(docroot)/libfeedback-dev/
