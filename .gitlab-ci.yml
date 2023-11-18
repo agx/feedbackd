@@ -2,14 +2,20 @@ include:
  - remote: 'https://source.puri.sm/Librem5/librem5-ci/raw/master/librem5-pipeline-definitions.yml'
  - remote: 'https://gitlab.freedesktop.org/freedesktop/ci-templates/-/raw/34039cd573a2df832d465bc9e4c5f543571f5241/templates/ci-fairy.yml'
 
-variables:
-  GIT_SUBMODULE_STRATEGY: normal
-  GIT_SUBMODULE_DEPTH: 1
-
 stages:
  - build
  - test
+ - style-checks
  - package
+
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    # Don't trigger a branch pipeline if there is an open MR
+    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS
+      when: never
+    - if: $CI_COMMIT_TAG
+    - if: $CI_COMMIT_BRANCH
 
 .before_script: &before_script
   before_script:
@@ -20,14 +26,14 @@ stages:
 
 .image: &image
   image:
-    name: debian:bookworm
+    name: debian:trixie
 
 .tags: &tags
   tags:
     - librem5:arm64
 
 # Regular, full build
-build:native-debian-bookworm:full:
+build:native-debian-trixie:full:
   <<: *tags
   <<: *image
   <<: *before_script
@@ -43,7 +49,7 @@ build:native-debian-bookworm:full:
       - $PKG_ONLY == "1"
 
 # Minimal build for e.g. submodule usage
-build:native-debian-bookworm:lib:
+build:native-debian-trixie:lib:
   <<: *tags
   <<: *image
   <<: *before_script
@@ -55,13 +61,13 @@ build:native-debian-bookworm:lib:
     variables:
       - $PKG_ONLY == "1"
 
-test:native-debian-bookworm:
+test:native-debian-trixie:
   <<: *tags
   <<: *image
   <<: *before_script
   stage: test
   needs:
-    - build:native-debian-bookworm:full
+    - build:native-debian-trixie:full
   coverage: '/^\s+lines\.+:\s+([\d.]+\%)\s+/'
   script:
     - dbus-run-session ninja -C _build test coverage
@@ -69,9 +75,37 @@ test:native-debian-bookworm:
     variables:
       - $PKG_ONLY == "1"
 
-package:deb-debian-bookwarm:arm64:
+format-check:
+  <<: *tags
+  <<: *image
+  before_script:
+    - export DEBIAN_FRONTEND=noninteractive
+    - apt-get -y update
+    - apt-get -y install uncrustify git python3
+  stage: style-checks
+  needs: []
+  script:
+    - |
+      if [ -n "$CI_MERGE_REQUEST_TARGET_BRANCH_NAME" ]; then
+        git remote add target $CI_MERGE_REQUEST_PROJECT_URL.git
+        echo "Fetching MR target branch $CI_MERGE_REQUEST_TARGET_BRANCH_NAME from $CI_MERGE_REQUEST_PROJECT_URL"
+        git fetch target "$CI_MERGE_REQUEST_TARGET_BRANCH_NAME"
+        git fetch --deepen=100 origin HEAD
+        merge_base=$(git merge-base "target/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME" HEAD)
+        if [ -z "$merge_base" ]; then
+          echo "Could't determine merge base"
+          exit 1
+        fi
+        echo "Merge base: $merge_base"
+        ./.gitlab-ci/check-style.py --dry-run --sha $merge_base
+      else
+        echo "Not a merge request"
+      fi
+  allow_failure: true
+
+package:deb-debian-trixie:arm64:
   variables:
-    L5_DOCKER_IMAGE: debian:bookworm
+    L5_DOCKER_IMAGE: debian:trixie
   extends: .l5-build-debian-package
   tags:
     - librem5:arm64
