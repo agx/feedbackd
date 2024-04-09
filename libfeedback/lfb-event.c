@@ -79,6 +79,7 @@ enum {
   PROP_STATE,
   PROP_END_REASON,
   PROP_FEEDBACK_PROFILE,
+  PROP_IMPORTANT,
   PROP_APP_ID,
   PROP_LAST_PROP,
 };
@@ -96,6 +97,7 @@ typedef struct _LfbEvent {
   char          *event;
   gint           timeout;
   gchar         *profile;
+  gboolean       important;
   char          *app_id;
 
   guint          id;
@@ -139,6 +141,8 @@ build_hints (LfbEvent *self)
   g_variant_builder_init (&hints_builder, G_VARIANT_TYPE ("a{sv}"));
   if (self->profile)
     g_variant_builder_add (&hints_builder, "{sv}", "profile", g_variant_new_string (self->profile));
+  if (self->important)
+    g_variant_builder_add (&hints_builder, "{sv}", "important", g_variant_new_boolean (self->important));
   return g_variant_builder_end (&hints_builder);
 }
 
@@ -223,6 +227,9 @@ lfb_event_set_property (GObject      *object,
   case PROP_FEEDBACK_PROFILE:
     lfb_event_set_feedback_profile (self, g_value_get_string (value));
     break;
+  case PROP_IMPORTANT:
+    lfb_event_set_important (self, g_value_get_boolean (value));
+    break;
   case PROP_APP_ID:
     lfb_event_set_app_id (self, g_value_get_string (value));
     break;
@@ -250,6 +257,9 @@ lfb_event_get_property (GObject    *object,
     break;
   case PROP_FEEDBACK_PROFILE:
     g_value_set_string (value, lfb_event_get_feedback_profile (self));
+    break;
+  case PROP_IMPORTANT:
+    g_value_set_boolean (value, lfb_event_get_important (self));
     break;
   case PROP_APP_ID:
     g_value_set_string (value, lfb_event_get_app_id (self));
@@ -343,6 +353,20 @@ lfb_event_class_init (LfbEventClass *klass)
       "Feedback profile",
       "Feedback profile to use for this event",
       NULL,
+      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+  /**
+   * LfbEvent:important:
+   *
+   * Whether to flag this event as important.
+   * [method@LfbEvent.set_imporant] for details.
+   */
+  props[PROP_IMPORTANT] =
+    g_param_spec_boolean (
+      "important",
+      "Important",
+      "Whether to flags this event as important",
+      FALSE,
       G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
@@ -755,6 +779,44 @@ lfb_event_get_feedback_profile (LfbEvent *self)
   g_return_val_if_fail (LFB_IS_EVENT (self), NULL);
 
   return self->profile;
+}
+
+/**
+ * lfb_event_set_important:
+ * @self: The event
+ * @important: Whether to flag this event as important
+ *
+ * Tells the feedback server that the sender deems this to be an
+ * important event. A feedback server might allow the sender to
+ * override the current feedback level when this is set.
+ */
+void
+lfb_event_set_important (LfbEvent *self, gboolean important)
+{
+  g_return_if_fail (LFB_IS_EVENT (self));
+
+  if (self->important == important)
+    return;
+
+  self->important = important;
+  g_object_notify_by_pspec (G_OBJECT (self), props[PROP_IMPORTANT]);
+}
+
+/**
+ * lfb_event_get_important:
+ * @self: The event
+ *
+ * Gets the set feedback profile. If no profile was set it returns
+ * %NULL. The event uses the system wide profile in this case.
+ *
+ * Returns: The set feedback profile to use for this event or %NULL.
+ */
+gboolean
+lfb_event_get_important (LfbEvent *self)
+{
+  g_return_val_if_fail (LFB_IS_EVENT (self), FALSE);
+
+  return self->important;
 }
 
 /**
