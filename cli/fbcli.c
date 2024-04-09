@@ -130,7 +130,8 @@ main (int argc, char *argv[0])
 {
   g_autoptr(GOptionContext) opt_context = NULL;
   g_autoptr(GError) err = NULL;
-  g_autofree gchar *profile = NULL;
+  g_autofree char *profile = NULL;
+  g_autofree char *app_id = NULL;
   const char *name = NULL;
   gboolean success;
   int watch = 30;
@@ -144,6 +145,8 @@ main (int argc, char *argv[0])
      "Profile name to set", NULL},
     {"watch", 'w', 0, G_OPTION_ARG_INT, &watch,
      "How long to watch for feedback longest", NULL},
+    {"app-id", 'A', 0, G_OPTION_ARG_STRING, &app_id,
+     "Override used application id"},
     { NULL, 0, 0, G_OPTION_ARG_NONE, NULL, NULL, NULL }
   };
 
@@ -155,7 +158,10 @@ main (int argc, char *argv[0])
     return 1;
   }
 
-  if (!lfb_init ("org.sigxcpu.fbcli", &err)) {
+  if (!app_id)
+    app_id = g_strdup ("org.sigxcpu.fbcli");
+
+  if (!lfb_init (app_id, &err)) {
     g_print ("Failed to init libfeedback: %s\n", err->message);
     return 1;
   }
