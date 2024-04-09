@@ -102,6 +102,8 @@ format-check:
         echo "Not a merge request"
       fi
   allow_failure: true
+  rules:
+    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME'
 
 package:deb-debian-trixie:arm64:
   variables:
