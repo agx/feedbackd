@@ -298,9 +298,11 @@ get_max_level (FbdFeedbackProfileLevel global_level,
 {
   FbdFeedbackProfileLevel level;
 
-  /* Individual events and apps can select lower levels than the global level but not higher ones */
-  level = global_level > app_level ? app_level : global_level;
-  level = level > event_level ? event_level : level;
+  /* Per app configuration can only select a *lower* feedback level */
+  level = MIN (global_level, app_level);
+  /* A hint in an event can only select a *lower* feedback level */
+  level = MIN (level, event_level);
+
   return level;
 }
 
