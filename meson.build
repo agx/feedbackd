@@ -14,13 +14,15 @@ gio_unix       = dependency('gio-unix-2.0', version: '>=2.50.0')
 glib           = dependency('glib-2.0', version: '>=2.50.0')
 if get_option('daemon')
   gobject        = dependency('gobject-2.0', version: '>=2.50.0')
-  gmobile_subp   = subproject('gmobile',
-                              default_options: [
-                                'examples=false',
-                                'gtk_doc=false',
-                                'tests=false',
-                              ])
-  gmobile        = gmobile_subp.get_variable('gmobile_dep')
+  gmobile        = dependency('gmobile',
+    version: '>= 0.1.0',
+    fallback: ['gmobile', 'gmobile_dep'],
+    default_options: [
+      'examples=false',
+      'introspection=false',
+      'gtk_doc=false',
+      'tests=false',
+  ])
   gsound         = dependency('gsound')
   gudev          = dependency('gudev-1.0', version: '>=232')
   json_glib      = dependency('json-glib-1.0')
