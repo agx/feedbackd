@@ -1,5 +1,7 @@
 /*
  * Copyright (C) 2020 Purism SPC
+ *               2023-2024 The Phosh Developers
+ *
  * SPDX-License-Identifier: GPL-3.0+
  * Author: Guido Günther <agx@sigxcpu.org>
  */
@@ -58,7 +60,7 @@ on_user_input (GIOChannel *channel, GIOCondition cond, LfbEvent *event)
 }
 
 static gboolean
-trigger_event (const char *name, const gchar *profile, gint timeout)
+trigger_event (const char *name, const gchar *profile, gboolean important, gint timeout)
 {
   g_autoptr(GError) err = NULL;
   g_autoptr(LfbEvent) event = NULL;
@@ -73,6 +75,9 @@ trigger_event (const char *name, const gchar *profile, gint timeout)
   lfb_event_set_timeout (event, timeout);
   if (profile)
     lfb_event_set_feedback_profile (event, profile);
+
+  if (important)
+    lfb_event_set_important (event, TRUE);
 
   g_signal_connect (event, "feedback-ended", (GCallback)on_feedback_ended, &success);
   if (!lfb_event_trigger_feedback (event, &err)) {
@@ -133,12 +138,14 @@ main (int argc, char *argv[0])
   g_autofree char *profile = NULL;
   g_autofree char *app_id = NULL;
   const char *name = NULL;
-  gboolean success;
+  gboolean success, important = FALSE;
   int watch = 30;
   int timeout = -1;
   const GOptionEntry options [] = {
     {"event", 'E', 0, G_OPTION_ARG_STRING, &name,
      "Event name. (default: " DEFAULT_EVENT ").", NULL},
+    {"important", 'I', 0, G_OPTION_ARG_NONE, &important,
+     "Whether to set the important hint", NULL},
     {"timeout", 't', 0, G_OPTION_ARG_INT, &timeout,
      "Run feedback for timeout seconds", NULL},
     {"profile", 'P', 0, G_OPTION_ARG_STRING, &profile,
@@ -173,7 +180,7 @@ main (int argc, char *argv[0])
       name = g_strdup (DEFAULT_EVENT);
 
     g_timeout_add_seconds (watch, (GSourceFunc)on_watch_expired, NULL);
-    success = trigger_event (name, profile, timeout);
+    success = trigger_event (name, profile, important, timeout);
   }
 
   lfb_uninit ();
