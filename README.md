@@ -115,7 +115,8 @@ You can add your own themes in multiple ways:
         gsettings reset org.sigxcpu.feedbackd theme
 
    Note that you can name your theme as you wish but avoid theme names
-   starting with `__` or `$` as this namespace is reserved.
+   starting with `__` or `$` as this namespace is reserved. This is the
+   preferred way to specify a custom theme.
 
 4. By adding your theme file to one of the folders in the `XDG_DATA_DIRS`
    environment variable, appended with `feedbackd/themes/`. This folder isn't
