@@ -1,12 +1,22 @@
-feedback 0.2.1
---------------
+feedbackd 0.3.0
+---------------
+Released April 2024
+* Allow blessed apps (e.g. alarm clocks) to override the global
+  feedback level
+* Documentation, CI and packaging updates
+* Make it simpler to add new led types
+* Contributors:
+    * Guido Günther
+
+feedbackd 0.2.1
+---------------
 Released August 2023
 * Minor documentation updates
 * Contributors:
     * Guido Günther
 
-feedback 0.2.0
---------------
+feedbackd 0.2.0
+---------------
 Released April 2023
 * lfbevent: Add api to set app-id
 * lfbevent: Change signature of get_feedback_profile().

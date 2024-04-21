@@ -1,3 +1,58 @@
+feedbackd (0.3.0) experimental; urgency=medium
+
+  * feedback-themes: Improve wording
+  * manpages: Improve references
+  * manpages: Fix whatis entry
+  * debian: Update from the current packaging in Debian
+    - Validate fbd-theme-validate
+    - Add Build-dep to symbols file
+    - Add doc-base registration
+    - Use dh_installman to fix nodoc build
+    - Update debian/copyright
+    - Improve Recommends: and multi arch annotations
+    - Add lintian overrides
+  * debian: Fix nodoc build.
+    Don't try to install the dev docs in that case.
+  * debian: Install NEWS
+  * packaging: Use meson's default wrap mode
+    ci should be allowed to download gmobile
+  * build: Switch gmobile to 0.0.4.
+    We switch to a wrap which helps us to avoid the submodule
+  * ci: Switch to trixie
+  * ci: Add uncrustify config and checker.
+    Based on what we added to phoc recently
+  * ci: Run style checks on merge requests
+  * fbd-dev-led-multicolor: Fix indentation
+  * fbd-dev-led-multicolor: Drop unused variable
+  * fbd-dev-led-multicolor: Make it a derivable type.
+    This will allow hw-pattern classes to derive from it.
+  * Draft: ci: Add rules for format-check
+  * build: Switch to gmobile 0.1.0
+  * build: Allow to use shared gmobile
+  * packaging: Add libgirepository1.0-dev
+  * README: Note what's the preferred way to specify a theme
+  * build: Validate schema file
+  * data/dbus: Document current flags
+  * data/dbus: Document important hint.
+    The important hint can be used by apps to override the current per app
+    or system wide feedback level (if the feedback server allows it).
+  * data/schema: Add 'allow-override' gsetting.
+    This allows to list apps that can override the currently
+    effective feedback level by setting the 'impotant' hint in
+    the event.
+  * fbcli: Allow to override app-id.
+    Useful for testing
+  * feedback-manager: Use MIN()
+    A bit easier to read
+  * libfeedback: Allow to set important hint
+  * feedback-manager: Parse important hint
+  * cli: Allow to set important hint
+  * feedback-manager: Handle important hint.
+    This allows blessed apps to override the per-app as well as the global
+    feedback level. This can e.g. be useful for alarm clocks.
+
+ -- Guido Günther <agx@sigxcpu.org>  Sun, 21 Apr 2024 12:15:01 +0200
+
 feedbackd (0.2.1) experimental; urgency=medium
 
   * Update NEWS
