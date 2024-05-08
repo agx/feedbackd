@@ -233,10 +233,26 @@ Run feedbacks for event `message-new-instant` for 10 seconds:
 _build/cli/fbcli -t 10 -E alarm-clock-elapsed
 ```
 
-## Python example
+## Examples
 
-There's an `example.py` script in the example/ folder of the
-repository demonstrating how to trigger feedback via an event.
+Here's some examples that show how to use libfeedback in your application:
+
+### C
+
+The command line tool [`fbcli`](./cli/fbcli.c) can be used as example
+on how to use libfeedback from C.
+
+### Python
+
+There's an [`example.py`](./examples/example.py) script demonstrating
+how to use the introspection bindings and how to trigger feedback via
+an event.
+
+### Rust
+
+The [libfeedback-rs](https://gitlab.gnome.org/guidog/libfeedback-rs) Rust
+bindings ship an [example](https://gitlab.gnome.org/guidog/libfeedback-rs/-/blob/main/libfeedback/examples/hello-world.rs?ref_type=heads)
+to demo the usage.
 
 ## Per app profiles
 One can set the feedback profile of an individual application
