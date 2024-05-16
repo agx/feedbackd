@@ -30,6 +30,11 @@ enum {
 };
 static GParamSpec *props[PROP_LAST_PROP];
 
+/**
+ * FbdDevLed:
+ *
+ * A single color LED driven by Linux sysfs
+ */
 typedef struct _FbdDevLedPrivate {
   GUdevDevice        *dev;
   guint               max_brightness;

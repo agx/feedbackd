@@ -24,7 +24,7 @@
 /**
  * fbd-dev-led-multicolor:
  *
- * A multicolor led using the kernels "multi_intensitiy"
+ * A multicolor led using the `multi_intensitiy` sysfs attribute
  */
 typedef struct _FbdDevLedMulticolorPrivate {
   guint               red_index;
