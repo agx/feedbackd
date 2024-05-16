@@ -57,7 +57,7 @@ fbd_dev_led_probe_default (FbdDevLed *led, GError **error)
 {
   FbdDevLedPrivate *priv = fbd_dev_led_get_instance_private (led);
   const gchar *name, *path;
-  gboolean success;
+  gboolean success = FALSE;
 
   name = g_udev_device_get_name (priv->dev);
   /* We don't know anything about diffusors that can combine different
