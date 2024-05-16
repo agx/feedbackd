@@ -72,7 +72,6 @@ fbd_dev_led_probe_default (FbdDevLed *led, GError **error)
     c = strrchr (enum_name, '_');
     color = g_ascii_strdown (c+1, -1);
     if (g_strstr_len (name, -1, color)) {
-      g_autoptr (GError) err = NULL;
       guint brightness = g_udev_device_get_sysfs_attr_as_int (priv->dev, LED_MAX_BRIGHTNESS_ATTR);
 
       if (!brightness)
