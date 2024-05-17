@@ -30,6 +30,11 @@ enum {
 };
 static GParamSpec *props[PROP_LAST_PROP];
 
+/**
+ * FbdDevLed:
+ *
+ * A single color LED driven by Linux sysfs
+ */
 typedef struct _FbdDevLedPrivate {
   GUdevDevice        *dev;
   guint               max_brightness;
@@ -52,7 +57,7 @@ fbd_dev_led_probe_default (FbdDevLed *led, GError **error)
 {
   FbdDevLedPrivate *priv = fbd_dev_led_get_instance_private (led);
   const gchar *name, *path;
-  gboolean success;
+  gboolean success = FALSE;
 
   name = g_udev_device_get_name (priv->dev);
   /* We don't know anything about diffusors that can combine different
@@ -67,7 +72,6 @@ fbd_dev_led_probe_default (FbdDevLed *led, GError **error)
     c = strrchr (enum_name, '_');
     color = g_ascii_strdown (c+1, -1);
     if (g_strstr_len (name, -1, color)) {
-      g_autoptr (GError) err = NULL;
       guint brightness = g_udev_device_get_sysfs_attr_as_int (priv->dev, LED_MAX_BRIGHTNESS_ATTR);
 
       if (!brightness)

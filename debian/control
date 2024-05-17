@@ -15,9 +15,11 @@ Build-Depends:
  libgudev-1.0-dev,
  libgsound-dev,
  libjson-glib-dev,
+ libumockdev-dev,
  meson,
  pkg-config,
  python3-docutils <!nodoc>,
+ umockdev,
  valac,
 Standards-Version: 4.6.2
 Homepage: https://source.puri.sm/Librem5/feedbackd
