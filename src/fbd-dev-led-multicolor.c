@@ -53,7 +53,7 @@ fbd_dev_led_probe_multicolor (FbdDevLed *led, GError **error)
   if (index == NULL) {
     g_set_error (error,
                  G_FILE_ERROR, G_FILE_ERROR_FAILED,
-                 "%s is no multicololor LED", name);
+                 "%s is no multicolor LED", name);
     return FALSE;
   }
 
