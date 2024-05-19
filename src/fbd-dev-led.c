@@ -63,7 +63,7 @@ fbd_dev_led_probe_default (FbdDevLed *led, GError **error)
   /* We don't know anything about diffusors that can combine different
      color LEDSs so go with fixed colors until the kernel gives us
      enough information */
-  for (int i = 0; i < FBD_FEEDBACK_LED_COLOR_RGB; i++) {
+  for (int i = 0; i <= FBD_FEEDBACK_LED_COLOR_LAST; i++) {
     g_autofree char *color = NULL;
     g_autofree char *enum_name = NULL;
     gchar *c;
