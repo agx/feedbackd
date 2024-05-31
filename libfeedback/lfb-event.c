@@ -359,7 +359,7 @@ lfb_event_class_init (LfbEventClass *klass)
    * LfbEvent:important:
    *
    * Whether to flag this event as important.
-   * [method@LfbEvent.set_imporant] for details.
+   * [method@LfbEvent.set_important] for details.
    */
   props[PROP_IMPORTANT] =
     g_param_spec_boolean (
