@@ -17,6 +17,8 @@ sources = [
   'fbd-dev-sound.c',
   'fbd-dev-led.c',
   'fbd-dev-led-multicolor.c',
+  'fbd-dev-led-qcom.c',
+  'fbd-dev-led-qcom-multicolor.c',
   'fbd-dev-leds.c',
   'fbd-event.c',
   'fbd-feedback-base.c',

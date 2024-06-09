@@ -12,6 +12,8 @@
 #include "fbd-enums.h"
 #include "fbd-dev-led.h"
 #include "fbd-dev-led-multicolor.h"
+#include "fbd-dev-led-qcom.h"
+#include "fbd-dev-led-qcom-multicolor.h"
 #include "fbd-dev-leds.h"
 #include "fbd-feedback-led.h"
 #include "fbd-udev.h"
@@ -47,13 +49,50 @@ find_led_by_color (FbdDevLeds *self, FbdFeedbackLedColor color)
 
   for (GSList *l = self->leds; l != NULL; l = l->next) {
     FbdDevLed *led = l->data;
-    if (fbd_dev_led_has_color (led, color))
+    if (fbd_dev_led_supports_color (led, color))
       return led;
   }
 
   /* If we did not match a color pick the first */
   return self->leds->data;
 }
+
+
+static FbdDevLed*
+probe_led (GUdevDevice *dev, GError **error) {
+  FbdDevLed *led = NULL;
+
+  led = fbd_dev_led_qcom_multicolor_new (dev, error);
+  if (led != NULL) {
+    g_debug ("Discovered QCOM multicolor LED");
+    return led;
+  }
+  g_clear_error (error);
+
+  led = fbd_dev_led_qcom_new (dev, error);
+  if (led != NULL) {
+    g_debug ("Discovered QCOM single color LED");
+    return led;
+  }
+  g_clear_error (error);
+
+  led = fbd_dev_led_multicolor_new (dev, error);
+  if (led != NULL) {
+    g_debug ("Discovered multicolor LED");
+    return led;
+  }
+  g_clear_error (error);
+
+  led = fbd_dev_led_new (dev, error);
+  if (led != NULL) {
+    g_debug ("Discovered single color LED");
+    return led;
+  }
+
+  g_debug ("Unable to determine LED driver");
+  return NULL;
+}
+
 
 static gboolean
 initable_init (GInitable    *initable,
@@ -79,14 +118,7 @@ initable_init (GInitable    *initable,
       continue;
     }
 
-    /* Try multicolor first, fall back to single color */
-    led = fbd_dev_led_multicolor_new (dev, &err);
-    if (led == NULL) {
-      g_debug ("Led not usable as multicolor: '%s'", err->message);
-      led = fbd_dev_led_new (dev, &err);
-      if (led == NULL)
-        g_debug ("Led not usable as single color: '%s'", err->message);
-    }
+    led = probe_led (dev, &err);
 
     if (led) {
       self->leds = g_slist_append (self->leds, led);
@@ -165,7 +197,9 @@ fbd_dev_leds_start_periodic (FbdDevLeds *self, FbdFeedbackLedColor color,
   led = find_led_by_color (self, color);
   g_return_val_if_fail (led, FALSE);
 
-  return fbd_dev_led_start_periodic (led, color, max_brightness_percentage, freq);
+  fbd_dev_led_set_color (led, color);
+
+  return fbd_dev_led_start_periodic (led, max_brightness_percentage, freq);
 }
 
 gboolean
