@@ -31,8 +31,8 @@ static gboolean
 fbd_dev_led_qcom_probe (FbdDevLed *led, GError **error)
 {
   GUdevDevice *dev = fbd_dev_led_get_device (led);
-  const gchar *name;
-  const gchar * const *index;
+  const char *name;
+  const char * const *index;
 
   name = g_udev_device_get_name (dev);
 
@@ -56,7 +56,7 @@ fbd_dev_led_qcom_start_periodic (FbdDevLed *led,
   GUdevDevice *dev = fbd_dev_led_get_device (led);
   gdouble max;
   gdouble t;
-  g_autofree gchar *str = NULL;
+  g_autofree char *str = NULL;
   g_autoptr (GError) err = NULL;
   gboolean success;
 
