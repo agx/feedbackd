@@ -50,9 +50,22 @@ fbd_dev_led_qcom_multicolor_start_periodic (FbdDevLed *led,
 }
 
 static void
+fbd_dev_led_qcom_multicolor_finalize (GObject *object)
+{
+  FbdDevLedQcomMulticolor *self = FBD_DEV_LED_QCOM_MULTICOLOR (object);
+
+  g_clear_object (&self->qcom_led);
+
+  G_OBJECT_CLASS (fbd_dev_led_qcom_multicolor_parent_class)->finalize (object);
+}
+
+static void
 fbd_dev_led_qcom_multicolor_class_init (FbdDevLedQcomMulticolorClass *klass)
 {
+  GObjectClass *object_class = G_OBJECT_CLASS (klass);
   FbdDevLedClass *fbd_dev_led_class = FBD_DEV_LED_CLASS (klass);
+
+  object_class->finalize = fbd_dev_led_qcom_multicolor_finalize;
 
   fbd_dev_led_class->probe = fbd_dev_led_qcom_multicolor_probe;
   fbd_dev_led_class->start_periodic = fbd_dev_led_qcom_multicolor_start_periodic;
