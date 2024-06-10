@@ -15,8 +15,6 @@
 
 #include <gio/gio.h>
 
-#define LED_HW_PATTERN_ATTR   "hw_pattern"
-#define LED_REPEAT_ATTR       "repeat"
 
 typedef struct _FbdDevLedQcomMulticolor {
   FbdDevLedMulticolor parent;
