@@ -18,6 +18,8 @@
 #define LED_REPEAT_ATTR       "repeat"
 #define LED_REPEAT_INFINITY   "-1"
 #define QCOM_LPG_MAX_PAUSE_MS 511
+#define LED_DRIVER_PROP       "DRIVER"
+#define QCOM_LED_DRIVER       "qcom-spmi-lpg"
 
 typedef struct _FbdDevLedQcom {
   FbdDevLed parent;
@@ -28,11 +30,35 @@ G_DEFINE_TYPE (FbdDevLedQcom, fbd_dev_led_qcom, FBD_TYPE_DEV_LED)
 
 
 static gboolean
+fbd_dev_led_qcom_check_driver (FbdDevLedQcom *self, const char *name)
+{
+  g_autoptr (GUdevDevice) dev = NULL;
+  gboolean found = FALSE;
+
+  dev = g_object_ref (fbd_dev_led_get_device (FBD_DEV_LED (self)));
+  do {
+    g_autoptr (GUdevDevice) parent = NULL;
+    const char *driver = g_udev_device_get_property (dev, LED_DRIVER_PROP);
+
+    if (g_strcmp0 (driver, QCOM_LED_DRIVER) == 0) {
+      found = TRUE;
+      break;
+    }
+
+    parent = g_udev_device_get_parent (dev);
+    g_set_object (&dev, parent);
+  } while (dev);
+
+  return found;
+}
+
+
+static gboolean
 fbd_dev_led_qcom_probe (FbdDevLed *led, GError **error)
 {
   GUdevDevice *dev = fbd_dev_led_get_device (led);
-  const gchar *name;
-  const gchar * const *index;
+  const char *name;
+  const char * const *index;
 
   name = g_udev_device_get_name (dev);
 
@@ -40,7 +66,14 @@ fbd_dev_led_qcom_probe (FbdDevLed *led, GError **error)
   if (index == NULL) {
     g_set_error (error,
                G_FILE_ERROR, G_FILE_ERROR_FAILED,
-               "%s is no QCOM LED with HW support", name);
+               "%s is no LED with HW support", name);
+    return FALSE;
+  }
+
+  if (!fbd_dev_led_qcom_check_driver (FBD_DEV_LED_QCOM (led), QCOM_LED_DRIVER)) {
+    g_set_error (error,
+                 G_FILE_ERROR, G_FILE_ERROR_FAILED,
+                 "%s is no QCOM LED with HW support", name);
     return FALSE;
   }
 
@@ -56,7 +89,7 @@ fbd_dev_led_qcom_start_periodic (FbdDevLed *led,
   GUdevDevice *dev = fbd_dev_led_get_device (led);
   gdouble max;
   gdouble t;
-  g_autofree gchar *str = NULL;
+  g_autofree char *str = NULL;
   g_autoptr (GError) err = NULL;
   gboolean success;
 
