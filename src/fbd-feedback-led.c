@@ -31,15 +31,34 @@ enum {
 static GParamSpec *props[PROP_LAST_PROP];
 
 typedef struct _FbdFeedbackLed {
-  FbdFeedbackBase     parent;
+  FbdFeedbackBase  parent;
 
-  guint               frequency;
-  guint               priority;
-  guint               max_brightness;
-  FbdFeedbackLedColor color;
+  guint            frequency;
+  guint            priority;
+  guint            max_brightness;
+  char            *color;
 } FbdFeedbackLed;
 
 G_DEFINE_TYPE (FbdFeedbackLed, fbd_feedback_led, FBD_TYPE_FEEDBACK_BASE)
+
+
+static FbdFeedbackLedColor
+color_string_to_color (const char *color)
+{
+
+  if (g_strcmp0 (color, "red") == 0)
+    return FBD_FEEDBACK_LED_COLOR_RED;
+  else if (g_strcmp0 (color, "green") == 0)
+    return FBD_FEEDBACK_LED_COLOR_GREEN;
+  else if (g_strcmp0 (color, "blue") == 0)
+    return FBD_FEEDBACK_LED_COLOR_BLUE;
+  else if (g_strcmp0 (color, "white") == 0)
+    return FBD_FEEDBACK_LED_COLOR_WHITE;
+
+  g_warning_once ("Can't parse color '%s' using white", color);
+  return FBD_FEEDBACK_LED_COLOR_WHITE;
+}
+
 
 static void
 fbd_feedback_led_set_property (GObject      *object,
@@ -60,7 +79,7 @@ fbd_feedback_led_set_property (GObject      *object,
     self->max_brightness = g_value_get_uint (value);
     break;
   case PROP_COLOR:
-    self->color = g_value_get_enum (value);
+    self->color = g_value_dup_string (value);
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -88,7 +107,7 @@ fbd_feedback_led_get_property (GObject    *object,
     g_value_set_uint (value, self->max_brightness);
     break;
   case PROP_COLOR:
-    g_value_set_enum (value, self->color);
+    g_value_set_string (value, self->color);
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -103,13 +122,15 @@ fbd_feedback_led_run (FbdFeedbackBase *base)
   FbdFeedbackLed *self = FBD_FEEDBACK_LED (base);
   FbdFeedbackManager *manager = fbd_feedback_manager_get_default ();
   FbdDevLeds *dev = fbd_feedback_manager_get_dev_leds (manager);
+  FbdFeedbackLedColor color;
 
   g_return_if_fail (FBD_IS_DEV_LEDS (dev));
   g_debug ("Periodic led feedback: self->max_brightness, self->frequency");
 
+  color = color_string_to_color (self->color);
   /* FIXME: handle priority */
   fbd_dev_leds_start_periodic (dev,
-                               self->color,
+                               color,
                                self->max_brightness,
                                self->frequency);
 }
@@ -121,9 +142,11 @@ fbd_feedback_led_end (FbdFeedbackBase *base)
   FbdFeedbackLed *self = FBD_FEEDBACK_LED (base);
   FbdFeedbackManager *manager = fbd_feedback_manager_get_default ();
   FbdDevLeds *dev = fbd_feedback_manager_get_dev_leds (manager);
+  FbdFeedbackLedColor color;
 
+  color = color_string_to_color (self->color);
   if (dev)
-    fbd_dev_leds_stop (dev, self->color);
+    fbd_dev_leds_stop (dev, color);
   fbd_feedback_base_done (FBD_FEEDBACK_BASE (self));
 }
 
@@ -139,6 +162,17 @@ fbd_feedback_led_is_available (FbdFeedbackBase *base)
 
 
 static void
+fbd_feedback_led_finalize (GObject *object)
+{
+  FbdFeedbackLed *self = FBD_FEEDBACK_LED (object);
+
+  g_clear_pointer (&self->color, g_free);
+
+  G_OBJECT_CLASS (fbd_feedback_led_parent_class)->finalize (object);
+}
+
+
+static void
 fbd_feedback_led_class_init (FbdFeedbackLedClass *klass)
 {
   FbdFeedbackBaseClass *base_class = FBD_FEEDBACK_BASE_CLASS (klass);
@@ -146,6 +180,7 @@ fbd_feedback_led_class_init (FbdFeedbackLedClass *klass)
 
   object_class->set_property = fbd_feedback_led_set_property;
   object_class->get_property = fbd_feedback_led_get_property;
+  object_class->finalize = fbd_feedback_led_finalize;
 
   base_class->run = fbd_feedback_led_run;
   base_class->end = fbd_feedback_led_end;
@@ -163,13 +198,13 @@ fbd_feedback_led_class_init (FbdFeedbackLedClass *klass)
   /**
    * FbdFeedbackLed:color:
    *
-   * The color the LED should blink with.
+   * The color the LED should blink with. The color is given as color
+   * name or `rgb()` color value.
    */
   props[PROP_COLOR] =
-    g_param_spec_enum ("color", "", "",
-                       FBD_FEEDBACK_LED_COLOR_WHITE,
-                       FBD_TYPE_FEEDBACK_LED_COLOR,
-                       G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+    g_param_spec_string ("color", "", "",
+                         NULL,
+                         G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
   /**
    * FbdFeedbackLed:priority:
    *
