@@ -129,7 +129,8 @@ fbd_dev_led_multicolor_set_color (FbdDevLed           *led,
     return FALSE;
   }
 
-  intensity = g_strdup_printf ("%d %d %d\n", colors[0], colors[1], colors[2]);
+  intensity = g_strdup_printf ("%u %u %u\n", colors[0], colors[1], colors[2]);
+
   fbd_dev_led_set_brightness (led, max_brightness);
   success = fbd_udev_set_sysfs_path_attr_as_string (dev,
                                                     LED_MULTI_INTENSITY_ATTR,
