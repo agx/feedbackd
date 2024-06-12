@@ -9,7 +9,7 @@ Theme configuration for feedbackd
 ---------------------------------
 
 DESCRIPTION
-===========
+-----------
 
 In order to reflect device specifics and user overrides the feedback
 (such as sound, haptic or led) that is being triggered by an event can
@@ -19,11 +19,37 @@ format that can be validated with ``fbd-theme-validate``.
 For details on how to create or modify feedback themes see [feedbackd's documentation](
 https://source.puri.sm/Librem5/feedbackd#feedback-theme).
 
+Feedback types
+--------------
+
+To build a theme you can use several different feedback types:
+
+- `Sound`:  Plays a sound from the installed sound theme
+- `VibraRumble`: A single rumble using the haptic motor
+- `VibraPeriodic`: A periodic rumble using the haptic motor
+- `Led`: A LED blinking in a periodic pattern
+
 Sound feedback
-==============
+~~~~~~~~~~~~~~
 
 Sound feedbacks specify an event name from a XDG sound theme. Sound themes
 are described in the [Sound theme spec](https://freedesktop.org/wiki/Specifications/sound-theme-spec/).
+
+VibraRumble feedback
+~~~~~~~~~~~~~~~~~~~~
+
+The `VibraRumble` feedback uses a single property
+
+- `duration`: The duration of the rumble in ms.
+
+LED feedback
+~~~~~~~~~~~~
+
+The `Led` feedback type uses two properties to specify the way a LED blinks.
+
+- `color`: This specifies the color a LED should blink with. It supports the fixed color names `red`,
+  `green`, `blue` and `white.
+- `frequency`: The LEDs blinkinig frequencey in mHz.
 
 See also
 ========
