@@ -201,8 +201,6 @@ on_profile_changed (FbdFeedbackManager *self, GParamSpec *psepc, gpointer unused
 
   if (!fbd_feedback_manager_set_profile (self, pname))
     g_warning ("Invalid profile '%s'", pname);
-
-  /* TODO: end running feedbacks that aren't allowed in new profile immediately */
 }
 
 static void
@@ -418,7 +416,7 @@ fbd_feedback_manager_handle_trigger_feedback (LfbGdbusFeedback      *object,
   feedbacks = fbd_feedback_theme_lookup_feedback (self->theme, level, event);
   if (feedbacks) {
     for (l = feedbacks; l; l = l->next) {
-      FbdFeedbackBase *fb = l->data;
+      FbdFeedbackBase *fb = FBD_FEEDBACK_BASE (l->data);
 
       if (fbd_feedback_is_available (FBD_FEEDBACK_BASE (fb))) {
         fbd_event_add_feedback (event, fb);
@@ -626,6 +624,20 @@ fbd_feedback_manager_load_theme (FbdFeedbackManager *self)
   }
 }
 
+
+static void
+cancel_running (FbdFeedbackManager *self)
+{
+  g_autoptr (GList) running = g_hash_table_get_values (self->events);
+
+  for (GList *l = running; l ; l = l->next) {
+    FbdEvent *event = FBD_EVENT (l->data);
+
+    fbd_event_end_feedbacks_by_level (event, self->level);
+  }
+}
+
+
 gboolean
 fbd_feedback_manager_set_profile (FbdFeedbackManager *self, const gchar *profile)
 {
@@ -645,5 +657,8 @@ fbd_feedback_manager_set_profile (FbdFeedbackManager *self, const gchar *profile
   self->level = level;
   lfb_gdbus_feedback_set_profile (LFB_GDBUS_FEEDBACK (self), profile);
   g_settings_set_string (self->settings, FEEDBACKD_KEY_PROFILE, profile);
+
+  cancel_running (self);
+
   return TRUE;
 }
