@@ -361,10 +361,26 @@ fbd_event_get_feedbacks (FbdEvent *self)
 int
 fbd_event_remove_feedback (FbdEvent *self, FbdFeedbackBase *feedback)
 {
+  guint len;
+
   g_return_val_if_fail (FBD_IS_EVENT (self), 0);
 
+  if (!self->feedbacks)
+    return 0;
+
+  if (g_slist_index (self->feedbacks, feedback) >= 0) {
+    g_signal_handlers_disconnect_by_data (feedback, self);
+    /* Drop our reference, feedbacks end themselves when unref'ed */
+    g_object_unref (feedback);
+  }
+
   self->feedbacks = g_slist_remove (self->feedbacks, feedback);
-  return g_slist_length (self->feedbacks);
+
+  len = g_slist_length (self->feedbacks);
+  if (!len)
+    check_ended (self);
+
+  return len;
 }
 
 /**
