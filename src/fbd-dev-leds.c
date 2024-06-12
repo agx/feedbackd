@@ -180,15 +180,19 @@ fbd_dev_leds_new (GError **error)
 /**
  * fbd_dev_leds_start_periodic:
  * @self: The #FbdDevLeds
- * @color: The color to use for the LED pattern
+ * @color: The color LED to use for the LED pattern
+ * @rgb: The rgb value to set (if `color` indicates an RGB led)
  * @max_brightness_percentage: The max brightness (in percent) to use for the pattern
  * @freq: The pattern's frequency in mHz
  *
  * Start periodic feedback.
  */
 gboolean
-fbd_dev_leds_start_periodic (FbdDevLeds *self, FbdFeedbackLedColor color,
-                             guint max_brightness_percentage, guint freq)
+fbd_dev_leds_start_periodic (FbdDevLeds          *self,
+                             FbdFeedbackLedColor  color,
+                             FbdLedRgbColor      *rgb,
+                             guint                max_brightness_percentage,
+                             guint                freq)
 {
   FbdDevLed *led;
 
@@ -197,7 +201,7 @@ fbd_dev_leds_start_periodic (FbdDevLeds *self, FbdFeedbackLedColor color,
   led = find_led_by_color (self, color);
   g_return_val_if_fail (led, FALSE);
 
-  fbd_dev_led_set_color (led, color);
+  fbd_dev_led_set_color (led, color, rgb);
 
   return fbd_dev_led_start_periodic (led, max_brightness_percentage, freq);
 }

@@ -33,10 +33,7 @@ static GParamSpec *props[PROP_LAST_PROP];
 typedef struct _FbdDevLedPrivate {
   GUdevDevice        *dev;
   guint               max_brightness;
-  /*
-   * We just use the colors from the feedback until we
-   * do rgb mixing, etc
-   */
+
   FbdFeedbackLedColor color;
 } FbdDevLedPrivate;
 
@@ -55,9 +52,6 @@ fbd_dev_led_probe_default (FbdDevLed *led, GError **error)
   gboolean success = FALSE;
 
   name = g_udev_device_get_name (priv->dev);
-  /* We don't know anything about diffusors that can combine different
-     color LEDSs so go with fixed colors until the kernel gives us
-     enough information */
   for (int i = 0; i <= FBD_FEEDBACK_LED_COLOR_LAST; i++) {
     g_autofree char *color = NULL;
     g_autofree char *enum_name = NULL;
@@ -94,7 +88,8 @@ fbd_dev_led_probe_default (FbdDevLed *led, GError **error)
 
 static gboolean
 fbd_dev_led_set_color_default (FbdDevLed           *led,
-                               FbdFeedbackLedColor  color)
+                               FbdFeedbackLedColor  color,
+                               FbdLedRgbColor      *rgb)
 {
   /* Ignore setting color as we have a single color only */
   return TRUE;
@@ -270,9 +265,9 @@ fbd_dev_led_set_brightness (FbdDevLed *led, guint brightness)
 
 
 gboolean
-fbd_dev_led_start_periodic (FbdDevLed           *led,
-                            guint                max_brightness_percentage,
-                            guint                freq)
+fbd_dev_led_start_periodic (FbdDevLed *led,
+                            guint      max_brightness_percentage,
+                            guint      freq)
 {
   FbdDevLedClass *fbd_dev_led_class = FBD_DEV_LED_GET_CLASS (led);
 
@@ -283,14 +278,15 @@ fbd_dev_led_start_periodic (FbdDevLed           *led,
 
 
 gboolean
-fbd_dev_led_set_color (FbdDevLed *led,
-                       FbdFeedbackLedColor color)
+fbd_dev_led_set_color (FbdDevLed           *led,
+                       FbdFeedbackLedColor  color,
+                       FbdLedRgbColor      *rgb)
 {
   FbdDevLedClass *fbd_dev_led_class = FBD_DEV_LED_GET_CLASS (led);
 
   g_return_val_if_fail (FBD_IS_DEV_LED (led), FALSE);
 
-  return fbd_dev_led_class->set_color (led, color);
+  return fbd_dev_led_class->set_color (led, color, rgb);
 }
 
 

@@ -28,6 +28,10 @@ typedef enum _FbdFeedbackLedColor {
   FBD_FEEDBACK_LED_COLOR_LAST = FBD_FEEDBACK_LED_COLOR_RGB,
 } FbdFeedbackLedColor;
 
+typedef struct {
+  guint r, g, b;
+} FbdLedRgbColor;
+
 #define FBD_TYPE_FEEDBACK_LED (fbd_feedback_led_get_type ())
 
 G_DECLARE_FINAL_TYPE (FbdFeedbackLed, fbd_feedback_led, FBD, FEEDBACK_LED, FbdFeedbackBase);

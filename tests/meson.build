@@ -78,6 +78,7 @@ test_fbd_deps = [
 
 # HW independent tests
 fbd_tests = [
+  'fbd-feedback-led',
   'fbd-feedback-profile',
   'fbd-feedback-theme',
   'fbd-event',

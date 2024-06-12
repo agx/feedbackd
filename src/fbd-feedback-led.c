@@ -13,6 +13,8 @@
 #include "fbd-feedback-led.h"
 #include "fbd-feedback-manager.h"
 
+#include <gmobile.h>
+
 /**
  * FbdFeedbackLed:
  *
@@ -41,21 +43,110 @@ typedef struct _FbdFeedbackLed {
 
 G_DEFINE_TYPE (FbdFeedbackLed, fbd_feedback_led, FBD_TYPE_FEEDBACK_BASE)
 
+/**
+ * ascii_to_int:
+ * @c: a character
+ *
+ * Interprets a character as digit. E.g. '1' will be converted to 1,
+ * 'C' or 'c' will be converted to 12.
+ *
+ * Returns: The integer value or -1 if the character isn't a hex digit.
+ */
+static int
+hex_ascii_to_int (char c)
+{
+  switch (c) {
+  case '0'...'9':
+    return c - '0';
+    break;
+  case 'a'...'f':
+    return 10 + c - 'a';
+    break;
+  case 'A'...'F':
+    return 10 + c - 'A';
+    break;
+  default:
+    return -1;
+  }
+}
+
+
+static gboolean
+parse_hex_color (const char *color, FbdLedRgbColor *rgb)
+{
+  FbdLedRgbColor parsed = { 0 };
+
+  if (color[0] != '#')
+    return FALSE;
+
+  if (strlen (color) != strlen ("#11AA00"))
+    return FALSE;
+
+  if (!rgb)
+    return TRUE;
+
+  for (int i = 1; color[i]; i++) {
+    int c = hex_ascii_to_int (color[i]);
+
+    if (c < 0)
+      return FALSE;
+
+    switch (i) {
+    case 1:
+      parsed.r |= hex_ascii_to_int (color[i]) << 4;
+      break;
+    case 2:
+      parsed.r |= hex_ascii_to_int (color[i]);
+      break;
+    case 3:
+      parsed.g |= hex_ascii_to_int (color[i]) << 4;
+      break;
+    case 4:
+      parsed.g |= hex_ascii_to_int (color[i]);
+      break;
+    case 5:
+      parsed.b |= hex_ascii_to_int (color[i]) << 4;
+      break;
+    case 6:
+      parsed.b |= hex_ascii_to_int (color[i]);
+      break;
+    }
+  }
+
+  memcpy (rgb, &parsed, sizeof (FbdLedRgbColor));
+
+  return TRUE;
+}
+
 
 static FbdFeedbackLedColor
-color_string_to_color (const char *color)
+color_string_to_color (const char *color, FbdLedRgbColor *rgb)
 {
+  g_return_val_if_fail (!gm_str_is_null_or_empty (color), FBD_FEEDBACK_LED_COLOR_WHITE);
 
-  if (g_strcmp0 (color, "red") == 0)
+  if (g_strcmp0 (color, "red") == 0) {
+    if (rgb)
+      rgb->r = 255;
     return FBD_FEEDBACK_LED_COLOR_RED;
-  else if (g_strcmp0 (color, "green") == 0)
+  } else if (g_strcmp0 (color, "green") == 0) {
+    if (rgb)
+      rgb->g = 255;
     return FBD_FEEDBACK_LED_COLOR_GREEN;
-  else if (g_strcmp0 (color, "blue") == 0)
+  } else if (g_strcmp0 (color, "blue") == 0) {
+    if (rgb)
+      rgb->b = 255;
     return FBD_FEEDBACK_LED_COLOR_BLUE;
-  else if (g_strcmp0 (color, "white") == 0)
+  } else if (g_strcmp0 (color, "white") == 0) {
+    if (rgb)
+      rgb->r = rgb->g = rgb->b = 255;
     return FBD_FEEDBACK_LED_COLOR_WHITE;
+  } else if (parse_hex_color (color, rgb)) {
+    return FBD_FEEDBACK_LED_COLOR_RGB;
+  }
 
   g_warning_once ("Can't parse color '%s' using white", color);
+  if (rgb)
+    rgb->r = rgb->g = rgb->b = 255;
   return FBD_FEEDBACK_LED_COLOR_WHITE;
 }
 
@@ -123,14 +214,16 @@ fbd_feedback_led_run (FbdFeedbackBase *base)
   FbdFeedbackManager *manager = fbd_feedback_manager_get_default ();
   FbdDevLeds *dev = fbd_feedback_manager_get_dev_leds (manager);
   FbdFeedbackLedColor color;
+  FbdLedRgbColor rgb;
 
   g_return_if_fail (FBD_IS_DEV_LEDS (dev));
-  g_debug ("Periodic led feedback: self->max_brightness, self->frequency");
+  g_debug ("Periodic led feedback: max brightness: %d, freq: %d", self->max_brightness, self->frequency);
 
-  color = color_string_to_color (self->color);
+  color = color_string_to_color (self->color, &rgb);
   /* FIXME: handle priority */
   fbd_dev_leds_start_periodic (dev,
                                color,
+                               &rgb,
                                self->max_brightness,
                                self->frequency);
 }
@@ -144,7 +237,7 @@ fbd_feedback_led_end (FbdFeedbackBase *base)
   FbdDevLeds *dev = fbd_feedback_manager_get_dev_leds (manager);
   FbdFeedbackLedColor color;
 
-  color = color_string_to_color (self->color);
+  color = color_string_to_color (self->color, NULL);
   if (dev)
     fbd_dev_leds_stop (dev, color);
   fbd_feedback_base_done (FBD_FEEDBACK_BASE (self));
