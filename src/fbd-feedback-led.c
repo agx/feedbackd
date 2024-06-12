@@ -1,6 +1,8 @@
 /*
  * Copyright (C) 2020 Purism SPC
+ *               2024 The Phosh Developers
  * SPDX-License-Identifier: GPL-3.0+
+ *
  * Author: Guido Günther <agx@sigxcpu.org>
  */
 
@@ -12,11 +14,9 @@
 #include "fbd-feedback-manager.h"
 
 /**
- * SECTION:fbd-feedback-led
- * @short_description: Describes a led feedback
- * @Title: FbdFeedbackLed
+ * FbdFeedbackLed:
  *
- * The #FbdFeedbackLed describes a feedback via an LED. It currently
+ * The `FbdFeedbackLed` describes a feedback via an LED. It currently
  * only supports periodic patterns.
  */
 
@@ -68,6 +68,7 @@ fbd_feedback_led_set_property (GObject      *object,
   }
 }
 
+
 static void
 fbd_feedback_led_get_property (GObject    *object,
                                guint       property_id,
@@ -95,6 +96,7 @@ fbd_feedback_led_get_property (GObject    *object,
   }
 }
 
+
 static void
 fbd_feedback_led_run (FbdFeedbackBase *base)
 {
@@ -112,6 +114,7 @@ fbd_feedback_led_run (FbdFeedbackBase *base)
                                self->frequency);
 }
 
+
 static void
 fbd_feedback_led_end (FbdFeedbackBase *base)
 {
@@ -124,6 +127,7 @@ fbd_feedback_led_end (FbdFeedbackBase *base)
   fbd_feedback_base_done (FBD_FEEDBACK_BASE (self));
 }
 
+
 static gboolean
 fbd_feedback_led_is_available (FbdFeedbackBase *base)
 {
@@ -132,6 +136,7 @@ fbd_feedback_led_is_available (FbdFeedbackBase *base)
 
   return FBD_IS_DEV_LEDS (dev);
 }
+
 
 static void
 fbd_feedback_led_class_init (FbdFeedbackLedClass *klass)
@@ -146,38 +151,36 @@ fbd_feedback_led_class_init (FbdFeedbackLedClass *klass)
   base_class->end = fbd_feedback_led_end;
   base_class->is_available = fbd_feedback_led_is_available;
 
+  /**
+   * FbdFeedbackLed:frequency:
+   *
+   * The frequency the LED should blink with in mHz.
+   */
   props[PROP_FREQUENCY] =
-    g_param_spec_uint (
-      "frequency",
-      "Frequency",
-      "Led event frequency in mHz",
-      0, G_MAXUINT, 0,
-      G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
-
+    g_param_spec_uint ("frequency", "", "",
+                       0, G_MAXUINT, 0,
+                       G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+  /**
+   * FbdFeedbackLed:color:
+   *
+   * The color the LED should blink with.
+   */
   props[PROP_COLOR] =
-    g_param_spec_enum (
-      "color",
-      "Color",
-      "The LED color",
-      FBD_TYPE_FEEDBACK_LED_COLOR,
-      FBD_FEEDBACK_LED_COLOR_WHITE,
-      G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
-
+    g_param_spec_enum ("color", "", "",
+                       FBD_FEEDBACK_LED_COLOR_WHITE,
+                       FBD_TYPE_FEEDBACK_LED_COLOR,
+                       G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
   /**
    * FbdFeedbackLed:priority:
    *
-   * Priority of the led pattern. Led devices can only display a limited
-   * amount of patterns at time. In this case the pattern with the highest
+   * Priority of the LED pattern. LED devices can only display a limited
+   * amount of patterns at a time. In this case the pattern with the highest
    * priority wins.
    */
   props[PROP_PRIORITY] =
-    g_param_spec_uint (
-      "priority",
-      "Priority",
-      "The LED pattern priority",
-      0, 255, 0,
-      G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
-
+    g_param_spec_uint ("priority", "", "",
+                       0, 255, 0,
+                       G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
   /**
    * FbdFeedbackLed:max-brightness:
    *
@@ -185,15 +188,13 @@ fbd_feedback_led_class_init (FbdFeedbackLedClass *klass)
    * maximum brightness.
    */
   props[PROP_MAX_BRIGHTNESS] =
-    g_param_spec_uint (
-      "max-brightness",
-      "Maximum brightness percentage",
-      "Maximum brightness in the LED pattern",
-      1, 100, 100,
-      G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+    g_param_spec_uint ("max-brightness", "", "",
+                       1, 100, 100,
+                       G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
   g_object_class_install_properties (object_class, PROP_LAST_PROP, props);
 }
+
 
 static void
 fbd_feedback_led_init (FbdFeedbackLed *self)
