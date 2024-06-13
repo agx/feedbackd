@@ -1,6 +1,6 @@
 include:
- - remote: 'https://source.puri.sm/Librem5/librem5-ci/raw/master/librem5-pipeline-definitions.yml'
  - remote: 'https://gitlab.freedesktop.org/freedesktop/ci-templates/-/raw/34039cd573a2df832d465bc9e4c5f543571f5241/templates/ci-fairy.yml'
+ - remote: 'https://gitlab.gnome.org/guidog/meta-phosh/-/raw/f3c92e90dcc0d65322888217429b75dd101bd0d3/ci/phosh-common-jobs.yml'
 
 stages:
  - build
@@ -126,9 +126,16 @@ format-check:
   rules:
     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME'
 
+format-check:
+  <<: *tags
+  stage: style-checks
+  extends: .phosh-format-check
+  allow_failure: true
+
 package:deb-debian-trixie:arm64:
-  variables:
-    L5_DOCKER_IMAGE: debian:trixie
-  extends: .l5-build-debian-package
   tags:
     - librem5:arm64
+  stage: package
+  variables:
+    PHOSH_DOCKER_IMAGE: debian:trixie
+  extends: .phosh-build-debian-package
