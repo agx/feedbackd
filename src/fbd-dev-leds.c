@@ -28,7 +28,7 @@
  *
  * LED device interface
  *
- * #FbdDevLeds is used to interface with LEDS via sysfs
+ * #FbdDevLeds is used to interface with all LEDs detected in sysfs
  * It currently only supports one pattern per led at a time.
  */
 typedef struct _FbdDevLeds {
