@@ -11,6 +11,7 @@
 #include "fbd.h"
 #include "fbd-enums.h"
 #include "fbd-dev-led.h"
+#include "fbd-dev-led-flash.h"
 #include "fbd-dev-led-multicolor.h"
 #include "fbd-dev-led-qcom.h"
 #include "fbd-dev-led-qcom-multicolor.h"
@@ -86,6 +87,13 @@ probe_led (GUdevDevice *dev, GError **error) {
   led = fbd_dev_led_multicolor_new (dev, error);
   if (led != NULL) {
     g_debug ("Discovered multicolor LED");
+    return led;
+  }
+  g_clear_error (error);
+
+  led = fbd_dev_led_flash_new (dev, error);
+  if (led != NULL) {
+    g_debug ("Discovered flash LED");
     return led;
   }
   g_clear_error (error);
