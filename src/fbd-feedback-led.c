@@ -250,7 +250,10 @@ fbd_feedback_led_is_available (FbdFeedbackBase *base)
   FbdFeedbackManager *manager = fbd_feedback_manager_get_default ();
   FbdDevLeds *dev = fbd_feedback_manager_get_dev_leds (manager);
 
-  return FBD_IS_DEV_LEDS (dev);
+  if (!FBD_IS_DEV_LEDS (dev))
+    return FALSE;
+
+  return fbd_dev_leds_has_led (dev, FBD_FEEDBACK_LED_COLOR_WHITE);
 }
 
 

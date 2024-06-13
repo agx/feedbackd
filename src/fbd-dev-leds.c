@@ -48,7 +48,7 @@ find_led_by_color (FbdDevLeds *self, FbdFeedbackLedColor color)
   g_return_val_if_fail (self->leds, NULL);
 
   for (GSList *l = self->leds; l != NULL; l = l->next) {
-    FbdDevLed *led = l->data;
+    FbdDevLed *led = FBD_DEV_LED (l->data);
     if (fbd_dev_led_supports_color (led, color))
       return led;
   }
@@ -199,7 +199,10 @@ fbd_dev_leds_start_periodic (FbdDevLeds          *self,
   g_return_val_if_fail (FBD_IS_DEV_LEDS (self), FALSE);
   g_return_val_if_fail (max_brightness_percentage <= 100.0, FALSE);
   led = find_led_by_color (self, color);
-  g_return_val_if_fail (led, FALSE);
+  if (!led) {
+    g_warning_once ("No usable led found");
+    return FALSE;
+  }
 
   fbd_dev_led_set_color (led, color, rgb);
 
@@ -214,7 +217,27 @@ fbd_dev_leds_stop (FbdDevLeds *self, FbdFeedbackLedColor color)
   g_return_val_if_fail (FBD_IS_DEV_LEDS (self), FALSE);
 
   led = find_led_by_color (self, color);
-  g_return_val_if_fail (led, FALSE);
+  if (!led) {
+    g_warning_once ("No usable led found");
+    return FALSE;
+  }
 
   return fbd_dev_led_set_brightness (led, 0);
+}
+
+/**
+ * fbd_dev_leds_has_led:
+ * @self: The FbdDevLeds
+ * @color: The color type to check
+ *
+ * Whether there's a usable LED of the given type
+ *
+ * Returns: `TRUE` if there's a at least one usable LED, otherwise `FALSE`
+ */
+gboolean
+fbd_dev_leds_has_led (FbdDevLeds *self, FbdFeedbackLedColor color)
+{
+  g_return_val_if_fail (FBD_IS_DEV_LEDS (self), FALSE);
+
+  return !!find_led_by_color (self, color);
 }
