@@ -53,8 +53,15 @@ find_led_by_color (FbdDevLeds *self, FbdFeedbackLedColor color)
       return led;
   }
 
-  /* If we did not match a color pick the first */
-  return self->leds->data;
+  /* If we did not match a color pick the first non flash LED */
+  for (GSList *l = self->leds; l != NULL; l = l->next) {
+    FbdDevLed *led = FBD_DEV_LED (l->data);
+
+    if (!fbd_dev_led_supports_color (led, FBD_FEEDBACK_LED_COLOR_FLASH))
+      return led;
+  }
+
+  return NULL;
 }
 
 
