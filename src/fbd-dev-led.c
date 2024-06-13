@@ -52,7 +52,7 @@ fbd_dev_led_probe_default (FbdDevLed *led, GError **error)
   gboolean success = FALSE;
 
   name = g_udev_device_get_name (priv->dev);
-  for (int i = 0; i <= FBD_FEEDBACK_LED_COLOR_LAST; i++) {
+  for (int i = 0; i <= FBD_FEEDBACK_LED_COLOR_RGB; i++) {
     g_autofree char *color = NULL;
     g_autofree char *enum_name = NULL;
     gchar *c;

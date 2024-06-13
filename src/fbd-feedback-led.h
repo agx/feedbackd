@@ -25,7 +25,6 @@ typedef enum _FbdFeedbackLedColor {
   FBD_FEEDBACK_LED_COLOR_GREEN = 2,
   FBD_FEEDBACK_LED_COLOR_BLUE = 3,
   FBD_FEEDBACK_LED_COLOR_RGB = 4,
-  FBD_FEEDBACK_LED_COLOR_LAST = FBD_FEEDBACK_LED_COLOR_RGB,
 } FbdFeedbackLedColor;
 
 typedef struct {
