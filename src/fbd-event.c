@@ -343,8 +343,8 @@ fbd_event_get_timeout (FbdEvent *self)
 void
 fbd_event_add_feedback (FbdEvent *self, FbdFeedbackBase *feedback)
 {
-  self->feedbacks = g_slist_prepend (self->feedbacks, g_object_ref(feedback));
-  g_object_set_data (G_OBJECT (feedback), "event-id", GUINT_TO_POINTER(self->id));
+  self->feedbacks = g_slist_prepend (self->feedbacks, g_object_ref (feedback));
+  g_object_set_data (G_OBJECT (feedback), "event-id", GUINT_TO_POINTER (self->id));
   g_signal_connect_object (feedback,
                            "ended",
                            (GCallback) on_fb_ended,
