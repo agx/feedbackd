@@ -50,9 +50,9 @@ static void
 test_fbd_event_feedback (void)
 {
   GSList *feedbacks;
-  g_autoptr (FbdEvent) event = NULL;
-  g_autoptr (FbdFeedbackDummy) feedback1 = NULL;
-  g_autoptr (FbdFeedbackDummy) feedback2 = NULL;
+  FbdEvent *event = NULL;
+  FbdFeedbackDummy *feedback1 = NULL;
+  FbdFeedbackDummy *feedback2 = NULL;
 
   event = fbd_event_new (1, TEST_APP_ID, TEST_EVENT, -1, NULL);
   feedback1 = g_object_new (FBD_TYPE_FEEDBACK_DUMMY, NULL);
@@ -83,6 +83,11 @@ test_fbd_event_feedback (void)
   fbd_event_end_feedbacks (event);
   /* Dummy feedback ends immediately */
   g_assert_true (fbd_event_get_feedbacks_ended (event));
+
+  /* event holds a ref on the feedbacks so finalize it first */
+  g_assert_finalize_object (event);
+  g_assert_finalize_object (feedback2);
+  g_assert_finalize_object (feedback1);
 }
 
 static void
