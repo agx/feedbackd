@@ -181,12 +181,7 @@ examples:
   over `/usr/share/feedbackd/themes/pine64-pinephone-1.2.json`
 - etc...
 
-The currently available feedback types are:
-
-- Sound (an audible sound from the sound naming spec)
-- VibraRumble: haptic motor rumbling
-- VibraPeriodic: periodic feedback from the haptic motor
-- Led: Feedback via blinking LEDs
+For available feeddback types see the [feedback-themes][](5) manpage.
 
 You can check the feedback theme and the classes (prefixed with Fbd)
 for available properties. Note that the feedback theme API (including
@@ -271,3 +266,4 @@ GSETTINGS_SCHEMA_DIR=_build/data/ gsettings set org.sigxcpu.feedbackd.applicatio
 
 [debian/control]: ./debian/control#L5
 [1]: https://source.puri.sm/Librem5/feedbackd-device-themes
+[feedback-themes]: ./doc/feedback-themes.rst

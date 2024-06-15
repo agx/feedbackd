@@ -91,7 +91,8 @@ fbd_dev_led_multicolor_probe (FbdDevLed *led, GError **error)
 
 static gboolean
 fbd_dev_led_multicolor_set_color (FbdDevLed           *led,
-                                  FbdFeedbackLedColor  color)
+                                  FbdFeedbackLedColor  color,
+                                  FbdLedRgbColor      *rgb)
 {
   FbdDevLedMulticolor *self = FBD_DEV_LED_MULTICOLOR (led);
   FbdDevLedMulticolorPrivate *priv = fbd_dev_led_multicolor_get_instance_private (self);
@@ -124,12 +125,19 @@ fbd_dev_led_multicolor_set_color (FbdDevLed           *led,
     colors[priv->green_index] = 0;
     colors[priv->blue_index] = max_brightness;
     break;
+  case FBD_FEEDBACK_LED_COLOR_RGB:
+    colors[priv->red_index] = rgb->r;
+    colors[priv->green_index] = rgb->g;
+    colors[priv->blue_index] = rgb->b;
+    break;
   default:
     g_warning("Unhandled color: %d\n", color);
     return FALSE;
   }
 
-  intensity = g_strdup_printf ("%d %d %d\n", colors[0], colors[1], colors[2]);
+  intensity = g_strdup_printf ("%u %u %u\n", colors[0], colors[1], colors[2]);
+  g_debug ("Multicolor intensity: %s", intensity);
+
   fbd_dev_led_set_brightness (led, max_brightness);
   success = fbd_udev_set_sysfs_path_attr_as_string (dev,
                                                     LED_MULTI_INTENSITY_ATTR,
@@ -156,6 +164,8 @@ fbd_dev_led_multicolor_supports_color (FbdDevLed           *led,
     case FBD_FEEDBACK_LED_COLOR_GREEN:
       return TRUE;
     case FBD_FEEDBACK_LED_COLOR_BLUE:
+      return TRUE;
+    case FBD_FEEDBACK_LED_COLOR_RGB:
       return TRUE;
     default:
       g_warning ("Color unsupported: %d", color);

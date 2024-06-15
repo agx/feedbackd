@@ -16,7 +16,6 @@
 #include "fbd-feedback-theme.h"
 #include "fbd-theme-expander.h"
 
-#define GMOBILE_USE_UNSTABLE_API
 #include <gmobile.h>
 
 #include <gio/gio.h>
