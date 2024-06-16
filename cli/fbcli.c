@@ -93,6 +93,9 @@ trigger_event (const char *name, const gchar *profile, gboolean important, gint 
   g_main_loop_run (loop);
   g_main_loop_unref (loop);
 
+  if (lfb_event_get_end_reason (event) == LFB_EVENT_END_REASON_NOT_FOUND)
+    g_print ("No feedback found for '%s' at level '%s'\n", name, lfb_get_feedback_profile ());
+
   return success;
 }
 
