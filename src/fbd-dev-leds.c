@@ -11,6 +11,7 @@
 #include "fbd.h"
 #include "fbd-enums.h"
 #include "fbd-dev-led.h"
+#include "fbd-dev-led-flash.h"
 #include "fbd-dev-led-multicolor.h"
 #include "fbd-dev-led-qcom.h"
 #include "fbd-dev-led-qcom-multicolor.h"
@@ -27,7 +28,7 @@
  *
  * LED device interface
  *
- * #FbdDevLeds is used to interface with LEDS via sysfs
+ * #FbdDevLeds is used to interface with all LEDs detected in sysfs
  * It currently only supports one pattern per led at a time.
  */
 typedef struct _FbdDevLeds {
@@ -48,13 +49,20 @@ find_led_by_color (FbdDevLeds *self, FbdFeedbackLedColor color)
   g_return_val_if_fail (self->leds, NULL);
 
   for (GSList *l = self->leds; l != NULL; l = l->next) {
-    FbdDevLed *led = l->data;
+    FbdDevLed *led = FBD_DEV_LED (l->data);
     if (fbd_dev_led_supports_color (led, color))
       return led;
   }
 
-  /* If we did not match a color pick the first */
-  return self->leds->data;
+  /* If we did not match a color pick the first non flash LED */
+  for (GSList *l = self->leds; l != NULL; l = l->next) {
+    FbdDevLed *led = FBD_DEV_LED (l->data);
+
+    if (!fbd_dev_led_supports_color (led, FBD_FEEDBACK_LED_COLOR_FLASH))
+      return led;
+  }
+
+  return NULL;
 }
 
 
@@ -79,6 +87,13 @@ probe_led (GUdevDevice *dev, GError **error) {
   led = fbd_dev_led_multicolor_new (dev, error);
   if (led != NULL) {
     g_debug ("Discovered multicolor LED");
+    return led;
+  }
+  g_clear_error (error);
+
+  led = fbd_dev_led_flash_new (dev, error);
+  if (led != NULL) {
+    g_debug ("Discovered flash LED");
     return led;
   }
   g_clear_error (error);
@@ -199,7 +214,10 @@ fbd_dev_leds_start_periodic (FbdDevLeds          *self,
   g_return_val_if_fail (FBD_IS_DEV_LEDS (self), FALSE);
   g_return_val_if_fail (max_brightness_percentage <= 100.0, FALSE);
   led = find_led_by_color (self, color);
-  g_return_val_if_fail (led, FALSE);
+  if (!led) {
+    g_warning_once ("No usable led found");
+    return FALSE;
+  }
 
   fbd_dev_led_set_color (led, color, rgb);
 
@@ -214,7 +232,27 @@ fbd_dev_leds_stop (FbdDevLeds *self, FbdFeedbackLedColor color)
   g_return_val_if_fail (FBD_IS_DEV_LEDS (self), FALSE);
 
   led = find_led_by_color (self, color);
-  g_return_val_if_fail (led, FALSE);
+  if (!led) {
+    g_warning_once ("No usable led found");
+    return FALSE;
+  }
 
   return fbd_dev_led_set_brightness (led, 0);
+}
+
+/**
+ * fbd_dev_leds_has_led:
+ * @self: The FbdDevLeds
+ * @color: The color type to check
+ *
+ * Whether there's a usable LED of the given type
+ *
+ * Returns: `TRUE` if there's a at least one usable LED, otherwise `FALSE`
+ */
+gboolean
+fbd_dev_leds_has_led (FbdDevLeds *self, FbdFeedbackLedColor color)
+{
+  g_return_val_if_fail (FBD_IS_DEV_LEDS (self), FALSE);
+
+  return !!find_led_by_color (self, color);
 }

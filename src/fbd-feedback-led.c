@@ -8,6 +8,7 @@
 
 #define G_LOG_DOMAIN "fbd-feedback-led"
 
+#include "fbd.h"
 #include "fbd-enums.h"
 #include "fbd-dev-leds.h"
 #include "fbd-feedback-led.h"
@@ -39,6 +40,9 @@ typedef struct _FbdFeedbackLed {
   guint            priority;
   guint            max_brightness;
   char            *color;
+  gboolean         prefer_flash;
+
+  GSettings       *settings;
 } FbdFeedbackLed;
 
 G_DEFINE_TYPE (FbdFeedbackLed, fbd_feedback_led, FBD_TYPE_FEEDBACK_BASE)
@@ -120,34 +124,52 @@ parse_hex_color (const char *color, FbdLedRgbColor *rgb)
 
 
 static FbdFeedbackLedColor
-color_string_to_color (const char *color, FbdLedRgbColor *rgb)
+color_string_to_color (const char *color, gboolean prefer_flash, FbdLedRgbColor *rgb)
 {
+  FbdFeedbackLedColor type;
+
   g_return_val_if_fail (!gm_str_is_null_or_empty (color), FBD_FEEDBACK_LED_COLOR_WHITE);
 
   if (g_strcmp0 (color, "red") == 0) {
     if (rgb)
       rgb->r = 255;
-    return FBD_FEEDBACK_LED_COLOR_RED;
+    type = FBD_FEEDBACK_LED_COLOR_RED;
   } else if (g_strcmp0 (color, "green") == 0) {
     if (rgb)
       rgb->g = 255;
-    return FBD_FEEDBACK_LED_COLOR_GREEN;
+    type = FBD_FEEDBACK_LED_COLOR_GREEN;
   } else if (g_strcmp0 (color, "blue") == 0) {
     if (rgb)
       rgb->b = 255;
-    return FBD_FEEDBACK_LED_COLOR_BLUE;
+    type = FBD_FEEDBACK_LED_COLOR_BLUE;
   } else if (g_strcmp0 (color, "white") == 0) {
     if (rgb)
       rgb->r = rgb->g = rgb->b = 255;
-    return FBD_FEEDBACK_LED_COLOR_WHITE;
+    type = FBD_FEEDBACK_LED_COLOR_WHITE;
   } else if (parse_hex_color (color, rgb)) {
-    return FBD_FEEDBACK_LED_COLOR_RGB;
+    type = FBD_FEEDBACK_LED_COLOR_RGB;
+  } else {
+    g_warning_once ("Can't parse color '%s' using white", color);
+    if (rgb)
+      rgb->r = rgb->g = rgb->b = 255;
+    type = FBD_FEEDBACK_LED_COLOR_WHITE;
   }
 
-  g_warning_once ("Can't parse color '%s' using white", color);
-  if (rgb)
-    rgb->r = rgb->g = rgb->b = 255;
-  return FBD_FEEDBACK_LED_COLOR_WHITE;
+  /* Override the LED color type at the very end as we want rgb filled
+   * in so it can be used in case we need to fall back to non flash
+   * LED */
+  if (prefer_flash)
+    type = FBD_FEEDBACK_LED_COLOR_FLASH;
+
+  return type;
+}
+
+
+static void
+on_prefer_flash_changed (FbdFeedbackLed *self)
+{
+  self->prefer_flash = g_settings_get_boolean (self->settings, "prefer-flash");
+  g_debug ("Prefer flash: %d", self->prefer_flash);
 }
 
 
@@ -219,7 +241,7 @@ fbd_feedback_led_run (FbdFeedbackBase *base)
   g_return_if_fail (FBD_IS_DEV_LEDS (dev));
   g_debug ("Periodic led feedback: max brightness: %d, freq: %d", self->max_brightness, self->frequency);
 
-  color = color_string_to_color (self->color, &rgb);
+  color = color_string_to_color (self->color, self->prefer_flash, &rgb);
   /* FIXME: handle priority */
   fbd_dev_leds_start_periodic (dev,
                                color,
@@ -237,7 +259,7 @@ fbd_feedback_led_end (FbdFeedbackBase *base)
   FbdDevLeds *dev = fbd_feedback_manager_get_dev_leds (manager);
   FbdFeedbackLedColor color;
 
-  color = color_string_to_color (self->color, NULL);
+  color = color_string_to_color (self->color, self->prefer_flash, NULL);
   if (dev)
     fbd_dev_leds_stop (dev, color);
   fbd_feedback_base_done (FBD_FEEDBACK_BASE (self));
@@ -247,10 +269,19 @@ fbd_feedback_led_end (FbdFeedbackBase *base)
 static gboolean
 fbd_feedback_led_is_available (FbdFeedbackBase *base)
 {
+  FbdFeedbackLed *self = FBD_FEEDBACK_LED (base);
   FbdFeedbackManager *manager = fbd_feedback_manager_get_default ();
   FbdDevLeds *dev = fbd_feedback_manager_get_dev_leds (manager);
 
-  return FBD_IS_DEV_LEDS (dev);
+  if (!FBD_IS_DEV_LEDS (dev))
+    return FALSE;
+
+  if (self->prefer_flash &&
+      fbd_dev_leds_has_led (dev, FBD_FEEDBACK_LED_COLOR_FLASH)) {
+    return TRUE;
+  }
+
+  return fbd_dev_leds_has_led (dev, FBD_FEEDBACK_LED_COLOR_WHITE);
 }
 
 
@@ -259,6 +290,7 @@ fbd_feedback_led_finalize (GObject *object)
 {
   FbdFeedbackLed *self = FBD_FEEDBACK_LED (object);
 
+  g_clear_object (&self->settings);
   g_clear_pointer (&self->color, g_free);
 
   G_OBJECT_CLASS (fbd_feedback_led_parent_class)->finalize (object);
@@ -328,4 +360,12 @@ static void
 fbd_feedback_led_init (FbdFeedbackLed *self)
 {
   self->max_brightness = 100;
+  self->settings = g_settings_new (FEEDBACKD_SCHEMA_ID);
+
+  g_signal_connect_object (self->settings,
+                           "changed::prefer-flash",
+                           G_CALLBACK (on_prefer_flash_changed),
+                           self,
+                           G_CONNECT_SWAPPED);
+  on_prefer_flash_changed (self);
 }

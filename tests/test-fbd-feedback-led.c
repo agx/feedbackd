@@ -38,14 +38,19 @@ test_fbd_feedback_led_color_string_to_color (void)
 {
   FbdLedRgbColor rgb = { 0 };
 
-  g_assert_cmpint (color_string_to_color ("red", NULL), ==, FBD_FEEDBACK_LED_COLOR_RED);
+  g_assert_cmpint (color_string_to_color ("red", FALSE, NULL), ==, FBD_FEEDBACK_LED_COLOR_RED);
 
-  g_assert_cmpint (color_string_to_color ("#11aaBB", &rgb), ==, FBD_FEEDBACK_LED_COLOR_RGB);
+  g_assert_cmpint (color_string_to_color ("#11aaBB", FALSE, &rgb), ==, FBD_FEEDBACK_LED_COLOR_RGB);
   g_assert_cmpint (rgb.r, ==, 0x11);
   g_assert_cmpint (rgb.g, ==, 0xaa);
   g_assert_cmpint (rgb.b, ==, 0xbb);
 
-  g_assert_cmpint (color_string_to_color ("#00FF00", &rgb), ==, FBD_FEEDBACK_LED_COLOR_RGB);
+  g_assert_cmpint (color_string_to_color ("#00FF00", FALSE, &rgb), ==, FBD_FEEDBACK_LED_COLOR_RGB);
+  g_assert_cmpint (rgb.r, ==, 0x00);
+  g_assert_cmpint (rgb.g, ==, 0xFF);
+  g_assert_cmpint (rgb.b, ==, 0x00);
+
+  g_assert_cmpint (color_string_to_color ("#00FF00", TRUE, &rgb), ==, FBD_FEEDBACK_LED_COLOR_FLASH);
   g_assert_cmpint (rgb.r, ==, 0x00);
   g_assert_cmpint (rgb.g, ==, 0xFF);
   g_assert_cmpint (rgb.b, ==, 0x00);

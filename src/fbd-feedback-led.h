@@ -16,6 +16,7 @@ G_BEGIN_DECLS
  * @FBD_FEEDBACK_LED_COLOR_GREEN: A green LED
  * @FBD_FEEDBACK_LED_COLOR_BLUE: A blue LED
  * @FBD_FEEDBACK_LED_COLOR_RGB: A multicolor LED that can display arbitrary RGB values
+ * @FBD_FEEDBACK_LED_COLOR_FLASH: A flash (usually white)
  *
  * The color of a hardware LED.
  */
@@ -25,7 +26,8 @@ typedef enum _FbdFeedbackLedColor {
   FBD_FEEDBACK_LED_COLOR_GREEN = 2,
   FBD_FEEDBACK_LED_COLOR_BLUE = 3,
   FBD_FEEDBACK_LED_COLOR_RGB = 4,
-  FBD_FEEDBACK_LED_COLOR_LAST = FBD_FEEDBACK_LED_COLOR_RGB,
+  /* Keep this last in the list */
+  FBD_FEEDBACK_LED_COLOR_FLASH = 5,
 } FbdFeedbackLedColor;
 
 typedef struct {

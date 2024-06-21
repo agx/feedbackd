@@ -22,7 +22,6 @@
 #include <glib-unix.h>
 #include <gudev/gudev.h>
 
-#define FEEDBACKD_SCHEMA_ID "org.sigxcpu.feedbackd"
 #define FEEDBACKD_KEY_PROFILE "profile"
 #define FEEDBACKD_KEY_THEME "theme"
 #define FEEDBACKD_KEY_ALLOW_IMPORTANT "allow-important"

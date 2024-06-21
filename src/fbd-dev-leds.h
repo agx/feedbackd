@@ -22,7 +22,7 @@ gboolean    fbd_dev_leds_start_periodic (FbdDevLeds          *self,
                                          FbdLedRgbColor      *rgb,
                                          guint                max_brighness,
                                          guint                freq);
-gboolean    fbd_dev_leds_stop (FbdDevLeds         *self,
-                               FbdFeedbackLedColor color);
+gboolean    fbd_dev_leds_stop (FbdDevLeds *self, FbdFeedbackLedColor color);
+gboolean    fbd_dev_leds_has_led (FbdDevLeds *self, FbdFeedbackLedColor color);
 
 G_END_DECLS
