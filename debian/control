@@ -12,6 +12,7 @@ Build-Depends:
  json-glib-tools,
  libgirepository1.0-dev <!nogir>,
  libglib2.0-dev,
+ libgmobile-dev,
  libgudev-1.0-dev,
  libgsound-dev,
  libjson-glib-dev,
