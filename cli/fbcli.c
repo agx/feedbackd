@@ -37,7 +37,7 @@ on_watch_expired (gpointer unused)
 }
 
 static void
-on_feedback_ended (LfbEvent *event, int* data)
+on_feedback_ended (LfbEvent *event, int *data)
 {
   g_return_if_fail (LFB_IS_EVENT (event));
 
@@ -49,7 +49,7 @@ on_feedback_ended (LfbEvent *event, int* data)
 static gboolean
 on_user_input (GIOChannel *channel, GIOCondition cond, LfbEvent *event)
 {
-  g_autoptr(GError) err = NULL;
+  g_autoptr (GError) err = NULL;
 
   if (cond == G_IO_IN) {
     g_print ("Ending feedback\n");
@@ -62,9 +62,9 @@ on_user_input (GIOChannel *channel, GIOCondition cond, LfbEvent *event)
 static gboolean
 trigger_event (const char *name, const gchar *profile, gboolean important, gint timeout)
 {
-  g_autoptr(GError) err = NULL;
-  g_autoptr(LfbEvent) event = NULL;
-  g_autoptr(GIOChannel) input = NULL;
+  g_autoptr (GError) err = NULL;
+  g_autoptr (LfbEvent) event = NULL;
+  g_autoptr (GIOChannel) input = NULL;
   int success = FALSE;
 
   g_unix_signal_add (SIGTERM, on_shutdown_signal, NULL);
@@ -92,6 +92,9 @@ trigger_event (const char *name, const gchar *profile, gboolean important, gint 
   loop = g_main_loop_new (NULL, FALSE);
   g_main_loop_run (loop);
   g_main_loop_unref (loop);
+
+  if (lfb_event_get_end_reason (event) == LFB_EVENT_END_REASON_NOT_FOUND)
+    g_print ("No feedback found for '%s' at level '%s'\n", name, lfb_get_feedback_profile ());
 
   return success;
 }
@@ -133,8 +136,8 @@ set_profile (const gchar *profile)
 int
 main (int argc, char *argv[0])
 {
-  g_autoptr(GOptionContext) opt_context = NULL;
-  g_autoptr(GError) err = NULL;
+  g_autoptr (GOptionContext) opt_context = NULL;
+  g_autoptr (GError) err = NULL;
   g_autofree char *profile = NULL;
   g_autofree char *app_id = NULL;
   const char *name = NULL;
@@ -173,9 +176,9 @@ main (int argc, char *argv[0])
     return 1;
   }
 
-  if (profile && !name)
+  if (profile && !name) {
     success = set_profile (profile);
-  else {
+  } else {
     if (!name)
       name = g_strdup (DEFAULT_EVENT);
 
