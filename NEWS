@@ -1,3 +1,22 @@
+feedbackd 0.4.0
+---------------
+Released June 2024
+* Support `hw_pattern` on devices using qcom-lpg. This allows
+  to keep LEDs on in suspend.
+* Internal cleanups and restructuring to cater for different
+  LED types.
+* Support RGB color mixing for multicolor leds
+* Allow to use (camera) flash LEDs as notificaton LED
+* Immediately end "too noisy" feedbacks when switching profile levels
+* Issues fixed:
+    * https://source.puri.sm/Librem5/feedbackd/-/issues/77
+    * https://source.puri.sm/Librem5/feedbackd/-/issues/76
+    * https://source.puri.sm/Librem5/feedbackd/-/issues/13
+    * https://source.puri.sm/Librem5/feedbackd/-/issues/55
+* Contributors:
+    * Dylan Van Assche
+    * Guido Günther
+
 feedbackd 0.3.0
 ---------------
 Released April 2024
