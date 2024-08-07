@@ -68,4 +68,8 @@ if json_glib_validate.found()
 		command: [json_glib_validate.full_path()] + jsons)
 endif
 
+if get_option('udev')
+  install_data('90-feedbackd.rules', install_dir: udevdir)
+endif
+
 endif # daemon
