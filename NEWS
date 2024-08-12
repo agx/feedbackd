@@ -1,3 +1,13 @@
+feedbackd 0.4.1
+---------------
+Released August 2024
+* Simplify udev rule installation
+* Dont' fail tests with newer json-glib
+* Issues fixed:
+    * https://source.puri.sm/Librem5/feedbackd/-/issues/79
+* Contributors:
+    * Guido Günther
+
 feedbackd 0.4.0
 ---------------
 Released June 2024
