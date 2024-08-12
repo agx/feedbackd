@@ -1,7 +1,7 @@
 project('feedbackd', 'c',
           version : '0.4.0',
           license : 'LGPLv3+',
-    meson_version : '>= 0.56.0',
+    meson_version : '>= 1.0.0',
   default_options : [
     'warning_level=1',
     'buildtype=debugoptimized',
@@ -12,6 +12,7 @@ project('feedbackd', 'c',
 gio            = dependency('gio-2.0', version: '>=2.50.0')
 gio_unix       = dependency('gio-unix-2.0', version: '>=2.50.0')
 glib           = dependency('glib-2.0', version: '>=2.50.0')
+udev           = dependency('udev', required: false)
 if get_option('daemon')
   gobject        = dependency('gobject-2.0', version: '>=2.50.0')
   gmobile        = dependency('gmobile',
@@ -40,6 +41,11 @@ libexecdir = join_paths(prefix, get_option('libexecdir'))
 typelibdir = join_paths(prefix, join_paths(libdir, 'girepository-1.0'))
 vapidir = join_paths(prefix, join_paths(datadir, 'vala', 'vapi'))
 feedbackd_theme_dir = join_paths(datadir, 'feedbackd', 'themes')
+if udev.found() and get_option('daemon')
+  udevdir = udev.get_variable('udevdir') / 'rules.d'
+else
+  udevdir = prefix / 'lib' / 'udev' / 'rules.d'
+endif
 
 run_data = configuration_data()
 run_data.set('ABS_BUILDDIR', meson.current_build_dir())
@@ -127,6 +133,7 @@ summary = [
         'feedbackd @0@'.format(meson.project_version()),
         '',
 	'         Daemon: @0@'.format(get_option('daemon')),
+	'     Udev rules: @0@'.format(get_option('udev')),
         '  Documentation: @0@'.format(get_option('gtk_doc')),
         '   Manual pages: @0@'.format(get_option('man')),
         '  Introspection: @0@'.format(introspection),

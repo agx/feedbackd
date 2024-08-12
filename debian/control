@@ -20,6 +20,7 @@ Build-Depends:
  meson,
  pkg-config,
  python3-docutils <!nodoc>,
+ systemd-dev,
  umockdev,
  valac,
 Standards-Version: 4.6.2
