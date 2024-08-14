@@ -1,3 +1,18 @@
+feedbackd (0.4.1) experimental; urgency=medium
+
+  * not-intalled: Avoid gmobile on all arches.
+    This only matters for the case where we use the embedded
+    gmobile but better to be correct.
+  * tests: Use decimal values.
+    We don't rely on that anywhere anyway.
+    Co-authored-by: Tomi Lähteenmäki <lihis@lihis.net>
+    Closes: https://source.puri.sm/Librem5/feedbackd/-/issues/79
+  * build: Install udev rule.
+    Don't hide it in the packaging as that makes it easier to miss.
+    This makes debian/ really only carry packaging information.
+
+ -- Guido Günther <agx@sigxcpu.org>  Mon, 12 Aug 2024 22:54:48 +0200
+
 feedbackd (0.4.0) experimental; urgency=medium
 
   [ Guido Günther ]
