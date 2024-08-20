@@ -18,7 +18,7 @@ Build-Depends:
  libjson-glib-dev,
  libumockdev-dev,
  meson,
- pkg-config,
+ pkgconf,
  python3-docutils <!nodoc>,
  systemd-dev,
  umockdev,
@@ -87,7 +87,7 @@ Description: Development files for libfeedback
  visual/audio feedback based on events.
  .
  This package contains development files and Vala bindings to use when writing
- applications that interface with GThd.
+ applications that interface with feedbackd.
 
 Package: gir1.2-lfb-0.0
 Architecture: any
