@@ -30,6 +30,11 @@
           "effect"     : "camera-shutter"
         },
         {
+          "event-name" : "message-new-cellbroadcast",
+          "type"       : "Sound",
+          "effect"     : "cellbroadcast"
+        },
+        {
           "event-name" : "message-new-email",
           "type"       : "Sound",
           "effect"     : "message-new-email"
@@ -113,6 +118,12 @@
           "duration"   : 12
         },
         {
+          "event-name" : "message-new-cellbroadcast",
+          "type"       : "VibraPeriodic",
+          "magnitude"  : 10000,
+          "duration"   : 3000
+        },
+        {
           "event-name" : "message-new-email",
           "type"       : "VibraRumble",
           "duration"   : 750,
@@ -169,12 +180,6 @@
           "frequency"  : 5000
         },
         {
-          "event-name" : "phone-missed-call",
-          "type"       : "Led",
-          "color"      : "#00FFFF",
-          "frequency"  : 3000
-        },
-        {
           "event-name" : "message-missed-email",
           "type"       : "Led",
           "color"      : "#800080",
@@ -197,6 +202,12 @@
           "type"       : "Led",
           "color"      : "blue",
           "frequency"  : 2000
+        },
+        {
+          "event-name" : "phone-missed-call",
+          "type"       : "Led",
+          "color"      : "#00FFFF",
+          "frequency"  : 3000
         }
       ]
     }
