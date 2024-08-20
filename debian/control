@@ -18,7 +18,7 @@ Build-Depends:
  libjson-glib-dev,
  libumockdev-dev,
  meson,
- pkg-config,
+ pkgconf,
  python3-docutils <!nodoc>,
  systemd-dev,
  umockdev,
