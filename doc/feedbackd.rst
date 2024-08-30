@@ -36,7 +36,30 @@ Options
 ``-h``, ``--help``
    print help and exit
 
+Configuration
+=============
+
+These gsettings are used by ``feedbackd``:
+
+- `org.gnome.desktop.sound`
+
+    - `sound-theme`: The sound theme used for sound events
+
+- `org.sigxcpu.feedbackd`
+
+    - `profile`: The current overall feedback profile
+    - `allow-important`: List of apps that can override the feedback level
+      (useful for e.g. allowing the alarm clock to also emit sound when
+      device is in silent mode).
+    - `prefer-flash`: Prefer camera flash over status LED
+    - `theme`: The feedback theme to use. This can be used to override
+      the feedback theme picked by feedbackd based on device information.
+
+- `org.sigxcpu.feedbackd.application`
+
+   - `profile`: Per application profile levels
+
 See also
 ========
 
-``fbcli(1)`` ``fbd-theme-validate(1)`` ``feedback-themes(5)``
+``fbcli(1)`` ``fbd-theme-validate(1)`` ``feedback-themes(5)`` ``gsettings(1)``
