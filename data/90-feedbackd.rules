@@ -9,6 +9,8 @@ ACTION=="remove", GOTO="feedbackd_end"
 #
 # Librem 5, PinePhone
 SUBSYSTEM=="input", KERNEL=="event*", ENV{ID_INPUT}=="1", ENV{ID_PATH}=="platform-vibrator", TAG+="uaccess", ENV{FEEDBACKD_TYPE}="vibra"
+# Google Sargo (not mainline)
+SUBSYSTEM=="input", KERNEL=="event*", ENV{ID_INPUT}=="1", SUBSYSTEMS=="input", ATTRS{name}=="drv2624:haptics", TAG+="uaccess", ENV{FEEDBACKD_TYPE}="vibra"
 # Oneplus Enchilada, Fajita (not mainline)
 SUBSYSTEM=="input", KERNEL=="event*", ENV{ID_INPUT}=="1", SUBSYSTEMS=="input", ATTRS{name}=="spmi_haptics", TAG+="uaccess", ENV{FEEDBACKD_TYPE}="vibra"
 
