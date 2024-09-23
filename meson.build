@@ -27,6 +27,7 @@ if get_option('daemon')
   gsound         = dependency('gsound')
   gudev          = dependency('gudev-1.0', version: '>=232')
   json_glib      = dependency('json-glib-1.0')
+  systemd_dep    = dependency('systemd', required: false)
 endif
 
 prefix = get_option('prefix')

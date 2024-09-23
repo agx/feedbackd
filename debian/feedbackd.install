@@ -1,4 +1,5 @@
 usr/bin/
+usr/lib/systemd/user
 usr/lib/udev/
 usr/libexec/
 usr/share/dbus-1/
