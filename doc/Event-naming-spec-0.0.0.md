@@ -110,6 +110,7 @@ These events are meant to be used by applications.
 - battery-caution: The event used when the battery is nearing exhaustion (below 40%, for example).
 - battery-full:	The event used when the battery is fully loaded up.
 - device-added: The event used when a device has become available to the desktop, i.e. due to USB plugging.
+- message-new-cellbroadcast: The event used when a new cell broadcast message is received.
 - power-plug: The power cable has been plugged in.
 - power-unplug: The power cable has been unplugged.
 
