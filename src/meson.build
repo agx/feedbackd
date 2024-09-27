@@ -88,6 +88,15 @@ executable(
 )
 
 executable(
+  'fbd-alert-slider',
+  sources : ['fbd-alert-slider.c'],
+  include_directories : fbd_inc,
+  dependencies : [glib, gio, gio_unix, gudev, libfeedback_dep],
+  install : true,
+  install_dir: libexecdir,
+)
+
+executable(
   'fbd-theme-validate',
   sources : ['fbd-theme-validate.c'],
   include_directories : fbd_inc,

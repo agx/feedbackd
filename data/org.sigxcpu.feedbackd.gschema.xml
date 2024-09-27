@@ -33,7 +33,8 @@
     </key>
 
     <key name="allow-important" type="as">
-      <default>[]</default>
+      <default>['org.sigxcpu.FbdAlertSlider',
+                'org.sigxcpu.FbdAlertSlider']</default>
       <summary>List of apps that can override the feedback level</summary>
       <description>
         Apps listed here can override the configured feedack level by
