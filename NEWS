@@ -1,3 +1,14 @@
+feedbackd 0.5.0
+---------------
+Released September 2024
+* Detect haptic on Google Sargo and Oneplus Enchilada/Fachita
+* Handle "alert slider" on Oneplus Enchilada/Fachita
+* Contributors:
+    * Evangelos Ribeiro Tzaras
+    * isyourbrain foss
+    * Guido Günther
+    * Robert Mader
+
 feedbackd 0.4.1
 ---------------
 Released August 2024
