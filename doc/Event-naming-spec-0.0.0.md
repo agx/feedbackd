@@ -68,7 +68,6 @@ These events are meant to be used by applications.
 - *message-new-email*: The event used when a new email is received.
 - *message-missed-email*: The event used when an email was received but not seen by the user.
 - *message-missed-instant*: The event used when a instant message was received but not seen by the user.
-- *message-missed-notification*: The event used when a notification was shown but not seen by the user.
 - *message-missed-sms*: The event used when a sms message was received but not seen by the user.
 - *phone-incoming-call*: The event used when a phone/voip call is coming in.
 - *phone-missed-call*: The event used when a phone/voip call is was incoming but not answered.
@@ -113,6 +112,13 @@ These events are meant to be used by system components.
 - *message-new-cellbroadcast*: The event used when a new cell broadcast message is received.
 - *power-plug*: The power cable has been plugged in.
 - *power-unplug*: The power cable has been unplugged.
+- *message-missed-notification*: The event used when a notification was shown but not seen by the user. (*deprecated*)
+- *notification-missed-generic*: The event used when a generic notification was
+  shown but not seen by the user. This event is usually only used by
+  the notification server.
+- *notification-new-generic*: The event used when a generic notification
+  is shown to the user. This event is usually only used by the
+  notification server.
 
 #### Input Events
 
