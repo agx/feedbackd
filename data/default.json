@@ -204,6 +204,12 @@
           "frequency"  : 2000
         },
         {
+          "event-name" : "notification-missed-generic",
+          "type"       : "Led",
+          "color"      : "blue",
+          "frequency"  : 500
+        },
+        {
           "event-name" : "phone-missed-call",
           "type"       : "Led",
           "color"      : "#00FFFF",
