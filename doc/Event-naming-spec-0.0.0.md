@@ -89,9 +89,9 @@ These events are meant to be used by applications.
 
 ### System Components
 
-These events are meant to be used by applications.
+These events are meant to be used by system components.
 
-### Actions
+#### Actions
 
 - bell-terminal: The sound to use as a terminal bell.
 - screen-capture: A screenshot was made
@@ -100,12 +100,12 @@ These events are meant to be used by applications.
   a incoming phone call) of a theme that would work nicely as a demo event for
   a theme in the theme selector dialog.
 
-### Alerts
+#### Alerts
 
 - battery-low: The Event used when the battery is low (below 20%, for example).
 - power-unplug-battery-low: The power cable has been unplugged and the battery level is low.
 
-### Notifications
+#### Notifications
 
 - battery-caution: The event used when the battery is nearing exhaustion (below 40%, for example).
 - battery-full:	The event used when the battery is fully loaded up.
