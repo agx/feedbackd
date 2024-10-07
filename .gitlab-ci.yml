@@ -98,36 +98,6 @@ test:native-debian-trixie:
 
 format-check:
   <<: *tags
-  <<: *image
-  before_script:
-    - export DEBIAN_FRONTEND=noninteractive
-    - apt-get -y update
-    - apt-get -y install uncrustify git python3
-  stage: style-checks
-  needs: []
-  script:
-    - |
-      if [ -n "$CI_MERGE_REQUEST_TARGET_BRANCH_NAME" ]; then
-        git remote add target $CI_MERGE_REQUEST_PROJECT_URL.git
-        echo "Fetching MR target branch $CI_MERGE_REQUEST_TARGET_BRANCH_NAME from $CI_MERGE_REQUEST_PROJECT_URL"
-        git fetch target "$CI_MERGE_REQUEST_TARGET_BRANCH_NAME"
-        git fetch --deepen=100 origin HEAD
-        merge_base=$(git merge-base "target/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME" HEAD)
-        if [ -z "$merge_base" ]; then
-          echo "Could't determine merge base"
-          exit 1
-        fi
-        echo "Merge base: $merge_base"
-        ./.gitlab-ci/check-style.py --dry-run --sha $merge_base
-      else
-        echo "Not a merge request"
-      fi
-  allow_failure: true
-  rules:
-    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME'
-
-format-check:
-  <<: *tags
   stage: style-checks
   extends: .phosh-format-check
   allow_failure: true
