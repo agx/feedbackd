@@ -124,6 +124,10 @@ set_perms (const char *sysfs_path, const char *trigger, const char *gname)
   gboolean success = TRUE;
 
   group = getgrnam (gname);
+  if (!group) {
+    fprintf (stderr, "Failed to get group %s\n", gname);
+    return FALSE;
+  }
 
   if (!set_sysfs_attr_perm (sysfs_path, LED_BRIGHTNESS_ATTR, group->gr_gid))
       return FALSE;
