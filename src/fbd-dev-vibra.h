@@ -21,6 +21,6 @@ gboolean     fbd_dev_vibra_periodic (FbdDevVibra *self, guint duration, guint ma
 gboolean     fbd_dev_vibra_stop (FbdDevVibra *self);
 gboolean     fbd_dev_vibra_remove_effect (FbdDevVibra *self);
 GUdevDevice *fbd_dev_vibra_get_device(FbdDevVibra *self);
-
+gboolean     fbd_dev_vibra_is_busy (FbdDevVibra *self);
 
 G_END_DECLS
