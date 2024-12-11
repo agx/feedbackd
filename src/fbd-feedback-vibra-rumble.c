@@ -43,9 +43,9 @@ G_DEFINE_TYPE (FbdFeedbackVibraRumble, fbd_feedback_vibra_rumble, FBD_TYPE_FEEDB
 
 static void
 fbd_feedback_vibra_rumble_set_property (GObject      *object,
-					guint         property_id,
-					const GValue *value,
-					GParamSpec   *pspec)
+                                        guint         property_id,
+                                        const GValue *value,
+                                        GParamSpec   *pspec)
 {
   FbdFeedbackVibraRumble *self = FBD_FEEDBACK_VIBRA_RUMBLE (object);
 
@@ -63,10 +63,10 @@ fbd_feedback_vibra_rumble_set_property (GObject      *object,
 }
 
 static void
-fbd_feedback_vibra_rumble_get_property (GObject  *object,
-					  guint       property_id,
-					  GValue     *value,
-					  GParamSpec *pspec)
+fbd_feedback_vibra_rumble_get_property (GObject    *object,
+                                        guint       property_id,
+                                        GValue     *value,
+                                        GParamSpec *pspec)
 {
   FbdFeedbackVibraRumble *self = FBD_FEEDBACK_VIBRA_RUMBLE (object);
 
@@ -129,7 +129,7 @@ fbd_feedback_vibra_rumble_start_vibra (FbdFeedbackVibra *vibra)
   self->periods = self->count;
 
   g_debug ("Rumble Vibra event: duration %d, rumble: %d, pause: %d, period: %d",
-	   duration, self->rumble, self->pause, period);
+           duration, self->rumble, self->pause, period);
   fbd_dev_vibra_rumble (dev, self->rumble, TRUE);
   self->periods--;
   if (self->periods) {
