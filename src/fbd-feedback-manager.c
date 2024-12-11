@@ -414,6 +414,10 @@ fbd_feedback_manager_handle_trigger_feedback (LfbGdbusFeedback      *object,
       FbdFeedbackBase *fb = FBD_FEEDBACK_BASE (l->data);
 
       if (fbd_feedback_is_available (FBD_FEEDBACK_BASE (fb))) {
+        /* Handle one haptic feedback at a time */
+        /* TODO: should use priorities */
+        if (FBD_IS_FEEDBACK_VIBRA (fb) && fbd_dev_vibra_is_busy (self->vibra))
+          continue;
         fbd_event_add_feedback (event, fb);
         found_fb = TRUE;
       }
