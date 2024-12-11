@@ -30,6 +30,7 @@ sources = [
   'fbd-feedback-sound.c',
   'fbd-feedback-theme.c',
   'fbd-feedback-vibra.c',
+  'fbd-feedback-vibra-pattern.c',
   'fbd-feedback-vibra-periodic.c',
   'fbd-feedback-vibra-rumble.c',
   'fbd-theme-expander.c',

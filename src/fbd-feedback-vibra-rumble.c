@@ -18,6 +18,8 @@
  * The #FbdVibraVibraRumble describes the properties of a haptic feedback
  * event. It knows nothing about the hardware itself but calls
  * #FbdDevVibra for that.
+ *
+ * TODO: could be dropped in favor of the more flexible `FbdFeedbackVibraPattern`.
  */
 
 enum {
