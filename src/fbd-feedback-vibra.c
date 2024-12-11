@@ -8,6 +8,7 @@
 
 #include "fbd-enums.h"
 #include "fbd-feedback-vibra.h"
+#include "fbd-feedback-vibra-priv.h"
 #include "fbd-feedback-manager.h"
 
 /**
@@ -133,13 +134,16 @@ fbd_feedback_vibra_class_init (FbdFeedbackVibraClass *klass)
   base_class->run = fbd_feedback_vibra_run;
   base_class->end = fbd_feedback_vibra_end;
 
+  /**
+   * FbdFeedbackVibra:duration:
+   *
+   * The total duration of the feedback event in milliseconds.
+   */
   props[PROP_DURATION] =
     g_param_spec_uint (
-      "duration",
-      "Duration",
-      "Vibra event duration in msecs",
+      "duration", "", "",
       0, G_MAXUINT, FBD_FEEDBACK_VIBRA_DEFAULT_DURATION,
-      G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+      G_PARAM_CONSTRUCT | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
   g_object_class_install_properties (object_class, PROP_LAST_PROP, props);
 }
@@ -157,4 +161,21 @@ fbd_feedback_vibra_get_duration (FbdFeedbackVibra *self)
   g_return_val_if_fail (FBD_IS_FEEDBACK_VIBRA (self), 0);
   priv = fbd_feedback_vibra_get_instance_private (self);
   return priv->duration;
+}
+
+
+void
+fbd_feedback_vibra_set_duration (FbdFeedbackVibra *self, guint duration)
+{
+  FbdFeedbackVibraPrivate *priv;
+
+  g_return_if_fail (FBD_IS_FEEDBACK_VIBRA (self));
+
+  priv = fbd_feedback_vibra_get_instance_private (self);
+
+  if (duration == priv->duration)
+    return;
+
+  priv->duration = duration;
+  g_object_notify_by_pspec (G_OBJECT (self), props[PROP_DURATION]);
 }
