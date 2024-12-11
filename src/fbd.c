@@ -8,14 +8,23 @@
 
 #include "fbd.h"
 #include "fbd-feedback-manager.h"
+#include "fbd-haptic-manager.h"
 #include "lfb-names.h"
 #include "lfb-gdbus.h"
 
 #include <gio/gio.h>
 #include <glib-unix.h>
 
-
 static GMainLoop *loop;
+
+
+static GDebugKey debug_keys[] =
+{
+  { .key = "force-haptic",
+    .value = FBD_DEBUG_FLAG_FORCE_HAPTIC,
+  },
+};
+
 
 static gboolean
 quit_cb (gpointer user_data)
@@ -45,17 +54,29 @@ reload_cb (gpointer user_data)
 
 static void
 bus_acquired_cb (GDBusConnection *connection,
-                 const gchar *name,
-                 gpointer user_data)
+                 const gchar     *name,
+                 gpointer         user_data)
 {
   FbdFeedbackManager *manager = fbd_feedback_manager_get_default ();
+  FbdHapticManager   *haptic_manager;
 
-  g_debug ("Bus acquired, creating manager...");
+  g_assert (FBD_IS_FEEDBACK_MANAGER (manager));
+
+  g_debug ("Bus acquired, exporting manager...");
 
   g_dbus_interface_skeleton_export (G_DBUS_INTERFACE_SKELETON (manager),
                                     connection,
                                     FB_DBUS_PATH,
                                     NULL);
+
+  haptic_manager = fbd_feedback_manager_get_haptic_manager (manager);
+  if (haptic_manager) {
+    g_debug ("Exporting haptic manager...");
+    g_dbus_interface_skeleton_export (G_DBUS_INTERFACE_SKELETON (haptic_manager),
+                                      connection,
+                                      FB_DBUS_PATH,
+                                      NULL);
+  }
 }
 
 
@@ -88,11 +109,13 @@ name_lost_cb (GDBusConnection *connection,
 }
 
 
-int main(int argc, char *argv[])
+int
+main (int argc, char *argv[])
 {
   g_autoptr(GError) err = NULL;
   g_autoptr(GOptionContext) opt_context = NULL;
   g_autoptr (FbdFeedbackManager) manager = NULL;
+  const char *debugenv;
 
   opt_context = g_option_context_new ("- A daemon to trigger event feedback");
   if (!g_option_context_parse (opt_context, &argc, &argv, &err)) {
@@ -100,6 +123,11 @@ int main(int argc, char *argv[])
     g_clear_error (&err);
     return 1;
   }
+
+  debugenv = g_getenv ("FEEDBACKD_DEBUG");
+  fbd_debug_flags = g_parse_debug_string (debugenv,
+                                          debug_keys,
+                                          G_N_ELEMENTS (debug_keys));
 
   manager = fbd_feedback_manager_get_default ();
   fbd_feedback_manager_load_theme (manager);

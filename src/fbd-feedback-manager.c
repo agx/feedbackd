@@ -12,8 +12,10 @@
 #include "fbd-dev-leds.h"
 #include "fbd-event.h"
 #include "fbd-feedback-vibra.h"
+#include "fbd-feedback-vibra-pattern.h"
 #include "fbd-feedback-manager.h"
 #include "fbd-feedback-theme.h"
+#include "fbd-haptic-manager.h"
 #include "fbd-theme-expander.h"
 
 #include <gmobile.h>
@@ -40,6 +42,9 @@
  * based on the incoming events.
  */
 
+FbdDebugFlags fbd_debug_flags;
+
+
 typedef struct _FbdFeedbackManager {
   LfbGdbusFeedbackSkeleton parent;
 
@@ -53,6 +58,9 @@ typedef struct _FbdFeedbackManager {
   GHashTable              *events;
   /* Key: DBus name, value: watch_id */
   GHashTable              *clients;
+
+  /* org.sigxcpu.Feedbackd.Haptic */
+  FbdHapticManager        *haptic_manager;
 
   /* Hardware interaction */
   GUdevClient             *client;
@@ -410,15 +418,27 @@ fbd_feedback_manager_handle_trigger_feedback (LfbGdbusFeedback      *object,
   feedbacks = fbd_feedback_theme_lookup_feedback (self->theme, level, event);
 
   if (feedbacks) {
+    gboolean has_vibra = FALSE;
+
     for (l = feedbacks; l; l = l->next) {
       FbdFeedbackBase *fb = FBD_FEEDBACK_BASE (l->data);
 
       if (fbd_feedback_is_available (FBD_FEEDBACK_BASE (fb))) {
-        /* Handle one haptic feedback at a time */
-        /* TODO: should use priorities */
-        if (FBD_IS_FEEDBACK_VIBRA (fb) && fbd_dev_vibra_is_busy (self->vibra))
-          continue;
+        /* Handle one haptic feedback at a time. In practice haptics can handle multiple
+         * patterns but none of the devices supports this atm */
+        /* TODO: should respect priorities */
+        if (FBD_IS_FEEDBACK_VIBRA (fb)) {
+          if (fbd_dev_vibra_is_busy (self->vibra))
+            continue;
+          has_vibra = TRUE;
+        }
+
         fbd_event_add_feedback (event, fb);
+
+        /* Events take priority over the haptic interface */
+        if (has_vibra)
+          fbd_haptic_manager_end_feedback (self->haptic_manager);
+
         found_fb = TRUE;
       }
     }
@@ -494,6 +514,9 @@ fbd_feedback_manager_constructed (GObject *object)
   g_signal_connect_swapped (self->settings, "changed::" FEEDBACKD_KEY_ALLOW_IMPORTANT,
                             G_CALLBACK (on_feedbackd_allow_important_changed), self);
   on_feedbackd_allow_important_changed (self, FEEDBACKD_KEY_ALLOW_IMPORTANT, self->settings);
+
+  if (self->vibra || fbd_debug_flags & FBD_DEBUG_FLAG_FORCE_HAPTIC)
+    self->haptic_manager = fbd_haptic_manager_new ();
 }
 
 
@@ -501,6 +524,8 @@ static void
 fbd_feedback_manager_dispose (GObject *object)
 {
   FbdFeedbackManager *self = FBD_FEEDBACK_MANAGER (object);
+
+  g_clear_object (&self->haptic_manager);
 
   g_clear_object (&self->settings);
   g_clear_object (&self->theme);
@@ -660,6 +685,15 @@ fbd_feedback_manager_set_profile (FbdFeedbackManager *self, const gchar *profile
   cancel_running (self);
 
   return TRUE;
+}
+
+
+FbdHapticManager *
+fbd_feedback_manager_get_haptic_manager (FbdFeedbackManager *self)
+{
+  g_assert (FBD_IS_FEEDBACK_MANAGER (self));
+
+  return self->haptic_manager;
 }
 
 /**
