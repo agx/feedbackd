@@ -8,6 +8,7 @@
 #include "fbd-dev-vibra.h"
 #include "fbd-dev-leds.h"
 #include "fbd-dev-sound.h"
+#include "fbd-feedback-profile.h"
 
 #include "lfb-gdbus.h"
 #include <glib-object.h>
@@ -24,5 +25,9 @@ FbdDevSound *fbd_feedback_manager_get_dev_sound (FbdFeedbackManager *self);
 FbdDevLeds  *fbd_feedback_manager_get_dev_leds  (FbdFeedbackManager *self);
 void         fbd_feedback_manager_load_theme    (FbdFeedbackManager *self);
 gboolean     fbd_feedback_manager_set_profile (FbdFeedbackManager *self, const gchar *profile);
+FbdFeedbackProfileLevel fbd_feedback_manager_get_effective_level (FbdFeedbackManager      *self,
+                                                                  const char              *app_id,
+                                                                  FbdFeedbackProfileLevel  want_level,
+                                                                  gboolean                 important);
 
 G_END_DECLS

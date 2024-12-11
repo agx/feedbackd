@@ -351,6 +351,7 @@ parse_hints (GVariant *hints, FbdFeedbackProfileLevel *level, gboolean *hint_imp
   return TRUE;
 }
 
+
 static gboolean
 fbd_feedback_manager_handle_trigger_feedback (LfbGdbusFeedback      *object,
                                               GDBusMethodInvocation *invocation,
@@ -364,9 +365,9 @@ fbd_feedback_manager_handle_trigger_feedback (LfbGdbusFeedback      *object,
   GSList *feedbacks, *l;
   guint event_id;
   const gchar *sender;
-  FbdFeedbackProfileLevel app_level, level, hint_level = FBD_FEEDBACK_PROFILE_LEVEL_FULL;
+  FbdFeedbackProfileLevel level, hint_level = FBD_FEEDBACK_PROFILE_LEVEL_FULL;
   gboolean found_fb = FALSE;
-  gboolean hint_important = FALSE, can_important;
+  gboolean hint_important = FALSE;
 
   sender = g_dbus_method_invocation_get_sender (invocation);
   g_debug ("Event '%s' for '%s' from %s", arg_event, arg_app_id, sender);
@@ -405,15 +406,9 @@ fbd_feedback_manager_handle_trigger_feedback (LfbGdbusFeedback      *object,
   event = fbd_event_new (event_id, arg_app_id, arg_event, arg_timeout, sender);
   g_hash_table_insert (self->events, GUINT_TO_POINTER (event_id), event);
 
-  app_level = app_get_feedback_level (arg_app_id);
-  can_important = app_is_important (self, arg_app_id);
-
-  if (hint_important && can_important)
-    level = hint_level;
-  else
-    level = get_max_level (self->level, app_level, hint_level);
-
+  level = fbd_feedback_manager_get_effective_level (self, arg_app_id, hint_level, hint_important);
   feedbacks = fbd_feedback_theme_lookup_feedback (self->theme, level, event);
+
   if (feedbacks) {
     for (l = feedbacks; l; l = l->next) {
       FbdFeedbackBase *fb = FBD_FEEDBACK_BASE (l->data);
@@ -661,4 +656,36 @@ fbd_feedback_manager_set_profile (FbdFeedbackManager *self, const gchar *profile
   cancel_running (self);
 
   return TRUE;
+}
+
+/**
+ * fbd_feedback_manager_get_effective_level:
+ * @self: The feedback manager
+ * @app_id: The app-id of the app that triggered the feedback
+ * @want_level: The wanted level
+ * @important: Whether the important hint is set
+ *
+ * Calculates the effective feedback level taking the hints sent for the event
+ * and the system configuration into account
+ *
+ * Returns: The effective feedback level
+ */
+FbdFeedbackProfileLevel
+fbd_feedback_manager_get_effective_level (FbdFeedbackManager      *self,
+                                          const char              *app_id,
+                                          FbdFeedbackProfileLevel  want_level,
+                                          gboolean                 important)
+{
+  gboolean can_important;
+  FbdFeedbackProfileLevel app_level, level;
+
+  app_level = app_get_feedback_level (app_id);
+  can_important = app_is_important (self, app_id);
+
+  if (important && can_important)
+    level = want_level;
+  else
+    level = get_max_level (self->level, app_level, want_level);
+
+  return level;
 }
