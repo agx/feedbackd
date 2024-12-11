@@ -39,9 +39,11 @@ static void
 on_timeout_expired (FbdFeedbackVibra *self)
 {
   FbdFeedbackManager *manager = fbd_feedback_manager_get_default ();
+  FbdFeedbackVibraPrivate *priv = fbd_feedback_vibra_get_instance_private (self);
   FbdDevVibra *dev = fbd_feedback_manager_get_dev_vibra (manager);
 
   fbd_dev_vibra_stop (dev);
+  priv->timer_id = 0;
   fbd_feedback_base_done (FBD_FEEDBACK_BASE (self));
 }
 
