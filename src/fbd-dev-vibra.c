@@ -272,7 +272,7 @@ fbd_dev_vibra_rumble (FbdDevVibra *self, guint duration, gboolean upload)
 /* TODO: fall back to multiple rumbles when sine not supported */
 gboolean
 fbd_dev_vibra_periodic (FbdDevVibra *self, guint duration, guint magnitude,
-			guint fade_in_level, guint fade_in_time)
+                        guint fade_in_level, guint fade_in_time)
 {
   struct input_event event;
   struct ff_effect effect = { 0 };
@@ -340,7 +340,7 @@ fbd_dev_vibra_remove_effect (FbdDevVibra *self)
 
 
 gboolean
-fbd_dev_vibra_stop(FbdDevVibra *self)
+fbd_dev_vibra_stop (FbdDevVibra *self)
 {
   struct input_event stop = { 0 };
 
@@ -359,7 +359,7 @@ fbd_dev_vibra_stop(FbdDevVibra *self)
 }
 
 GUdevDevice *
-fbd_dev_vibra_get_device(FbdDevVibra *self)
+fbd_dev_vibra_get_device (FbdDevVibra *self)
 {
   g_return_val_if_fail (FBD_IS_DEV_VIBRA (self), FALSE);
 
