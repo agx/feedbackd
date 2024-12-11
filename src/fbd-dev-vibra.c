@@ -233,7 +233,7 @@ fbd_dev_vibra_new (GUdevDevice *device, GError **error)
 }
 
 gboolean
-fbd_dev_vibra_rumble (FbdDevVibra *self, guint duration, gboolean upload)
+fbd_dev_vibra_rumble (FbdDevVibra *self, double magnitude, guint duration, gboolean upload)
 {
   struct input_event event = { 0 };
   struct ff_effect effect = { 0 };
@@ -243,7 +243,7 @@ fbd_dev_vibra_rumble (FbdDevVibra *self, guint duration, gboolean upload)
   memset(&effect, 0, sizeof(effect));
   effect.type = FF_RUMBLE;
   effect.id = -1;
-  effect.u.rumble.strong_magnitude = 0x8000;
+  effect.u.rumble.strong_magnitude = (0x8000 * magnitude);
   effect.u.rumble.weak_magnitude = 0;
   effect.replay.length = duration;
   effect.replay.delay = 0;

@@ -92,7 +92,7 @@ on_period_ended (FbdFeedbackVibraRumble *self)
   g_return_val_if_fail (FBD_IS_FEEDBACK_VIBRA_RUMBLE (self), G_SOURCE_REMOVE);
 
   if (self->periods) {
-    fbd_dev_vibra_rumble (dev, self->rumble, FALSE);
+    fbd_dev_vibra_rumble (dev, 1.0, self->rumble, FALSE);
     self->periods--;
     return G_SOURCE_CONTINUE;
   }
@@ -130,7 +130,7 @@ fbd_feedback_vibra_rumble_start_vibra (FbdFeedbackVibra *vibra)
 
   g_debug ("Rumble Vibra event: duration %d, rumble: %d, pause: %d, period: %d",
            duration, self->rumble, self->pause, period);
-  fbd_dev_vibra_rumble (dev, self->rumble, TRUE);
+  fbd_dev_vibra_rumble (dev, 1.0, self->rumble, TRUE);
   self->periods--;
   if (self->periods) {
     self->timer_id = g_timeout_add (period, (GSourceFunc) on_period_ended, self);
