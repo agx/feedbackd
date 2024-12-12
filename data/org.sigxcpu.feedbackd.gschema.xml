@@ -34,7 +34,7 @@
 
     <key name="allow-important" type="as">
       <default>['org.sigxcpu.FbdAlertSlider',
-                'org.sigxcpu.FbdAlertSlider']</default>
+                'org.gnome.clocks']</default>
       <summary>List of apps that can override the feedback level</summary>
       <description>
         Apps listed here can override the configured feedack level by
