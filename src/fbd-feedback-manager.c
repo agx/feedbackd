@@ -12,8 +12,10 @@
 #include "fbd-dev-leds.h"
 #include "fbd-event.h"
 #include "fbd-feedback-vibra.h"
+#include "fbd-feedback-vibra-pattern.h"
 #include "fbd-feedback-manager.h"
 #include "fbd-feedback-theme.h"
+#include "fbd-haptic-manager.h"
 #include "fbd-theme-expander.h"
 
 #include <gmobile.h>
@@ -40,6 +42,9 @@
  * based on the incoming events.
  */
 
+FbdDebugFlags fbd_debug_flags;
+
+
 typedef struct _FbdFeedbackManager {
   LfbGdbusFeedbackSkeleton parent;
 
@@ -53,6 +58,9 @@ typedef struct _FbdFeedbackManager {
   GHashTable              *events;
   /* Key: DBus name, value: watch_id */
   GHashTable              *clients;
+
+  /* org.sigxcpu.Feedbackd.Haptic */
+  FbdHapticManager        *haptic_manager;
 
   /* Hardware interaction */
   GUdevClient             *client;
@@ -351,6 +359,7 @@ parse_hints (GVariant *hints, FbdFeedbackProfileLevel *level, gboolean *hint_imp
   return TRUE;
 }
 
+
 static gboolean
 fbd_feedback_manager_handle_trigger_feedback (LfbGdbusFeedback      *object,
                                               GDBusMethodInvocation *invocation,
@@ -364,9 +373,9 @@ fbd_feedback_manager_handle_trigger_feedback (LfbGdbusFeedback      *object,
   GSList *feedbacks, *l;
   guint event_id;
   const gchar *sender;
-  FbdFeedbackProfileLevel app_level, level, hint_level = FBD_FEEDBACK_PROFILE_LEVEL_FULL;
+  FbdFeedbackProfileLevel level, hint_level = FBD_FEEDBACK_PROFILE_LEVEL_FULL;
   gboolean found_fb = FALSE;
-  gboolean hint_important = FALSE, can_important;
+  gboolean hint_important = FALSE;
 
   sender = g_dbus_method_invocation_get_sender (invocation);
   g_debug ("Event '%s' for '%s' from %s", arg_event, arg_app_id, sender);
@@ -405,21 +414,31 @@ fbd_feedback_manager_handle_trigger_feedback (LfbGdbusFeedback      *object,
   event = fbd_event_new (event_id, arg_app_id, arg_event, arg_timeout, sender);
   g_hash_table_insert (self->events, GUINT_TO_POINTER (event_id), event);
 
-  app_level = app_get_feedback_level (arg_app_id);
-  can_important = app_is_important (self, arg_app_id);
-
-  if (hint_important && can_important)
-    level = hint_level;
-  else
-    level = get_max_level (self->level, app_level, hint_level);
-
+  level = fbd_feedback_manager_get_effective_level (self, arg_app_id, hint_level, hint_important);
   feedbacks = fbd_feedback_theme_lookup_feedback (self->theme, level, event);
+
   if (feedbacks) {
+    gboolean has_vibra = FALSE;
+
     for (l = feedbacks; l; l = l->next) {
       FbdFeedbackBase *fb = FBD_FEEDBACK_BASE (l->data);
 
       if (fbd_feedback_is_available (FBD_FEEDBACK_BASE (fb))) {
+        /* Handle one haptic feedback at a time. In practice haptics can handle multiple
+         * patterns but none of the devices supports this atm */
+        /* TODO: should respect priorities */
+        if (FBD_IS_FEEDBACK_VIBRA (fb)) {
+          if (fbd_dev_vibra_is_busy (self->vibra))
+            continue;
+          has_vibra = TRUE;
+        }
+
         fbd_event_add_feedback (event, fb);
+
+        /* Events take priority over the haptic interface */
+        if (has_vibra)
+          fbd_haptic_manager_end_feedback (self->haptic_manager);
+
         found_fb = TRUE;
       }
     }
@@ -495,6 +514,9 @@ fbd_feedback_manager_constructed (GObject *object)
   g_signal_connect_swapped (self->settings, "changed::" FEEDBACKD_KEY_ALLOW_IMPORTANT,
                             G_CALLBACK (on_feedbackd_allow_important_changed), self);
   on_feedbackd_allow_important_changed (self, FEEDBACKD_KEY_ALLOW_IMPORTANT, self->settings);
+
+  if (self->vibra || fbd_debug_flags & FBD_DEBUG_FLAG_FORCE_HAPTIC)
+    self->haptic_manager = fbd_haptic_manager_new ();
 }
 
 
@@ -502,6 +524,8 @@ static void
 fbd_feedback_manager_dispose (GObject *object)
 {
   FbdFeedbackManager *self = FBD_FEEDBACK_MANAGER (object);
+
+  g_clear_object (&self->haptic_manager);
 
   g_clear_object (&self->settings);
   g_clear_object (&self->theme);
@@ -661,4 +685,45 @@ fbd_feedback_manager_set_profile (FbdFeedbackManager *self, const gchar *profile
   cancel_running (self);
 
   return TRUE;
+}
+
+
+FbdHapticManager *
+fbd_feedback_manager_get_haptic_manager (FbdFeedbackManager *self)
+{
+  g_assert (FBD_IS_FEEDBACK_MANAGER (self));
+
+  return self->haptic_manager;
+}
+
+/**
+ * fbd_feedback_manager_get_effective_level:
+ * @self: The feedback manager
+ * @app_id: The app-id of the app that triggered the feedback
+ * @want_level: The wanted level
+ * @important: Whether the important hint is set
+ *
+ * Calculates the effective feedback level taking the hints sent for the event
+ * and the system configuration into account
+ *
+ * Returns: The effective feedback level
+ */
+FbdFeedbackProfileLevel
+fbd_feedback_manager_get_effective_level (FbdFeedbackManager      *self,
+                                          const char              *app_id,
+                                          FbdFeedbackProfileLevel  want_level,
+                                          gboolean                 important)
+{
+  gboolean can_important;
+  FbdFeedbackProfileLevel app_level, level;
+
+  app_level = app_get_feedback_level (app_id);
+  can_important = app_is_important (self, app_id);
+
+  if (important && can_important)
+    level = want_level;
+  else
+    level = get_max_level (self->level, app_level, want_level);
+
+  return level;
 }

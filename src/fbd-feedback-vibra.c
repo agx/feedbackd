@@ -8,6 +8,7 @@
 
 #include "fbd-enums.h"
 #include "fbd-feedback-vibra.h"
+#include "fbd-feedback-vibra-priv.h"
 #include "fbd-feedback-manager.h"
 
 /**
@@ -35,16 +36,18 @@ typedef struct _FbdFeedbackVibraPrivate {
 G_DEFINE_TYPE_WITH_PRIVATE (FbdFeedbackVibra, fbd_feedback_vibra, FBD_TYPE_FEEDBACK_BASE);
 
 
-static gboolean
+static void
 on_timeout_expired (FbdFeedbackVibra *self)
 {
   FbdFeedbackManager *manager = fbd_feedback_manager_get_default ();
+  FbdFeedbackVibraPrivate *priv = fbd_feedback_vibra_get_instance_private (self);
   FbdDevVibra *dev = fbd_feedback_manager_get_dev_vibra (manager);
 
-  fbd_dev_vibra_remove_effect (dev);
-  fbd_feedback_base_done (FBD_FEEDBACK_BASE(self));
-  return G_SOURCE_REMOVE;
+  fbd_dev_vibra_stop (dev);
+  priv->timer_id = 0;
+  fbd_feedback_base_done (FBD_FEEDBACK_BASE (self));
 }
+
 
 static void
 fbd_feedback_vibra_run (FbdFeedbackBase *base)
@@ -57,9 +60,9 @@ fbd_feedback_vibra_run (FbdFeedbackBase *base)
   g_return_if_fail (klass->start_vibra);
   klass->start_vibra (self);
 
-  priv->timer_id = g_timeout_add (priv->duration,
-				  (GSourceFunc)on_timeout_expired,
-				  self);
+  priv->timer_id = g_timeout_add_once (priv->duration,
+                                       (GSourceOnceFunc)on_timeout_expired,
+                                       self);
   g_source_set_name_by_id (priv->timer_id, "feedback-vibra-timer");
 }
 
@@ -75,8 +78,8 @@ fbd_feedback_vibra_end (FbdFeedbackBase *base)
     return;
 
   g_return_if_fail (klass->end_vibra);
-  klass->end_vibra(self);
-  g_clear_handle_id(&priv->timer_id, g_source_remove);
+  klass->end_vibra (self);
+  g_clear_handle_id (&priv->timer_id, g_source_remove);
   fbd_feedback_base_done (FBD_FEEDBACK_BASE(self));
 }
 
@@ -102,9 +105,9 @@ fbd_feedback_vibra_set_property (GObject      *object,
 
 static void
 fbd_feedback_vibra_get_property (GObject    *object,
-				 guint       property_id,
-				 GValue     *value,
-				 GParamSpec *pspec)
+                                 guint       property_id,
+                                 GValue     *value,
+                                 GParamSpec *pspec)
 {
   FbdFeedbackVibra *self = FBD_FEEDBACK_VIBRA (object);
   FbdFeedbackVibraPrivate *priv = fbd_feedback_vibra_get_instance_private (self);
@@ -131,13 +134,16 @@ fbd_feedback_vibra_class_init (FbdFeedbackVibraClass *klass)
   base_class->run = fbd_feedback_vibra_run;
   base_class->end = fbd_feedback_vibra_end;
 
+  /**
+   * FbdFeedbackVibra:duration:
+   *
+   * The total duration of the feedback event in milliseconds.
+   */
   props[PROP_DURATION] =
     g_param_spec_uint (
-      "duration",
-      "Duration",
-      "Vibra event duration in msecs",
+      "duration", "", "",
       0, G_MAXUINT, FBD_FEEDBACK_VIBRA_DEFAULT_DURATION,
-      G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+      G_PARAM_CONSTRUCT | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
   g_object_class_install_properties (object_class, PROP_LAST_PROP, props);
 }
@@ -155,4 +161,21 @@ fbd_feedback_vibra_get_duration (FbdFeedbackVibra *self)
   g_return_val_if_fail (FBD_IS_FEEDBACK_VIBRA (self), 0);
   priv = fbd_feedback_vibra_get_instance_private (self);
   return priv->duration;
+}
+
+
+void
+fbd_feedback_vibra_set_duration (FbdFeedbackVibra *self, guint duration)
+{
+  FbdFeedbackVibraPrivate *priv;
+
+  g_return_if_fail (FBD_IS_FEEDBACK_VIBRA (self));
+
+  priv = fbd_feedback_vibra_get_instance_private (self);
+
+  if (duration == priv->duration)
+    return;
+
+  priv->duration = duration;
+  g_object_notify_by_pspec (G_OBJECT (self), props[PROP_DURATION]);
 }

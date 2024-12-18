@@ -219,6 +219,7 @@ fbd_dev_vibra_class_init (FbdDevVibraClass *klass)
 static void
 fbd_dev_vibra_init (FbdDevVibra *self)
 {
+  self->id = -1;
 }
 
 FbdDevVibra *
@@ -232,7 +233,7 @@ fbd_dev_vibra_new (GUdevDevice *device, GError **error)
 }
 
 gboolean
-fbd_dev_vibra_rumble (FbdDevVibra *self, guint duration, gboolean upload)
+fbd_dev_vibra_rumble (FbdDevVibra *self, double magnitude, guint duration, gboolean upload)
 {
   struct input_event event = { 0 };
   struct ff_effect effect = { 0 };
@@ -242,7 +243,7 @@ fbd_dev_vibra_rumble (FbdDevVibra *self, guint duration, gboolean upload)
   memset(&effect, 0, sizeof(effect));
   effect.type = FF_RUMBLE;
   effect.id = -1;
-  effect.u.rumble.strong_magnitude = 0x8000;
+  effect.u.rumble.strong_magnitude = (0x8000 * magnitude);
   effect.u.rumble.weak_magnitude = 0;
   effect.replay.length = duration;
   effect.replay.delay = 0;
@@ -272,7 +273,7 @@ fbd_dev_vibra_rumble (FbdDevVibra *self, guint duration, gboolean upload)
 /* TODO: fall back to multiple rumbles when sine not supported */
 gboolean
 fbd_dev_vibra_periodic (FbdDevVibra *self, guint duration, guint magnitude,
-			guint fade_in_level, guint fade_in_time)
+                        guint fade_in_level, guint fade_in_time)
 {
   struct input_event event;
   struct ff_effect effect = { 0 };
@@ -330,21 +331,29 @@ fbd_dev_vibra_remove_effect (FbdDevVibra *self)
 {
   g_return_val_if_fail (FBD_IS_DEV_VIBRA (self), FALSE);
 
+  if (self->id == -1)
+    return TRUE;
+
   g_debug("Erasing vibra effect (%d)", self->fd);
   if (ioctl(self->fd, EVIOCRMFF, self->id) == -1) {
     g_warning  ("Failed to erase vibra effect with id %d: %s", self->id, strerror(errno));
+    self->id = -1;
     return FALSE;
   }
+  self->id = -1;
   return TRUE;
 }
 
 
 gboolean
-fbd_dev_vibra_stop(FbdDevVibra *self)
+fbd_dev_vibra_stop (FbdDevVibra *self)
 {
   struct input_event stop = { 0 };
 
   g_return_val_if_fail (FBD_IS_DEV_VIBRA (self), FALSE);
+
+  if (self->id == -1)
+    return TRUE;
 
   stop.type = EV_FF;
   stop.code = self->id;
@@ -359,9 +368,28 @@ fbd_dev_vibra_stop(FbdDevVibra *self)
 }
 
 GUdevDevice *
-fbd_dev_vibra_get_device(FbdDevVibra *self)
+fbd_dev_vibra_get_device (FbdDevVibra *self)
 {
   g_return_val_if_fail (FBD_IS_DEV_VIBRA (self), FALSE);
 
   return self->device;
+}
+
+/**
+ * fbd_dev_vibra_is_busy:
+ * @self: The vibra device
+ *
+ * Check whether the device is currently in used
+ *
+ * Returns: `TRUE` when the device is in use, otherwise `FALSE`
+ */
+gboolean
+fbd_dev_vibra_is_busy (FbdDevVibra *self)
+{
+  if (self == NULL)
+    return FALSE;
+
+  g_return_val_if_fail (FBD_IS_DEV_VIBRA (self), TRUE);
+
+  return self->id != -1;
 }

@@ -277,11 +277,32 @@ export GSETTINGS_SCHEMA_DIR=_build/data/
 gsettings set org.sigxcpu.feedbackd.application:/org/sigxcpu/feedbackd/application/sm-puri-phosh/ profile quiet
 ```
 
+## Haptic API
+
+In order to give applications like browsers and games more control
+over the haptic motor `Feebackd` implements an interface that allows
+to set vibra patterns. The vibration pattern is given as a sequence of
+rumble magnitude and duration pairs like:
+
+```
+busctl call --user org.sigxcpu.Feedback /org/sigxcpu/Feedback org.sigxcpu.Feedback.Haptic Vibrate 'sa(du)' org.foo.app 3 1.0 200  0.0 50  0.5 300
+```
+
+Vibration can be ended by submitting an empty array:
+
+```sh
+busctl call --user org.sigxcpu.Feedback /org/sigxcpu/Feedback org.sigxcpu.Feedback.Haptic Vibrate 'sa(du)' org.foo.app 0
+```
+
+The API is exported as a separate interface `org.sigxcpu.Feedback.Haptic` which is only available when
+a haptic device is found.
+
 ## Documentation
 
 - [Libfeedback API](https://honk.sigxcpu.org/projects/feedbackd/doc/)
 - [Event naming spec draft](./doc/Event-naming-spec-0.0.0.md)
 - [Feedback-theme-spec draft](./doc/Feedback-theme-spec-0.0.0.md)
+- [W3's vibration API draft](https://www.w3.org/TR/vibration/)
 
 [debian/control]: ./debian/control#L5
 [1]: https://source.puri.sm/Librem5/feedbackd-device-themes

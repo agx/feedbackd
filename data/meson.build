@@ -4,7 +4,10 @@ namespace = 'LfbGdbus'
 
 generated_dbus_sources = []
 
-dbus_interfaces = [ 'org.sigxcpu.Feedback.xml' ]
+dbus_interfaces = [
+  'org.sigxcpu.Feedback.xml',
+  'org.sigxcpu.Feedback.Haptic.xml',
+]
 
 generated_dbus_sources += gnome.gdbus_codegen('lfb-gdbus',
       sources          : dbus_interfaces,

@@ -18,6 +18,8 @@
  * The #FbdVibraVibraRumble describes the properties of a haptic feedback
  * event. It knows nothing about the hardware itself but calls
  * #FbdDevVibra for that.
+ *
+ * TODO: could be dropped in favor of the more flexible `FbdFeedbackVibraPattern`.
  */
 
 enum {
@@ -43,9 +45,9 @@ G_DEFINE_TYPE (FbdFeedbackVibraRumble, fbd_feedback_vibra_rumble, FBD_TYPE_FEEDB
 
 static void
 fbd_feedback_vibra_rumble_set_property (GObject      *object,
-					guint         property_id,
-					const GValue *value,
-					GParamSpec   *pspec)
+                                        guint         property_id,
+                                        const GValue *value,
+                                        GParamSpec   *pspec)
 {
   FbdFeedbackVibraRumble *self = FBD_FEEDBACK_VIBRA_RUMBLE (object);
 
@@ -63,10 +65,10 @@ fbd_feedback_vibra_rumble_set_property (GObject      *object,
 }
 
 static void
-fbd_feedback_vibra_rumble_get_property (GObject  *object,
-					  guint       property_id,
-					  GValue     *value,
-					  GParamSpec *pspec)
+fbd_feedback_vibra_rumble_get_property (GObject    *object,
+                                        guint       property_id,
+                                        GValue     *value,
+                                        GParamSpec *pspec)
 {
   FbdFeedbackVibraRumble *self = FBD_FEEDBACK_VIBRA_RUMBLE (object);
 
@@ -92,7 +94,7 @@ on_period_ended (FbdFeedbackVibraRumble *self)
   g_return_val_if_fail (FBD_IS_FEEDBACK_VIBRA_RUMBLE (self), G_SOURCE_REMOVE);
 
   if (self->periods) {
-    fbd_dev_vibra_rumble (dev, self->rumble, FALSE);
+    fbd_dev_vibra_rumble (dev, 1.0, self->rumble, FALSE);
     self->periods--;
     return G_SOURCE_CONTINUE;
   }
@@ -129,8 +131,8 @@ fbd_feedback_vibra_rumble_start_vibra (FbdFeedbackVibra *vibra)
   self->periods = self->count;
 
   g_debug ("Rumble Vibra event: duration %d, rumble: %d, pause: %d, period: %d",
-	   duration, self->rumble, self->pause, period);
-  fbd_dev_vibra_rumble (dev, self->rumble, TRUE);
+           duration, self->rumble, self->pause, period);
+  fbd_dev_vibra_rumble (dev, 1.0, self->rumble, TRUE);
   self->periods--;
   if (self->periods) {
     self->timer_id = g_timeout_add (period, (GSourceFunc) on_period_ended, self);
