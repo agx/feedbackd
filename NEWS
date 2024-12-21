@@ -1,3 +1,16 @@
+feedbackd 0.6.0
+---------------
+Released December 2024
+* feedbackd: Add vibration API. Gives e.g. games more control over haptic and
+  will allow browsers to implement `navigator.vibrate()`
+* spec: Clarify use of notification related events
+* Fix crash in fbd-lectrl when group doesn't exist
+* Issues fixed:
+    * https://source.puri.sm/Librem5/feedbackd/-/issues/80
+* Contributors:
+    * Dang Huynh
+    * Guido Günther
+
 feedbackd 0.5.0
 ---------------
 Released September 2024
