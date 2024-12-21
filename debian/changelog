@@ -1,3 +1,70 @@
+feedbackd (0.6.0) experimental; urgency=medium
+
+  [ Guido Günther ]
+  * event-naming-spec: Fix section description
+  * event-naming-spec: Expand on notifiction events.
+    We move them to the system category as the notification server
+    is a system component and add an event for now notifictions
+    for the notification server to use
+  * theme: Add notification-missed-new.
+    We'll remove message-new-notification somewhat later to not break
+    existing themes.
+    This reverts commit 5cc9713984778e61c4218e8ff6d896324cba5d5d.
+  * ci: Drop duplicate format check
+  * doc: Modernize README a bit
+  * data: Really add gnome-clocks.
+    Fixes d5b2042 ("data: Add gnome-clocks to allow-important list")
+  * feedback-rumble: Fix indent.
+    There were some tabs from day 0
+  * dev-vibra: Allow to check if the device is busy.
+    We accept `NULL` to make the case of no haptic easy to handle.
+  * feedback-manager: Split out feedback level calculation.
+    This allows to use it from other places too and while at that
+    documents it.
+  * feedback-manager: Don't trigger haptic feedbacks when vibra is busy.
+    This just gives odd vibration. Later on we should use priorities to
+    allow for higher priority events like phone calls to override lower
+    priority events like e.g. button presses. This is similar to how we want
+    to handle LED patterns.
+  * feedback-vibra: Use g_timeout_add_once.
+    Fix some indent while at that
+  * feedback-vibra: Clear timer id.
+    Make sure we clear the timer id when vibra ended.
+  * feedback-vibra: Allow derived classes to override duration.
+    This allows the derived classes to perform the length duration
+    calculation.  The parent class can thus still keep track of the total
+    feedback length.
+  * dev-vibra: Allow to set magnitude.
+    Allows for more subtle feedback
+  * feedback-vibra: Add support for patterns.
+    Add a new class that takes an array of durations and magnitudes.
+    A magnitude of 0 indicates a pause.
+    We can consider dropping the VibraRumble class at some point as that
+    is a special case of VibraPeriodic now however as the feedbacks are
+    encoded in the themes let's make sure VibraPattern is good API before
+    deprecating VibraRumble.
+  * data: Add vibration API.
+    The API is meant to trigger the given vibration pattern on the haptic
+    device. The pattern is sequence of relative amplitude and duration
+    pairs. A magnitude of 0.0 indicates a pause.
+  * haptic-manager: New object to handle the Haptic DBus interface.
+    The API has lower priority than the event based API to e.g.  not miss
+    incoming phone calls or cell broadast messages.
+  * feedback-manager: Instantiate .Haptic DBus interface.
+    Make the haptic interface available on the Bus when a haptic
+    motor is found at daemon startup.
+    Closes: https://source.puri.sm/Librem5/feedbackd/-/issues/80
+  * README: Document new API
+
+  [ Dang Huynh ]
+  * fbd-ledctrl: Add null pointer check for groups.
+    The set_perms function does not check if getgrnam returns a null
+    pointer.
+    This causes the fbd-ledctrl to crash when a non-existent group is
+    passed.
+
+ -- Guido Günther <agx@sigxcpu.org>  Sat, 21 Dec 2024 11:07:33 +0100
+
 feedbackd (0.5.0) experimental; urgency=medium
 
   [ Guido Günther ]
