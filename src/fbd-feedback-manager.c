@@ -376,14 +376,32 @@ parse_hints (GVariant                *hints,
  * Returns: `TRUE` if at least on feedback was added.
  */
 static gboolean
-add_event_feedbacks (FbdFeedbackManager *self, FbdEvent *event, GSList *feedbacks)
+add_event_feedbacks (FbdFeedbackManager      *self,
+                     FbdEvent                *event,
+                     GSList                  *feedbacks,
+                     FbdFeedbackProfileLevel  level,
+                     const char              *sound_file)
 {
-  gboolean has_vibra = FALSE;
+  gboolean has_vibra = FALSE, has_sound = FALSE;
+
+  /* Synthesize sound event for custom sound */
+  if (sound_file && level >= FBD_FEEDBACK_PROFILE_LEVEL_FULL) {
+    g_autoptr (FbdFeedbackSound) sound = NULL;
+
+    g_debug ("Using custom sound event '%s'", sound_file);
+    sound = fbd_feedback_sound_new_from_file_name (sound_file);
+
+    fbd_event_add_feedback (event, FBD_FEEDBACK_BASE (sound));
+    has_sound = TRUE;
+  }
 
   for (GSList *l = feedbacks; l; l = l->next) {
     FbdFeedbackBase *fb = FBD_FEEDBACK_BASE (l->data);
 
     if (!fbd_feedback_is_available (FBD_FEEDBACK_BASE (fb)))
+      continue;
+
+    if (FBD_IS_FEEDBACK_SOUND (fb) && has_sound)
       continue;
 
     /* Handle one haptic feedback at a time. In practice haptics can handle multiple
@@ -464,7 +482,7 @@ fbd_feedback_manager_handle_trigger_feedback (LfbGdbusFeedback      *object,
   level = fbd_feedback_manager_get_effective_level (self, arg_app_id, hint_level, hint_important);
 
   feedbacks = fbd_feedback_theme_lookup_feedback (self->theme, level, event);
-  found_fb = add_event_feedbacks (self, event, feedbacks);
+  found_fb = add_event_feedbacks (self, event, feedbacks, level, sound_file);
   if (feedbacks)
     g_slist_free_full (feedbacks, g_object_unref);
 
