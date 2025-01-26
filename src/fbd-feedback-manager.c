@@ -380,24 +380,24 @@ add_event_feedbacks (FbdFeedbackManager *self, FbdEvent *event, GSList *feedback
   for (GSList *l = feedbacks; l; l = l->next) {
     FbdFeedbackBase *fb = FBD_FEEDBACK_BASE (l->data);
 
-    if (fbd_feedback_is_available (FBD_FEEDBACK_BASE (fb))) {
-      /* Handle one haptic feedback at a time. In practice haptics can handle multiple
-       * patterns but none of the devices supports this atm */
-      /* TODO: should respect priorities */
-      if (FBD_IS_FEEDBACK_VIBRA (fb)) {
-        if (fbd_dev_vibra_is_busy (self->vibra))
-          continue;
-        has_vibra = TRUE;
-      }
+    if (!fbd_feedback_is_available (FBD_FEEDBACK_BASE (fb)))
+      continue;
 
-      fbd_event_add_feedback (event, fb);
-
-      /* Events take priority over the haptic interface */
-      if (has_vibra)
-        fbd_haptic_manager_end_feedback (self->haptic_manager);
-
-      found_fb = TRUE;
+    /* Handle one haptic feedback at a time. In practice haptics can handle multiple
+     * patterns but none of the devices supports this atm */
+    /* TODO: should respect priorities */
+    if (FBD_IS_FEEDBACK_VIBRA (fb)) {
+      if (fbd_dev_vibra_is_busy (self->vibra))
+        continue;
+      has_vibra = TRUE;
     }
+
+    /* Events take priority over the haptic interface */
+    if (has_vibra)
+      fbd_haptic_manager_end_feedback (self->haptic_manager);
+
+    fbd_event_add_feedback (event, fb);
+    found_fb = TRUE;
   }
 
   return found_fb;
