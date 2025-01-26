@@ -176,14 +176,16 @@ on_sound_play_finished_callback (GSoundContext *ctx,
   g_autoptr (GError) err = NULL;
 
   if (!gsound_context_play_full_finish (ctx, res, &err)) {
+    const char *sound = fbd_feedback_sound_get_file_name (data->feedback);
+    if (!sound)
+      sound = fbd_feedback_sound_get_effect (data->feedback);
+
     if (err->domain == GSOUND_ERROR && err->code == GSOUND_ERROR_NOTFOUND) {
-      g_debug ("Failed to find sound '%s'", fbd_feedback_sound_get_effect (data->feedback));
+      g_debug ("Failed to find sound '%s'", sound);
     } else if (g_error_matches (err, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
-      g_debug ("Sound '%s' cancelled", fbd_feedback_sound_get_effect (data->feedback));
+      g_debug ("Sound '%s' cancelled", sound);
     } else {
-      g_warning ("Failed to play sound '%s': %s",
-		 fbd_feedback_sound_get_effect (data->feedback),
-		 err->message);
+      g_warning ("Failed to play sound '%s': %s", sound, err->message);
     }
   }
 
@@ -200,6 +202,7 @@ gboolean
 fbd_dev_sound_play (FbdDevSound *self, FbdFeedbackSound *feedback, FbdDevSoundPlayedCallback callback)
 {
   FbdAsyncData *data;
+  const char *filename;
 
   g_return_val_if_fail (FBD_IS_DEV_SOUND (self), FALSE);
   g_return_val_if_fail (GSOUND_IS_CONTEXT (self->ctx), FALSE);
@@ -209,13 +212,24 @@ fbd_dev_sound_play (FbdDevSound *self, FbdFeedbackSound *feedback, FbdDevSoundPl
   if (!g_hash_table_insert (self->playbacks, feedback, data))
     g_warning ("Feedback %p already present", feedback);
 
-  gsound_context_play_full (self->ctx, data->cancel,
-                            (GAsyncReadyCallback) on_sound_play_finished_callback,
-                            data,
-                            GSOUND_ATTR_EVENT_ID, fbd_feedback_sound_get_effect (feedback),
-                            GSOUND_ATTR_EVENT_DESCRIPTION, "Feedbackd sound feedback",
-                            GSOUND_ATTR_MEDIA_ROLE, "event",
-                            NULL);
+  filename = fbd_feedback_sound_get_file_name (feedback);
+  if (filename) {
+    gsound_context_play_full (self->ctx, data->cancel,
+                              (GAsyncReadyCallback) on_sound_play_finished_callback,
+                              data,
+                              GSOUND_ATTR_MEDIA_FILENAME, filename,
+                              GSOUND_ATTR_EVENT_DESCRIPTION, "Feedbackd custom sound feedback",
+                              GSOUND_ATTR_MEDIA_ROLE, "event",
+                              NULL);
+  } else {
+    gsound_context_play_full (self->ctx, data->cancel,
+                              (GAsyncReadyCallback) on_sound_play_finished_callback,
+                              data,
+                              GSOUND_ATTR_EVENT_ID, fbd_feedback_sound_get_effect (feedback),
+                              GSOUND_ATTR_EVENT_DESCRIPTION, "Feedbackd sound feedback",
+                              GSOUND_ATTR_MEDIA_ROLE, "event",
+                              NULL);
+  }
   return TRUE;
 }
 
