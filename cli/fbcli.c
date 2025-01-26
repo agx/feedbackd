@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2020 Purism SPC
- *               2023-2024 The Phosh Developers
+ *               2023-2025 The Phosh Developers
  *
  * SPDX-License-Identifier: GPL-3.0+
  * Author: Guido Günther <agx@sigxcpu.org>
@@ -60,7 +60,11 @@ on_user_input (GIOChannel *channel, GIOCondition cond, LfbEvent *event)
 }
 
 static gboolean
-trigger_event (const char *name, const gchar *profile, gboolean important, gint timeout)
+trigger_event (const char  *name,
+               const char  *profile,
+               gboolean     important,
+               gint         timeout,
+               const char  *sound_file)
 {
   g_autoptr (GError) err = NULL;
   g_autoptr (LfbEvent) event = NULL;
@@ -78,6 +82,9 @@ trigger_event (const char *name, const gchar *profile, gboolean important, gint 
 
   if (important)
     lfb_event_set_important (event, TRUE);
+
+  if (sound_file)
+    lfb_event_set_sound_file(event, sound_file);
 
   g_signal_connect (event, "feedback-ended", (GCallback)on_feedback_ended, &success);
   if (!lfb_event_trigger_feedback (event, &err)) {
@@ -140,6 +147,7 @@ main (int argc, char *argv[0])
   g_autoptr (GError) err = NULL;
   g_autofree char *profile = NULL;
   g_autofree char *app_id = NULL;
+  g_autofree char *sound_file = NULL;
   const char *name = NULL;
   gboolean success, important = FALSE;
   int watch = 30;
@@ -157,6 +165,8 @@ main (int argc, char *argv[0])
      "How long to watch for feedback longest", NULL},
     {"app-id", 'A', 0, G_OPTION_ARG_STRING, &app_id,
      "Override used application id"},
+    {"sound-file", 'S', 0, G_OPTION_ARG_STRING, &sound_file,
+     "Override the sound effect used by a file"},
     { NULL, 0, 0, G_OPTION_ARG_NONE, NULL, NULL, NULL }
   };
 
@@ -183,7 +193,7 @@ main (int argc, char *argv[0])
       name = g_strdup (DEFAULT_EVENT);
 
     g_timeout_add_seconds (watch, (GSourceFunc)on_watch_expired, NULL);
-    success = trigger_event (name, profile, important, timeout);
+    success = trigger_event (name, profile, important, timeout, sound_file);
   }
 
   lfb_uninit ();
