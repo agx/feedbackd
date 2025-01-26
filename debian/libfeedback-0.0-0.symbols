@@ -34,6 +34,22 @@ libfeedback-0.0.so.0 libfeedback-0.0-0 #MINVER#
  lfb_gdbus_feedback_emit_feedback_ended@LIBFEEDBACK_0_0_0 0.1.1
  lfb_gdbus_feedback_get_profile@LIBFEEDBACK_0_0_0 0.1.1
  lfb_gdbus_feedback_get_type@LIBFEEDBACK_0_0_0 0.1.1
+ lfb_gdbus_feedback_haptic_call_vibrate@LIBFEEDBACK_0_0_0 0.6.0
+ lfb_gdbus_feedback_haptic_call_vibrate_finish@LIBFEEDBACK_0_0_0 0.6.0
+ lfb_gdbus_feedback_haptic_call_vibrate_sync@LIBFEEDBACK_0_0_0 0.6.0
+ lfb_gdbus_feedback_haptic_complete_vibrate@LIBFEEDBACK_0_0_0 0.6.0
+ lfb_gdbus_feedback_haptic_get_type@LIBFEEDBACK_0_0_0 0.6.0
+ lfb_gdbus_feedback_haptic_interface_info@LIBFEEDBACK_0_0_0 0.6.0
+ lfb_gdbus_feedback_haptic_override_properties@LIBFEEDBACK_0_0_0 0.6.0
+ lfb_gdbus_feedback_haptic_proxy_get_type@LIBFEEDBACK_0_0_0 0.6.0
+ lfb_gdbus_feedback_haptic_proxy_new@LIBFEEDBACK_0_0_0 0.6.0
+ lfb_gdbus_feedback_haptic_proxy_new_finish@LIBFEEDBACK_0_0_0 0.6.0
+ lfb_gdbus_feedback_haptic_proxy_new_for_bus@LIBFEEDBACK_0_0_0 0.6.0
+ lfb_gdbus_feedback_haptic_proxy_new_for_bus_finish@LIBFEEDBACK_0_0_0 0.6.0
+ lfb_gdbus_feedback_haptic_proxy_new_for_bus_sync@LIBFEEDBACK_0_0_0 0.6.0
+ lfb_gdbus_feedback_haptic_proxy_new_sync@LIBFEEDBACK_0_0_0 0.6.0
+ lfb_gdbus_feedback_haptic_skeleton_get_type@LIBFEEDBACK_0_0_0 0.6.0
+ lfb_gdbus_feedback_haptic_skeleton_new@LIBFEEDBACK_0_0_0 0.6.0
  lfb_gdbus_feedback_interface_info@LIBFEEDBACK_0_0_0 0.1.1
  lfb_gdbus_feedback_override_properties@LIBFEEDBACK_0_0_0 0.1.1
  lfb_gdbus_feedback_proxy_get_type@LIBFEEDBACK_0_0_0 0.1.1
