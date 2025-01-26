@@ -372,10 +372,6 @@ static gboolean
 add_event_feedbacks (FbdFeedbackManager *self, FbdEvent *event, GSList *feedbacks)
 {
   gboolean has_vibra = FALSE;
-  gboolean found_fb = FALSE;
-
-  if (!feedbacks)
-    return FALSE;
 
   for (GSList *l = feedbacks; l; l = l->next) {
     FbdFeedbackBase *fb = FBD_FEEDBACK_BASE (l->data);
@@ -397,10 +393,9 @@ add_event_feedbacks (FbdFeedbackManager *self, FbdEvent *event, GSList *feedback
       fbd_haptic_manager_end_feedback (self->haptic_manager);
 
     fbd_event_add_feedback (event, fb);
-    found_fb = TRUE;
   }
 
-  return found_fb;
+  return (fbd_event_get_feedbacks (event) != NULL);
 }
 
 
