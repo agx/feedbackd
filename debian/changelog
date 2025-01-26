@@ -1,3 +1,9 @@
+feedbackd (0.7.0~dev) UNRELEASED; urgency=medium
+
+  * Unreleased
+
+ -- Guido Günther <agx@sigxcpu.org>  Sun, 26 Jan 2025 14:07:50 +0100
+
 feedbackd (0.6.0) experimental; urgency=medium
 
   [ Guido Günther ]
