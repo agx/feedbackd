@@ -10,6 +10,7 @@ libfeedback-0.0.so.0 libfeedback-0.0-0 #MINVER#
  lfb_event_get_event@LIBFEEDBACK_0_0_0 0.1.1
  lfb_event_get_feedback_profile@LIBFEEDBACK_0_0_0 0.1.1
  lfb_event_get_important@LIBFEEDBACK_0_0_0 0.2.1
+ lfb_event_get_sound_file@LIBFEEDBACK_0_0_0 0.7.0~
  lfb_event_get_state@LIBFEEDBACK_0_0_0 0.1.1
  lfb_event_get_timeout@LIBFEEDBACK_0_0_0 0.1.1
  lfb_event_get_type@LIBFEEDBACK_0_0_0 0.1.1
@@ -17,6 +18,7 @@ libfeedback-0.0.so.0 libfeedback-0.0-0 #MINVER#
  lfb_event_set_app_id@LIBFEEDBACK_0_0_0 0.2.0
  lfb_event_set_feedback_profile@LIBFEEDBACK_0_0_0 0.1.1
  lfb_event_set_important@LIBFEEDBACK_0_0_0 0.2.1
+ lfb_event_set_sound_file@LIBFEEDBACK_0_0_0 0.7.0~
  lfb_event_set_timeout@LIBFEEDBACK_0_0_0 0.1.1
  lfb_event_state_get_type@LIBFEEDBACK_0_0_0 0.1.1
  lfb_event_trigger_feedback@LIBFEEDBACK_0_0_0 0.1.1
