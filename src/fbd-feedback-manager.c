@@ -342,9 +342,12 @@ get_max_level (FbdFeedbackProfileLevel global_level,
 }
 
 static gboolean
-parse_hints (GVariant *hints, FbdFeedbackProfileLevel *level, gboolean *hint_important)
+parse_hints (GVariant                *hints,
+             FbdFeedbackProfileLevel *level,
+             gboolean                *hint_important,
+             char                   **hint_sound_file)
 {
-  const gchar *profile;
+  const gchar *profile, *sound_file;
   gboolean found, important;
   g_auto (GVariantDict) dict = G_VARIANT_DICT_INIT (NULL);
 
@@ -357,6 +360,10 @@ parse_hints (GVariant *hints, FbdFeedbackProfileLevel *level, gboolean *hint_imp
   found = g_variant_dict_lookup (&dict, "important", "b", &important);
   if (hint_important && found)
     *hint_important = important;
+
+  found = g_variant_dict_lookup (&dict, "sound-file", "&s", &sound_file);
+  if (hint_sound_file && found)
+    *hint_sound_file = g_strdup (sound_file);
 
   return TRUE;
 }
@@ -415,6 +422,7 @@ fbd_feedback_manager_handle_trigger_feedback (LfbGdbusFeedback      *object,
   FbdFeedbackProfileLevel level, hint_level = FBD_FEEDBACK_PROFILE_LEVEL_FULL;
   gboolean found_fb = FALSE;
   gboolean hint_important = FALSE;
+  g_autofree char *sound_file = NULL;
 
   sender = g_dbus_method_invocation_get_sender (invocation);
   g_debug ("Event '%s' for '%s' from %s", arg_event, arg_app_id, sender);
@@ -438,7 +446,7 @@ fbd_feedback_manager_handle_trigger_feedback (LfbGdbusFeedback      *object,
     return TRUE;
   }
 
-  if (!parse_hints (arg_hints, &hint_level, &hint_important)) {
+  if (!parse_hints (arg_hints, &hint_level, &hint_important, &sound_file)) {
     g_dbus_method_invocation_return_error (invocation, G_DBUS_ERROR,
                                            G_DBUS_ERROR_INVALID_ARGS,
                                            "Invalid hints");
