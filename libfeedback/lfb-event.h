@@ -80,6 +80,8 @@ gboolean    lfb_event_get_important (LfbEvent *self);
 void        lfb_event_set_app_id (LfbEvent *self, const char *app_id);
 const char *lfb_event_get_app_id (LfbEvent *self);
 const char *lfb_event_get_event (LfbEvent *self);
+void        lfb_event_set_sound_file (LfbEvent *self, const char *sound_file);
+const char *lfb_event_get_sound_file (LfbEvent *self);
 
 LfbEventState     lfb_event_get_state (LfbEvent *self);
 LfbEventEndReason lfb_event_get_end_reason (LfbEvent *self);

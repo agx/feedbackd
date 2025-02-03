@@ -26,7 +26,11 @@
             Together with the 'profile' hint this allows to trigger feedback for events
             that would otherwise be disabled. A typical use case is an alarm clock. Note
             that the feedback daemon (depending on it's configuration) might ignore this flag.
-        @timeout: When the feedbacks for this event should end latest in seconds. The special values '-1' (just run each feedback once) and '0' (endless loop) are also supported.
+          - sound-file: A custom sound file to play. This file will be used instead of any
+            sound event specified in the "full" profile. The sound will only be played if
+            appropriate for the feedback level of the event.
+        @timeout: When the feedbacks for this event should end latest in seconds. The special
+            values '-1' (just run each feedback once) and '0' (endless loop) are also supported.
 	@id: Event id for future reference
 
         Give user feedback for an event by triggering feedbacks

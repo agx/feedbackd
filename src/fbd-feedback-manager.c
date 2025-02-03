@@ -1,5 +1,7 @@
 /*
  * Copyright (C) 2020 Purism SPC
+ *               2024-2025 The Phosh Developers
+ *
  * SPDX-License-Identifier: GPL-3.0+
  * Author: Guido Günther <agx@sigxcpu.org>
  */
@@ -340,9 +342,12 @@ get_max_level (FbdFeedbackProfileLevel global_level,
 }
 
 static gboolean
-parse_hints (GVariant *hints, FbdFeedbackProfileLevel *level, gboolean *hint_important)
+parse_hints (GVariant                *hints,
+             FbdFeedbackProfileLevel *level,
+             gboolean                *hint_important,
+             char                   **hint_sound_file)
 {
-  const gchar *profile;
+  const gchar *profile, *sound_file;
   gboolean found, important;
   g_auto (GVariantDict) dict = G_VARIANT_DICT_INIT (NULL);
 
@@ -356,7 +361,66 @@ parse_hints (GVariant *hints, FbdFeedbackProfileLevel *level, gboolean *hint_imp
   if (hint_important && found)
     *hint_important = important;
 
+  found = g_variant_dict_lookup (&dict, "sound-file", "&s", &sound_file);
+  if (hint_sound_file && found)
+    *hint_sound_file = g_strdup (sound_file);
+
   return TRUE;
+}
+
+/**
+ * add_event_feedbacks:
+ *
+ * Add the suitable feedacks to the event.
+ *
+ * Returns: `TRUE` if at least on feedback was added.
+ */
+static gboolean
+add_event_feedbacks (FbdFeedbackManager      *self,
+                     FbdEvent                *event,
+                     GSList                  *feedbacks,
+                     FbdFeedbackProfileLevel  level,
+                     const char              *sound_file)
+{
+  gboolean has_vibra = FALSE, has_sound = FALSE;
+
+  /* Synthesize sound event for custom sound */
+  if (sound_file && level >= FBD_FEEDBACK_PROFILE_LEVEL_FULL) {
+    g_autoptr (FbdFeedbackSound) sound = NULL;
+
+    g_debug ("Using custom sound event '%s'", sound_file);
+    sound = fbd_feedback_sound_new_from_file_name (sound_file);
+
+    fbd_event_add_feedback (event, FBD_FEEDBACK_BASE (sound));
+    has_sound = TRUE;
+  }
+
+  for (GSList *l = feedbacks; l; l = l->next) {
+    FbdFeedbackBase *fb = FBD_FEEDBACK_BASE (l->data);
+
+    if (!fbd_feedback_is_available (FBD_FEEDBACK_BASE (fb)))
+      continue;
+
+    if (FBD_IS_FEEDBACK_SOUND (fb) && has_sound)
+      continue;
+
+    /* Handle one haptic feedback at a time. In practice haptics can handle multiple
+     * patterns but none of the devices supports this atm */
+    /* TODO: should respect priorities */
+    if (FBD_IS_FEEDBACK_VIBRA (fb)) {
+      if (fbd_dev_vibra_is_busy (self->vibra))
+        continue;
+      has_vibra = TRUE;
+    }
+
+    /* Events take priority over the haptic interface */
+    if (has_vibra)
+      fbd_haptic_manager_end_feedback (self->haptic_manager);
+
+    fbd_event_add_feedback (event, fb);
+  }
+
+  return (fbd_event_get_feedbacks (event) != NULL);
 }
 
 
@@ -370,12 +434,13 @@ fbd_feedback_manager_handle_trigger_feedback (LfbGdbusFeedback      *object,
 {
   FbdFeedbackManager *self;
   FbdEvent *event;
-  GSList *feedbacks, *l;
+  GSList *feedbacks;
   guint event_id;
   const gchar *sender;
   FbdFeedbackProfileLevel level, hint_level = FBD_FEEDBACK_PROFILE_LEVEL_FULL;
   gboolean found_fb = FALSE;
   gboolean hint_important = FALSE;
+  g_autofree char *sound_file = NULL;
 
   sender = g_dbus_method_invocation_get_sender (invocation);
   g_debug ("Event '%s' for '%s' from %s", arg_event, arg_app_id, sender);
@@ -399,7 +464,7 @@ fbd_feedback_manager_handle_trigger_feedback (LfbGdbusFeedback      *object,
     return TRUE;
   }
 
-  if (!parse_hints (arg_hints, &hint_level, &hint_important)) {
+  if (!parse_hints (arg_hints, &hint_level, &hint_important, &sound_file)) {
     g_dbus_method_invocation_return_error (invocation, G_DBUS_ERROR,
                                            G_DBUS_ERROR_INVALID_ARGS,
                                            "Invalid hints");
@@ -415,38 +480,11 @@ fbd_feedback_manager_handle_trigger_feedback (LfbGdbusFeedback      *object,
   g_hash_table_insert (self->events, GUINT_TO_POINTER (event_id), event);
 
   level = fbd_feedback_manager_get_effective_level (self, arg_app_id, hint_level, hint_important);
+
   feedbacks = fbd_feedback_theme_lookup_feedback (self->theme, level, event);
-
-  if (feedbacks) {
-    gboolean has_vibra = FALSE;
-
-    for (l = feedbacks; l; l = l->next) {
-      FbdFeedbackBase *fb = FBD_FEEDBACK_BASE (l->data);
-
-      if (fbd_feedback_is_available (FBD_FEEDBACK_BASE (fb))) {
-        /* Handle one haptic feedback at a time. In practice haptics can handle multiple
-         * patterns but none of the devices supports this atm */
-        /* TODO: should respect priorities */
-        if (FBD_IS_FEEDBACK_VIBRA (fb)) {
-          if (fbd_dev_vibra_is_busy (self->vibra))
-            continue;
-          has_vibra = TRUE;
-        }
-
-        fbd_event_add_feedback (event, fb);
-
-        /* Events take priority over the haptic interface */
-        if (has_vibra)
-          fbd_haptic_manager_end_feedback (self->haptic_manager);
-
-        found_fb = TRUE;
-      }
-    }
+  found_fb = add_event_feedbacks (self, event, feedbacks, level, sound_file);
+  if (feedbacks)
     g_slist_free_full (feedbacks, g_object_unref);
-  } else {
-    /* No feedbacks found at all */
-    found_fb = FALSE;
-  }
 
   lfb_gdbus_feedback_complete_trigger_feedback (object, invocation, event_id);
 

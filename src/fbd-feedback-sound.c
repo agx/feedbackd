@@ -23,6 +23,7 @@
 enum {
   PROP_0,
   PROP_EFFECT,
+  PROP_FILE_NAME,
   PROP_LAST_PROP,
 };
 static GParamSpec *props[PROP_LAST_PROP];
@@ -30,7 +31,8 @@ static GParamSpec *props[PROP_LAST_PROP];
 typedef struct _FbdFeedbackSound {
   FbdFeedbackBase parent;
 
-  gchar *effect;
+  char           *effect;
+  char           *file_name;
 } FbdFeedbackSound;
 
 G_DEFINE_TYPE (FbdFeedbackSound, fbd_feedback_sound, FBD_TYPE_FEEDBACK_BASE);
@@ -86,6 +88,9 @@ fbd_feedback_sound_set_property (GObject      *object,
   case PROP_EFFECT:
     self->effect = g_value_dup_string (value);
     break;
+  case PROP_FILE_NAME:
+    self->file_name = g_value_dup_string (value);
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
     break;
@@ -104,6 +109,9 @@ fbd_feedback_sound_get_property (GObject    *object,
   case PROP_EFFECT:
     g_value_set_string (value, fbd_feedback_sound_get_effect (self));
     break;
+  case PROP_FILE_NAME:
+    g_value_set_string (value, fbd_feedback_sound_get_file_name (self));
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
     break;
@@ -116,6 +124,7 @@ fbd_feedback_sound_finalize (GObject *object)
   FbdFeedbackSound *self = FBD_FEEDBACK_SOUND (object);
 
   g_clear_pointer (&self->effect, g_free);
+  g_clear_pointer (&self->file_name, g_free);
 
   G_OBJECT_CLASS (fbd_feedback_sound_parent_class)->finalize (object);
 }
@@ -142,6 +151,11 @@ fbd_feedback_sound_class_init (FbdFeedbackSoundClass *klass)
       "",
       G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
+  props[PROP_FILE_NAME] =
+    g_param_spec_string ("file-name", "", "",
+                         NULL,
+                         G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
   g_object_class_install_properties (object_class, PROP_LAST_PROP, props);
 }
 
@@ -150,7 +164,22 @@ fbd_feedback_sound_init (FbdFeedbackSound *self)
 {
 }
 
-const char *fbd_feedback_sound_get_effect (FbdFeedbackSound *self)
+
+FbdFeedbackSound *
+fbd_feedback_sound_new_from_file_name (const char *filename)
+{
+  return g_object_new (FBD_TYPE_FEEDBACK_SOUND, "file-name", filename, NULL);
+}
+
+
+const char *
+fbd_feedback_sound_get_effect (FbdFeedbackSound *self)
 {
   return self->effect;
+}
+
+const char *
+fbd_feedback_sound_get_file_name (FbdFeedbackSound *self)
+{
+  return self->file_name;
 }

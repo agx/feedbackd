@@ -1,5 +1,7 @@
 /*
  * Copyright (C) 2020 Purism SPC
+ *               2024-2025 The Phosh Developers
+ *
  * SPDX-License-Identifier: LGPL-2.1+
  * Author: Guido Günther <agx@sigxcpu.org>
  */
@@ -81,6 +83,7 @@ enum {
   PROP_FEEDBACK_PROFILE,
   PROP_IMPORTANT,
   PROP_APP_ID,
+  PROP_SOUND_FILE,
   PROP_LAST_PROP,
 };
 static GParamSpec *props[PROP_LAST_PROP];
@@ -99,6 +102,7 @@ typedef struct _LfbEvent {
   gchar         *profile;
   gboolean       important;
   char          *app_id;
+  char          *sound_file;
 
   guint          id;
   LfbEventState  state;
@@ -139,10 +143,18 @@ build_hints (LfbEvent *self)
   GVariantBuilder hints_builder;
 
   g_variant_builder_init (&hints_builder, G_VARIANT_TYPE ("a{sv}"));
-  if (self->profile)
-    g_variant_builder_add (&hints_builder, "{sv}", "profile", g_variant_new_string (self->profile));
-  if (self->important)
-    g_variant_builder_add (&hints_builder, "{sv}", "important", g_variant_new_boolean (self->important));
+  if (self->profile) {
+    g_variant_builder_add (&hints_builder, "{sv}", "profile",
+                           g_variant_new_string (self->profile));
+  }
+  if (self->important) {
+    g_variant_builder_add (&hints_builder, "{sv}", "important",
+                           g_variant_new_boolean (self->important));
+  }
+  if (self->sound_file) {
+    g_variant_builder_add (&hints_builder, "{sv}", "sound-file",
+                           g_variant_new_string (self->sound_file));
+  }
   return g_variant_builder_end (&hints_builder);
 }
 
@@ -233,6 +245,9 @@ lfb_event_set_property (GObject      *object,
   case PROP_APP_ID:
     lfb_event_set_app_id (self, g_value_get_string (value));
     break;
+  case PROP_SOUND_FILE:
+    lfb_event_set_sound_file (self, g_value_get_string (value));
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
     break;
@@ -264,6 +279,9 @@ lfb_event_get_property (GObject    *object,
   case PROP_APP_ID:
     g_value_set_string (value, lfb_event_get_app_id (self));
     break;
+  case PROP_SOUND_FILE:
+    g_value_set_string (value, lfb_event_get_sound_file (self));
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
     break;
@@ -278,6 +296,7 @@ lfb_event_finalize (GObject *object)
   /* Signal handler is disconnected automatically due to g_signal_connect_object */
   self->handler_id = 0;
 
+  g_clear_pointer (&self->sound_file, g_free);
   g_clear_pointer (&self->event, g_free);
   g_clear_pointer (&self->profile, g_free);
   g_clear_pointer (&self->app_id, g_free);
@@ -340,7 +359,6 @@ lfb_event_class_init (LfbEventClass *klass)
       LFB_TYPE_EVENT_END_REASON,
       LFB_EVENT_END_REASON_NATURAL,
       G_PARAM_READABLE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
-
   /**
    * LfbEvent:feedback-profile:
    *
@@ -354,7 +372,6 @@ lfb_event_class_init (LfbEventClass *klass)
       "Feedback profile to use for this event",
       NULL,
       G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
-
   /**
    * LfbEvent:important:
    *
@@ -368,7 +385,6 @@ lfb_event_class_init (LfbEventClass *klass)
       "Whether to flags this event as important",
       FALSE,
       G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
-
   /**
    * LfbEvent:app-id:
    *
@@ -380,6 +396,19 @@ lfb_event_class_init (LfbEventClass *klass)
       "app-id",
       "Application Id",
       "The Application id to use for this event",
+      NULL,
+      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+  /**
+   * LfbEvent:sound-file:
+   *
+   * A custom sound-file to play. See [method@LfbEvent.set_sound_file]
+   * for details.
+   */
+  props[PROP_SOUND_FILE] =
+    g_param_spec_string (
+      "sound-file",
+      "Sound file",
+      "Custom sound file to play",
       NULL,
       G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
@@ -862,4 +891,45 @@ lfb_event_get_app_id (LfbEvent *self)
   g_return_val_if_fail (LFB_IS_EVENT (self), NULL);
 
   return self->app_id;
+}
+
+/**
+ * lfb_event_set_sound_file:
+ * @self: The event
+ * @sound_file: The sound file
+ *
+ * Tells the feedback server to use the given sound file if a sound is
+ * to be played. It will only be used if sound is suitable for the
+ * events feedback level.
+ *
+ * A value of %NULL (the default) lets the server pick the sound
+ * based on the event.
+ */
+void
+lfb_event_set_sound_file (LfbEvent *self, const gchar *sound_file)
+{
+  g_return_if_fail (LFB_IS_EVENT (self));
+
+  if (!g_strcmp0 (self->sound_file, sound_file))
+    return;
+
+  g_free (self->sound_file);
+  self->sound_file = g_strdup (sound_file);
+  g_object_notify_by_pspec (G_OBJECT (self), props[PROP_SOUND_FILE]);
+}
+
+/**
+ * lfb_event_get_sound_file:
+ * @self: The event
+ *
+ * Returns the sound file for this event if set.
+ *
+ * Returns:(transfer none): The set sound file for this event or %NULL.
+ */
+const char *
+lfb_event_get_sound_file (LfbEvent *self)
+{
+  g_return_val_if_fail (LFB_IS_EVENT (self), NULL);
+
+  return self->sound_file;
 }

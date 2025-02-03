@@ -15,6 +15,7 @@ test_lfb_event_props (void)
   g_autofree gchar *evname = NULL;
   g_autofree gchar *profile = NULL;
   g_autofree gchar *app_id = NULL;
+  g_autofree gchar *sound_file = NULL;
   gboolean important;
   gint timeout;
 
@@ -29,12 +30,14 @@ test_lfb_event_props (void)
                 "feedback-profile", &profile,
                 "app-id", &app_id,
                 "important", &important,
+                "sound-file", &sound_file,
                 NULL);
   g_assert_cmpstr (evname, ==, "window-close");
   g_assert_cmpint (timeout, ==, -1);
   g_assert_null (profile);
   g_assert_false (important);
   g_assert_null (app_id);
+  g_assert_null (sound_file);
 
   g_assert_cmpint (lfb_event_get_end_reason (event), ==, LFB_EVENT_END_REASON_NATURAL);
   g_assert_cmpint (lfb_event_get_state (event), ==, LFB_EVENT_STATE_NONE);
@@ -48,6 +51,11 @@ test_lfb_event_props (void)
   g_object_get (event, "app-id", &app_id, NULL);
   g_assert_cmpstr (app_id, ==, "com.example.foo");
   g_assert_cmpstr (lfb_event_get_app_id (event), ==, "com.example.foo");
+
+  g_object_set (event, "sound-file", "/does/not/exist", NULL);
+  g_object_get (event, "sound-file", &sound_file, NULL);
+  g_assert_cmpstr (sound_file, ==, "/does/not/exist");
+  g_assert_cmpstr (lfb_event_get_sound_file (event), ==, "/does/not/exist");
 
   lfb_uninit ();
 }
