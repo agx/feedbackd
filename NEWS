@@ -1,3 +1,13 @@
+feedbackd 0.7.0
+---------------
+Released February 2025
+* Allow clients to pass a custom sound file for events. Useful for custom
+  ring tone feedback or custom notification sounds.
+* Issues fixed:
+    * https://source.puri.sm/Librem5/feedbackd/-/issues/81
+* Contributors:
+    * Guido Günther
+
 feedbackd 0.6.0
 ---------------
 Released December 2024

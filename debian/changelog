@@ -1,8 +1,33 @@
-feedbackd (0.7.0~dev) UNRELEASED; urgency=medium
+feedbackd (0.7.0) experimental; urgency=medium
 
-  * Unreleased
+  * packaging: Add symbols from 0.6.0
+  * dir-locals: Set display column
+  * feedback-manager: Split out event feedback preparation.
+    It's becoming gradually more complex so move it to a separate function.
+  * feedback-manager: Improve readability of add_event_feedbacks()
+    Save one indent level and add the feedback at the very end. This
+    makes extending easier.
+  * feedback-manager: Drop fb_found boolean.
+    Just check the elements on the event list. This makes it easier to
+    extend as we can't forget to toggle the variable.
+  * data: Document sound-file hint
+  * libfeedback: Allow to set sound-file hint
+  * fbd-feedback-sound: Allow to set file name.
+    This will be preferred over "effect" when set.
+  * fbd-dev-sound: Play custom sound file if specified
+  * feedback-manager: Parse sound file hint
+  * feedback-manager: Add sound feedback for custom sound file.
+    If a custom sound is provided for the event, use that instead of the one
+    from the theme. We always add the sound event, even when the theme
+    doesn't have sound feedback for that event honoring the users choice.
+    Closes: https://source.puri.sm/Librem5/feedbackd/-/merge_requests/150
+  * cli: Allow to provide custom sound file
+  * build: Bump dev versions.
+    Allows us to bump symbols and have proper dependencies in consuming
+    projects
+  * packaging: Add symbols from 0.7.0
 
- -- Guido Günther <agx@sigxcpu.org>  Sun, 26 Jan 2025 14:07:50 +0100
+ -- Guido Günther <agx@sigxcpu.org>  Mon, 03 Feb 2025 14:08:12 +0100
 
 feedbackd (0.6.0) experimental; urgency=medium
 
