@@ -168,7 +168,12 @@ color_string_to_color (const char *color, gboolean prefer_flash, FbdLedRgbColor 
 static void
 on_prefer_flash_changed (FbdFeedbackLed *self)
 {
-  self->prefer_flash = g_settings_get_boolean (self->settings, "prefer-flash");
+  gboolean prefer_flash = g_settings_get_boolean (self->settings, "prefer-flash");
+
+  if (self->prefer_flash && !prefer_flash)
+    fbd_feedback_end (FBD_FEEDBACK_BASE (self));
+
+  self->prefer_flash = prefer_flash;
   g_debug ("Prefer flash: %d", self->prefer_flash);
 }
 
