@@ -157,6 +157,7 @@ on_timer_expired (gpointer data)
   self->pos++;
 
   if (self->pos == self->durations->len) {
+    self->pos = 0;
     self->timer_id = 0;
     return;
   }
@@ -172,10 +173,8 @@ fbd_feedback_vibra_pattern_end_vibra (FbdFeedbackVibra *vibra)
   FbdFeedbackManager *manager = fbd_feedback_manager_get_default ();
   FbdDevVibra *dev = fbd_feedback_manager_get_dev_vibra (manager);
 
-  if (self->timer_id) {
-    self->pos = 0;
-    g_clear_handle_id (&self->timer_id, g_source_remove);
-  }
+  self->pos = 0;
+  g_clear_handle_id (&self->timer_id, g_source_remove);
 
   fbd_dev_vibra_stop (dev);
 }
