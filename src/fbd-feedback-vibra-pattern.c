@@ -192,7 +192,9 @@ fbd_feedback_vibra_pattern_start_vibra (FbdFeedbackVibra *vibra)
   g_return_if_fail (self->magnitudes);
   g_return_if_fail (self->durations);
   g_return_if_fail (self->durations->len == self->magnitudes->len);
-  g_return_if_fail (self->pos == 0);
+
+  if (self->pos)
+    fbd_feedback_vibra_pattern_end_vibra (FBD_FEEDBACK_VIBRA (self));
 
   g_debug ("Pattern Vibra: %u elements", self->durations->len);
 
