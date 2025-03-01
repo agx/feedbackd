@@ -176,7 +176,8 @@ fbd_feedback_vibra_pattern_end_vibra (FbdFeedbackVibra *vibra)
   self->pos = 0;
   g_clear_handle_id (&self->timer_id, g_source_remove);
 
-  fbd_dev_vibra_stop (dev);
+  if (dev)
+    fbd_dev_vibra_stop (dev);
 }
 
 
