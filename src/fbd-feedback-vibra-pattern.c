@@ -13,6 +13,8 @@
 #include "fbd-feedback-vibra-priv.h"
 #include "fbd-feedback-manager.h"
 
+#include <json-glib/json-glib.h>
+
 /**
  * FbdFeedbackVibraPattern:
  *
@@ -41,7 +43,68 @@ typedef struct _FbdFeedbackVibraPattern {
   guint            timer_id;
 } FbdFeedbackVibraPattern;
 
-G_DEFINE_TYPE (FbdFeedbackVibraPattern, fbd_feedback_vibra_pattern, FBD_TYPE_FEEDBACK_VIBRA);
+static void json_serializable_iface_init (JsonSerializableIface *iface);
+
+G_DEFINE_TYPE_WITH_CODE (FbdFeedbackVibraPattern, fbd_feedback_vibra_pattern,
+                         FBD_TYPE_FEEDBACK_VIBRA,
+                         G_IMPLEMENT_INTERFACE (JSON_TYPE_SERIALIZABLE,
+                                                json_serializable_iface_init));
+
+
+static gboolean
+fbd_feedback_vibra_pattern_serializable_deserialize_property (JsonSerializable *serializable,
+                                                              const gchar *property_name,
+                                                              GValue *value,
+                                                              GParamSpec *pspec,
+                                                              JsonNode *property_node)
+{
+  if (g_strcmp0 (property_name, "magnitudes") == 0) {
+    if (JSON_NODE_TYPE (property_node) == JSON_NODE_ARRAY) {
+      JsonArray *array = json_node_get_array (property_node);
+      guint array_len = json_array_get_length (array);
+      g_autoptr (GArray) magnitudes = g_array_sized_new (FALSE, FALSE, sizeof (double), array_len);
+
+      for (guint i = 0; i < array_len; i++) {
+        JsonNode *element_node = json_array_get_element (array, i);
+
+        if (JSON_NODE_HOLDS_VALUE (element_node)) {
+          double magnitude;
+
+          magnitude = json_node_get_double (element_node);
+          magnitude = MAX (0.0, MIN (magnitude, 1.0));
+          g_array_append_val (magnitudes, magnitude);
+        } else {
+          return FALSE;
+        }
+      }
+      g_value_set_boxed (value, magnitudes);
+      return TRUE;
+    }
+  } else if (g_strcmp0 (property_name, "durations") == 0) {
+    if (JSON_NODE_TYPE (property_node) == JSON_NODE_ARRAY) {
+      JsonArray *array = json_node_get_array (property_node);
+      guint array_len = json_array_get_length (array);
+      g_autoptr (GArray) durations = g_array_sized_new (FALSE, FALSE, sizeof (guint), array_len);
+
+      for (guint i = 0; i < array_len; i++) {
+        JsonNode *element_node = json_array_get_element (array, i);
+
+        if (JSON_NODE_HOLDS_VALUE (element_node)) {
+          guint duration;
+
+          duration = json_node_get_int (element_node);
+          g_array_append_val (durations, duration);
+        } else {
+          return FALSE;
+        }
+      }
+      g_value_set_boxed (value, durations);
+      return TRUE;
+    }
+  }
+
+  return FALSE;
+}
 
 
 static void
@@ -227,6 +290,11 @@ fbd_feedback_vibra_pattern_finalize (GObject *object)
   G_OBJECT_CLASS (fbd_feedback_vibra_pattern_parent_class)->finalize (object);
 }
 
+static void
+json_serializable_iface_init (JsonSerializableIface *iface)
+{
+  iface->deserialize_property = fbd_feedback_vibra_pattern_serializable_deserialize_property;
+}
 
 static void
 fbd_feedback_vibra_pattern_class_init (FbdFeedbackVibraPatternClass *klass)
