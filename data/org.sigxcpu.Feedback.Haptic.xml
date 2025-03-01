@@ -19,7 +19,8 @@
 
         Triggers the given vibration pattern on the haptic device. The
         pattern is a sequence of relative amplitude and duration pairs.
-        The amplitude must be between 0.0 and 1.0.
+        The amplitude must be between 0.0 and 1.0, durations are in
+        milliseconds.
     -->
     <method name="Vibrate">
       <arg direction="in" name="app_id" type="s"/>
