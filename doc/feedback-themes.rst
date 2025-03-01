@@ -27,6 +27,7 @@ To build a theme you can use several different feedback types:
 - `Sound`:  Plays a sound from the installed sound theme
 - `VibraRumble`: A single rumble using the haptic motor
 - `VibraPeriodic`: A periodic rumble using the haptic motor
+- `VibraPattern`: A pattern specifying the rumbling of the haptic motor
 - `Led`: A LED blinking in a periodic pattern
 
 Sound feedback
@@ -41,6 +42,16 @@ VibraRumble feedback
 The `VibraRumble` feedback uses a single property
 
 - `duration`: The duration of the rumble in ms.
+
+VibraPattern feedback
+~~~~~~~~~~~~~~~~~~~~~
+
+The `VibraPattern` feedback has these properties
+
+- `magnitudes`: The relative magnitude of each rumble ``[0, 1]`` as array of doubles.
+- `durations`: The durations of each rumble in ms as array of unsigned integers.
+
+Both arrays must have the same length.
 
 LED feedback
 ~~~~~~~~~~~~
