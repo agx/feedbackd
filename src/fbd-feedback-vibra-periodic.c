@@ -7,6 +7,7 @@
 #define G_LOG_DOMAIN "fbd-feedback-vibra-periodic"
 
 #include "fbd-enums.h"
+#include "fbd-feedback-vibra-priv.h"
 #include "fbd-feedback-vibra-periodic.h"
 #include "fbd-feedback-manager.h"
 
@@ -19,6 +20,8 @@
  * event. It knows nothing about the hardware itself but calls
  * #FbdDevVibra for that.
  */
+
+#define MAX_MAGNITUDE 0xFFFF
 
 enum {
   PROP_0,
@@ -103,13 +106,18 @@ fbd_feedback_vibra_periodic_start_vibra (FbdFeedbackVibra *vibra)
   FbdFeedbackManager *manager = fbd_feedback_manager_get_default ();
   FbdDevVibra *dev = fbd_feedback_manager_get_dev_vibra (manager);
   guint duration = fbd_feedback_vibra_get_duration (vibra);
+  double max_strength = fbd_feedback_vibra_get_max_strength (FBD_FEEDBACK_VIBRA (self));
+  double fade_in_ratio = (double)self->fade_in_level / self->magnitude;
+  guint max_magnitude, fade_in_level;
 
   g_return_if_fail (FBD_IS_DEV_VIBRA (dev));
-  g_debug ("Periodic Vibra: %d %d %d %d",
-	   duration, self->magnitude, self->fade_in_level, self->fade_in_time);
+  max_magnitude = MIN (MAX_MAGNITUDE * max_strength, self->magnitude);
+  fade_in_level = MIN (max_magnitude * fade_in_ratio, self->fade_in_level);
 
-  fbd_dev_vibra_periodic (dev, duration, self->magnitude, self->fade_in_level,
-			  self->fade_in_time);
+  g_debug ("Periodic Vibra: %d %d %d %d",
+	   duration, max_magnitude, fade_in_level, self->fade_in_time);
+
+  fbd_dev_vibra_periodic (dev, duration, max_magnitude, fade_in_level, self->fade_in_time);
 }
 
 static gboolean
@@ -141,7 +149,7 @@ fbd_feedback_vibra_periodic_class_init (FbdFeedbackVibraPeriodicClass *klass)
       "magnitude",
       "Magnitude",
       "total magnitude",
-      0, 0xFFFF, 0x7FFF,
+      0, MAX_MAGNITUDE, 0x7FFF,
       G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
   props[PROP_FADE_IN_TIME] =
@@ -157,7 +165,7 @@ fbd_feedback_vibra_periodic_class_init (FbdFeedbackVibraPeriodicClass *klass)
       "fade-in-level",
       "Fade in level",
       "Fade in start level",
-      0, 0xFFFF, 0x7FFF,
+      0, MAX_MAGNITUDE, 0x7FFF,
       G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
   g_object_class_install_properties (object_class, PROP_LAST_PROP, props);
