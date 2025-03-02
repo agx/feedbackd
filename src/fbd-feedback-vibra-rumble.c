@@ -7,6 +7,7 @@
 #define G_LOG_DOMAIN "fbd-feedback-vibra-rumble"
 
 #include "fbd-enums.h"
+#include "fbd-feedback-vibra-priv.h"
 #include "fbd-feedback-vibra-rumble.h"
 #include "fbd-feedback-manager.h"
 
@@ -119,6 +120,7 @@ fbd_feedback_vibra_rumble_start_vibra (FbdFeedbackVibra *vibra)
   FbdFeedbackManager *manager = fbd_feedback_manager_get_default ();
   FbdDevVibra *dev = fbd_feedback_manager_get_dev_vibra (manager);
   guint duration = fbd_feedback_vibra_get_duration (vibra);
+  double strength = fbd_feedback_vibra_get_max_strength (FBD_FEEDBACK_VIBRA (self));
   guint period;
 
   self->rumble = (duration / self->count) - self->pause;
@@ -130,9 +132,9 @@ fbd_feedback_vibra_rumble_start_vibra (FbdFeedbackVibra *vibra)
   period = self->rumble + self->pause;
   self->periods = self->count;
 
-  g_debug ("Rumble Vibra event: duration %d, rumble: %d, pause: %d, period: %d",
-           duration, self->rumble, self->pause, period);
-  fbd_dev_vibra_rumble (dev, 1.0, self->rumble, TRUE);
+  g_debug ("Rumble Vibra event: duration %d, rumble: %d, pause: %d, period: %d, strength %f",
+           duration, self->rumble, self->pause, period, strength);
+  fbd_dev_vibra_rumble (dev, strength, self->rumble, TRUE);
   self->periods--;
   if (self->periods) {
     self->timer_id = g_timeout_add (period, (GSourceFunc) on_period_ended, self);
