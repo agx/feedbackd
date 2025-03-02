@@ -54,6 +54,8 @@ These gsettings are used by ``feedbackd``:
     - `prefer-flash`: Prefer camera flash over status LED
     - `theme`: The feedback theme to use. This can be used to override
       the feedback theme picked by feedbackd based on device information.
+    - `max-haptic-strength`: Limits th maximum strenght used for the
+      haptic motor `[0.0, 1.0]`.
 
 - `org.sigxcpu.feedbackd.application`
 

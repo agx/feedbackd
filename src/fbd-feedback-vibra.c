@@ -6,6 +6,7 @@
 
 #define G_LOG_DOMAIN "fbd-feedback-vibra"
 
+#include "fbd.h"
 #include "fbd-enums.h"
 #include "fbd-feedback-vibra.h"
 #include "fbd-feedback-vibra-priv.h"
@@ -29,11 +30,24 @@ enum {
 static GParamSpec *props[PROP_LAST_PROP];
 
 typedef struct _FbdFeedbackVibraPrivate {
-  guint duration;
-  guint timer_id;
+  guint      duration;
+  guint      timer_id;
+  double     max_strength;
+
+  GSettings *settings;
 } FbdFeedbackVibraPrivate;
 
 G_DEFINE_TYPE_WITH_PRIVATE (FbdFeedbackVibra, fbd_feedback_vibra, FBD_TYPE_FEEDBACK_BASE);
+
+
+static void
+on_max_haptic_strength_changed (FbdFeedbackVibra *self)
+{
+  FbdFeedbackVibraPrivate *priv = fbd_feedback_vibra_get_instance_private (self);
+
+  priv->max_strength = g_settings_get_double (priv->settings, "max-haptic-strength");
+  g_debug ("Max haptic strength: %f", priv->max_strength);
+}
 
 
 static void
@@ -122,12 +136,26 @@ fbd_feedback_vibra_get_property (GObject    *object,
   }
 }
 
+
+static void
+fbd_feedback_vibra_finalize (GObject *object)
+{
+  FbdFeedbackVibra *self = FBD_FEEDBACK_VIBRA (object);
+  FbdFeedbackVibraPrivate *priv = fbd_feedback_vibra_get_instance_private (self);
+
+  g_clear_object (&priv->settings);
+
+  G_OBJECT_CLASS (fbd_feedback_vibra_parent_class)->finalize (object);
+}
+
+
 static void
 fbd_feedback_vibra_class_init (FbdFeedbackVibraClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
   FbdFeedbackBaseClass *base_class = FBD_FEEDBACK_BASE_CLASS (klass);
 
+  object_class->finalize = fbd_feedback_vibra_finalize;
   object_class->set_property = fbd_feedback_vibra_set_property;
   object_class->get_property = fbd_feedback_vibra_get_property;
 
@@ -151,6 +179,15 @@ fbd_feedback_vibra_class_init (FbdFeedbackVibraClass *klass)
 static void
 fbd_feedback_vibra_init (FbdFeedbackVibra *self)
 {
+  FbdFeedbackVibraPrivate *priv = fbd_feedback_vibra_get_instance_private (self);
+
+  priv->settings = g_settings_new (FEEDBACKD_SCHEMA_ID);
+  g_signal_connect_object (priv->settings,
+                           "changed::max-haptic-strength",
+                           G_CALLBACK (on_max_haptic_strength_changed),
+                           self,
+                           G_CONNECT_SWAPPED);
+  on_max_haptic_strength_changed (self);
 }
 
 guint
@@ -178,4 +215,17 @@ fbd_feedback_vibra_set_duration (FbdFeedbackVibra *self, guint duration)
 
   priv->duration = duration;
   g_object_notify_by_pspec (G_OBJECT (self), props[PROP_DURATION]);
+}
+
+
+double
+fbd_feedback_vibra_get_max_strength (FbdFeedbackVibra *self)
+{
+  FbdFeedbackVibraPrivate *priv;
+
+  g_return_val_if_fail (FBD_IS_FEEDBACK_VIBRA (self), 1.0);
+
+  priv = fbd_feedback_vibra_get_instance_private (self);
+
+  return priv->max_strength;
 }
