@@ -23,14 +23,15 @@ lfb_enum_sources = gnome.mkenums_simple('lfb-enums',
 libfeedback_headers = [
   'libfeedback.h',
   'lfb-event.h',
+  'lfb-main.h',
 ]
 
 libfeedback_sources = [
   generated_dbus_sources,
   lfb_enum_sources,
   libfeedback_headers,
-  'libfeedback.c',
   'lfb-event.c',
+  'lfb-main.c',
 ]
 
 libfeedback_deps = [

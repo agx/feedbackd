@@ -1,9 +1,12 @@
 /*
  * Copyright (C) 2020 Purism SPC
+ *               2025 The Phosh Developers
+ *
  * SPDX-License-Identifier: LGPL-2.1+
+ *
  * Author: Guido Günther <agx@sigxcpu.org>
  */
-#include "libfeedback.h"
+#include "lfb-main.h"
 #include "lfb-gdbus.h"
 #include "lfb-priv.h"
 
