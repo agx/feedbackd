@@ -297,6 +297,11 @@ busctl call --user org.sigxcpu.Feedback /org/sigxcpu/Feedback org.sigxcpu.Feedba
 The API is exported as a separate interface `org.sigxcpu.Feedback.Haptic` which is only available when
 a haptic device is found.
 
+## Getting in Touch
+
+- Issue tracker: <https://source.puri.sm/agx/feedbackd/-/issues>
+- Matrix: <https://matrix.to/#/#phosh:sigxcpu.org>
+
 ## Documentation
 
 - [Libfeedback API](https://honk.sigxcpu.org/projects/feedbackd/doc/)
