@@ -1,12 +1,13 @@
+---
 include:
- - remote: 'https://gitlab.freedesktop.org/freedesktop/ci-templates/-/raw/34039cd573a2df832d465bc9e4c5f543571f5241/templates/ci-fairy.yml'
- - remote: 'https://gitlab.gnome.org/guidog/meta-phosh/-/raw/f3c92e90dcc0d65322888217429b75dd101bd0d3/ci/phosh-common-jobs.yml'
+  - remote: 'https://gitlab.freedesktop.org/freedesktop/ci-templates/-/raw/34039cd573a2df832d465bc9e4c5f543571f5241/templates/ci-fairy.yml'
+  - remote: 'https://gitlab.gnome.org/guidog/meta-phosh/-/raw/0ed15edd821f8afacbf7a9c0f2a6266873289115/ci/phosh-common-jobs.yml'
 
 stages:
- - build
- - test
- - style-checks
- - package
+  - build
+  - test
+  - style-checks
+  - package
 
 workflow:
   rules:
@@ -96,11 +97,22 @@ test:native-debian-trixie:
     variables:
       - $PKG_ONLY == "1"
 
+check-consistency:
+  <<: *tags
+  stage: test
+  extends: .phosh-check-consistency
+
 format-check:
   <<: *tags
   stage: style-checks
   extends: .phosh-format-check
   allow_failure: true
+
+check-meson:
+  <<: *tags
+  stage: style-checks
+  extends:
+    - .phosh-check-meson
 
 package:deb-debian-trixie:arm64:
   tags:
