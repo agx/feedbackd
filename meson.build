@@ -1,33 +1,28 @@
-project('feedbackd', 'c',
-          version : '0.7.0',
-          license : 'LGPLv3+',
-    meson_version : '>= 1.0.0',
-  default_options : [
-    'warning_level=1',
-    'buildtype=debugoptimized',
-    'c_std=gnu11',
-  ],
+project(
+  'feedbackd',
+  'c',
+  version: '0.7.0',
+  license: 'LGPLv3+',
+  meson_version: '>= 1.0.0',
+  default_options: ['warning_level=1', 'buildtype=debugoptimized', 'c_std=gnu11'],
 )
 
-gio            = dependency('gio-2.0', version: '>=2.50.0')
-gio_unix       = dependency('gio-unix-2.0', version: '>=2.50.0')
-glib           = dependency('glib-2.0', version: '>=2.50.0')
-udev           = dependency('udev', required: false)
+gio = dependency('gio-2.0', version: '>=2.50.0')
+gio_unix = dependency('gio-unix-2.0', version: '>=2.50.0')
+glib = dependency('glib-2.0', version: '>=2.50.0')
+udev = dependency('udev', required: false)
 if get_option('daemon')
-  gobject        = dependency('gobject-2.0', version: '>=2.50.0')
-  gmobile        = dependency('gmobile',
+  gobject = dependency('gobject-2.0', version: '>=2.50.0')
+  gmobile = dependency(
+    'gmobile',
     version: '>= 0.1.0',
     fallback: ['gmobile', 'gmobile_dep'],
-    default_options: [
-      'examples=false',
-      'introspection=false',
-      'gtk_doc=false',
-      'tests=false',
-  ])
-  gsound         = dependency('gsound')
-  gudev          = dependency('gudev-1.0', version: '>=232')
-  json_glib      = dependency('json-glib-1.0')
-  systemd_dep    = dependency('systemd', required: false)
+    default_options: ['examples=false', 'introspection=false', 'gtk_doc=false', 'tests=false'],
+  )
+  gsound = dependency('gsound')
+  gudev = dependency('gudev-1.0', version: '>=232')
+  json_glib = dependency('json-glib-1.0')
+  systemd_dep = dependency('systemd', required: false)
 endif
 
 prefix = get_option('prefix')
@@ -51,10 +46,7 @@ endif
 run_data = configuration_data()
 run_data.set('ABS_BUILDDIR', meson.current_build_dir())
 run_data.set('ABS_SRCDIR', meson.current_source_dir())
-configure_file(
-  input: 'run.in',
-  output: 'run',
-  configuration: run_data)
+configure_file(input: 'run.in', output: 'run', configuration: run_data)
 
 gnome = import('gnome')
 
@@ -103,10 +95,7 @@ global_c_args = [
   '-DFBD_VERSION="@0@"'.format(meson.project_version()),
 ]
 
-add_project_arguments(
-  global_c_args + cc.get_supported_arguments(test_c_args),
-  language: 'c'
-)
+add_project_arguments(global_c_args + cc.get_supported_arguments(test_c_args), language: 'c')
 
 introspection_feature = get_option('introspection')
 introspection = introspection_feature.enabled() or introspection_feature.auto()
@@ -116,10 +105,7 @@ libname = 'libfeedback-' + apiversion
 
 json_glib_validate = find_program('json-glib-validate', required: false)
 
-meson.add_install_script(
-  join_paths('build-aux', 'post_install.py'),
-  datadir
-)
+meson.add_install_script(join_paths('build-aux', 'post_install.py'), datadir)
 
 subdir('data')
 subdir('libfeedback')
@@ -129,18 +115,18 @@ subdir('tests')
 subdir('doc')
 
 summary = [
-        '',
-        '---------------',
-        'feedbackd @0@'.format(meson.project_version()),
-        '',
-	'         Daemon: @0@'.format(get_option('daemon')),
-	'     Udev rules: @0@'.format(get_option('udev')),
-        '  Documentation: @0@'.format(get_option('gtk_doc')),
-        '   Manual pages: @0@'.format(get_option('man')),
-        '  Introspection: @0@'.format(introspection),
-        '           Vapi: @0@'.format(get_option('vapi')),
-        '          Tests: @0@'.format(get_option('tests')),
-        '---------------',
-        ''
+  '',
+  '---------------',
+  'feedbackd @0@'.format(meson.project_version()),
+  '',
+  '         Daemon: @0@'.format(get_option('daemon')),
+  '     Udev rules: @0@'.format(get_option('udev')),
+  '  Documentation: @0@'.format(get_option('gtk_doc')),
+  '   Manual pages: @0@'.format(get_option('man')),
+  '  Introspection: @0@'.format(introspection),
+  '           Vapi: @0@'.format(get_option('vapi')),
+  '          Tests: @0@'.format(get_option('tests')),
+  '---------------',
+  '',
 ]
 message('\n'.join(summary))
