@@ -34,11 +34,11 @@ capping the noisiness for each limit:
 
 1. The currently selected profile provides the (global) upper limit for noisiness
 
-2. Per application settings impose another upper limit
+1. Per application settings impose another upper limit
 
-3. Per event noisiness is the last noisiness constraint
+1. Per event noisiness is the last noisiness constraint
 
-4. All feedback consistent with the resulting limit are selected
+1. All feedback consistent with the resulting limit are selected
    and run to provide the feedback to the user
 
 With the above a feedback theme in YAML format could look like:
@@ -68,7 +68,6 @@ silent:
 
 At the time of writing the theme format is daemon dependent. E.g. feedbackd
 uses a format [similar to the above in JSON](https://source.puri.sm/Librem5/feedbackd/-/blob/main/data/default.json)
-
 
 # Recommendations
 
