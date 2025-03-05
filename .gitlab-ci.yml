@@ -96,6 +96,11 @@ test:native-debian-trixie:
     variables:
       - $PKG_ONLY == "1"
 
+check-consistency:
+  <<: *tags  
+  stage: test
+  extends: .phosh-check-consistency      
+
 format-check:
   <<: *tags
   stage: style-checks
