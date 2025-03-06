@@ -51,7 +51,7 @@ The `Led` feedback type uses two properties to specify the way a LED blinks.
   `green`, `blue` and `white` as well as values in the RGB HEX  format (`#RRGGBB`) where
   `RR`, `GG` and `BB` are two digit  hex value between `00` and `FF` specifying the value of
   each component. E.g. `#00FFFF` corresponds to cyan color.
-- `frequency`: The LEDs blinkinig frequencey in mHz.
+- `frequency`: The LEDs blinkinig frequency in mHz.
 
 See also
 ========

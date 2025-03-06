@@ -36,7 +36,7 @@ feedbackd 0.4.1
 ---------------
 Released August 2024
 * Simplify udev rule installation
-* Dont' fail tests with newer json-glib
+* Don't fail tests with newer json-glib
 * Issues fixed:
     * https://source.puri.sm/Librem5/feedbackd/-/issues/79
 * Contributors:
@@ -50,7 +50,7 @@ Released June 2024
 * Internal cleanups and restructuring to cater for different
   LED types.
 * Support RGB color mixing for multicolor leds
-* Allow to use (camera) flash LEDs as notificaton LED
+* Allow to use (camera) flash LEDs as notification LED
 * Immediately end "too noisy" feedbacks when switching profile levels
 * Issues fixed:
     * https://source.puri.sm/Librem5/feedbackd/-/issues/77

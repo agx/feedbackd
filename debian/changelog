@@ -33,9 +33,9 @@ feedbackd (0.6.0) experimental; urgency=medium
 
   [ Guido Günther ]
   * event-naming-spec: Fix section description
-  * event-naming-spec: Expand on notifiction events.
+  * event-naming-spec: Expand on notification events.
     We move them to the system category as the notification server
-    is a system component and add an event for now notifictions
+    is a system component and add an event for new notifications
     for the notification server to use
   * theme: Add notification-missed-new.
     We'll remove message-new-notification somewhat later to not break
@@ -101,7 +101,7 @@ feedbackd (0.5.0) experimental; urgency=medium
   [ Guido Günther ]
   * packaging: Update lintian overrides
   * packaging: Install NEWS and README. They contain useful information
-  * packaging: Use pkgconf. It's prefered over pkg-config in Debian
+  * packaging: Use pkgconf. It's preferred over pkg-config in Debian
   * doc: Document gsettings used by feedbackd
   * udev: Add support for haptics on Oneplus Enchilada / Fajita.
     The spmi_haptics driver isn't in mainline Linux as of Linux 6.11.
@@ -266,7 +266,7 @@ feedbackd (0.4.0) experimental; urgency=medium
     even if the device is suspended.
   * fbd-dev-led-qcom-multicolor: Support QCOM LPG LED multicolor.
     QCOM LPG LEDs can also operate in a multicolor fashion.
-    Re-use the probing sequence of multicolor LEDs and the hw_pattern
+    Reuse the probing sequence of multicolor LEDs and the hw_pattern
     configuration of single color QCOM LPG LEDs.
   * fbd-dev-leds: Probe QCOM HW LED types.
     Try first the QCOM hardware LED types which require the most features of
@@ -486,7 +486,7 @@ feedbackd (0.0.2) experimental; urgency=medium
   * Include specifications in the documentation.
     Now that we can use markdown easily add them as they provide
     help to the developer what events exist, etc.
-  * dir-locals: Simlify consistent JS indenting
+  * dir-locals: Simplify consistent JS indenting
   * feedback-vibra: Fix indentation
   * tests: Test feedback theme name
   * feedback-theme: No need for constructed.
@@ -700,13 +700,13 @@ feedbackd (0.0.0+git20210426) byzantium; urgency=medium
   * event: Make log-domain match source file name
   * tests: Run event tests too
   * event: Remove 'g' prefix from common C types.
-    This matchs phosh's style.
+    This matches phosh's style.
   * fbd-event: Add sender property.
     This allows us to store the DBus sender
   * fbd-manager: Keep DBus sender around
   * feedback-manager: Track DBus clients and end feedbacks if they go away.
     When the client goes away we build up a list of events to end feedback
-    for to make sure the hash table isn't modified in place. tThe alternative
+    for to make sure the hash table isn't modified in place. the alternative
     approach would be to disconnect the on_event_feedbacks_ended handler,
     duplicate the DBus signal emission and use g_hash_table_foreach_remove
     but that looks less robust than using the same code path. (Closes: #25)
@@ -838,7 +838,7 @@ feedbackd (0.0.0+git20200714) amber-phone; urgency=medium
 
   [ Guido Günther ]
   * lfb-event: Clarify return values of `finished` functions.
-    They just inidicate that we talked to feedbackd successfully.
+    They just indicate that we talked to feedbackd successfully.
   * lfb-event: Connect done handler in async case too.
     Otherwise the event state is not updated properly
   * tests: Don't quit mainloop on event end.
@@ -886,7 +886,7 @@ feedbackd (0.0.0+git20200707) amber-phone; urgency=medium
     trigger.
   * data: Use LED feedback for missed calls, IMs and SMS
   * Add generic missed notification.
-    This can be used e.g. by the shell for general purpose notifictions
+    This can be used e.g. by the shell for general purpose notifications
     but also for in app notifications of the foreground app.
   * feedback-manager: Add hint to select feedback profile per event.
     This e.g. allows events that are meant for haptic only to avoid

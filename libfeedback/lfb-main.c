@@ -28,7 +28,7 @@ lfb_cancel_feedbacks (void)
   while (g_hash_table_iter_next (&iter, &key, &value)) {
     guint id = GPOINTER_TO_UINT(key);
     g_hash_table_iter_remove (&iter);
-    g_debug ("Cancellling feedback on shutdown %d", id);
+    g_debug ("Cancelling feedback on shutdown %d", id);
     /* Need to use a sync call here since there might not be a main loop anymore */
     lfb_gdbus_feedback_call_end_feedback_sync (_proxy, id, NULL, NULL);
   }

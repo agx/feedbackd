@@ -79,7 +79,7 @@ fbd_dev_led_multicolor_probe (FbdDevLed *led, GError **error)
       priv->blue_index = counter;
       counter++;
     } else {
-      g_warning ("Unsupport LED color index: %d %s", counter, index[i]);
+      g_warning ("Unsupported LED color index: %d %s", counter, index[i]);
     }
   }
 

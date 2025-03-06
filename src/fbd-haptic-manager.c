@@ -133,7 +133,7 @@ fbd_feedback_manager_handle_vibrate (LfbGdbusFeedbackHaptic *object,
     fbd_feedback_end (FBD_FEEDBACK_BASE (self->vibra));
   if (fbd_dev_vibra_is_busy (vibra_dev)) {
     g_debug ("Haptic busy");
-    /* If there's an event with haptic deny haptic patter */
+    /* If there's an event with haptic deny haptic pattern */
     lfb_gdbus_feedback_haptic_complete_vibrate (object, invocation, FALSE);
     return TRUE;
   }

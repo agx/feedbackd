@@ -28,7 +28,7 @@
       <default>false</default>
       <summary>Prefer camera flash LED over notification LED</summary>
       <description>
-        Prefer the (camera) flash LED over other notifiction LEDs.
+        Prefer the (camera) flash LED over other notification LEDs.
       </description>
     </key>
 

@@ -8,7 +8,7 @@ call [func@Lfb.init]() with the id of your application (usually
 the desktop file name without the .desktop extension). For that you
 include the `libfeedback.h` header. Since the API is considered
 unstable at this point in time you need to acknowledge this by
-definining `LIBFEEDBACK_USE_UNSTABLE_API`:
+defining `LIBFEEDBACK_USE_UNSTABLE_API`:
 
 ```c
   #define LIBFEEDBACK_USE_UNSTABLE_API
