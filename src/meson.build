@@ -53,7 +53,7 @@ if get_option('daemon')
     dependencies: fbd_deps,
   )
 
-  executable(
+  fbd_exe = executable(
     'feedbackd',
     sources: ['fbd.c', generated_dbus_sources[1]],
     include_directories: fbd_inc,

@@ -29,15 +29,10 @@ if get_option('tests')
 
   test_lfb_deps = [libfeedback_dep, glib, gio_unix]
 
-  lfb_tests = ['lfb-event']
-
   if get_option('daemon')
     # The integration test needs the daemon
-    lfb_tests += 'lfb-integration'
+    test = 'lfb-integration'
     subdir('services')
-  endif
-
-  foreach test : lfb_tests
     t = executable(
       'test-@0@'.format(test),
       ['test-@0@.c'.format(test)],
@@ -46,8 +41,19 @@ if get_option('tests')
       link_args: test_lfb_link_args,
       dependencies: test_lfb_deps,
     )
-    test(test, t, env: test_env)
-  endforeach
+    test(test, t, env: test_env, depends: fbd_exe)
+  endif
+
+  test = 'lfb-event'
+  t = executable(
+    'test-@0@'.format(test),
+    ['test-@0@.c'.format(test)],
+    c_args: test_lfb_cflags,
+    pie: true,
+    link_args: test_lfb_link_args,
+    dependencies: test_lfb_deps,
+  )
+  test(test, t, env: test_env)
 
   # Daemon Unit tests
   if get_option('daemon')
