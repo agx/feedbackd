@@ -14,6 +14,8 @@ if get_option('tests')
   test_env.set('MALLOC_CHECK_', '2')
   test_env.set('XDG_CONFIG_HOME', meson.current_source_dir() / 'data' / 'user-config')
   test_env.set('XDG_CONFIG_DIRS', meson.current_source_dir())
+  # Override desktop so we don't depend on GNOME schemas in the tests
+  test_env.set('XDG_CURRENT_DESKTOP', 'doesnotexist')
 
   # Shared library Unit tests
 
@@ -66,6 +68,7 @@ if get_option('tests')
     fbd_tests = [
       'fbd-feedback-led',
       'fbd-feedback-profile',
+      'fbd-feedback-vibra',
       'fbd-feedback-theme',
       'fbd-event',
       'fbd-theme-expander',
