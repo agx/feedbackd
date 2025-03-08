@@ -109,8 +109,9 @@
         },
         {
           "event-name" : "button-pressed",
-          "type"       : "VibraRumble",
-          "duration"   : 15
+          "type"       : "VibraPattern",
+          "magnitudes" : [ 0.2 ],
+          "durations"  : [ 7 ]
         },
         {
           "event-name" : "button-released",
