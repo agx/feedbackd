@@ -30,6 +30,8 @@ app that triggered it crashes.
 For details refer to the event and feedback theme specs at
 `<https://source.puri.sm/Librem5/feedbackd/>`__
 
+Feedbackd reloads the feedback theme on `SIGHUP` (i.e. `pkill -HUP feedbackd`).
+
 Options
 =======
 
