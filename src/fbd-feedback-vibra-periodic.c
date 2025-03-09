@@ -58,12 +58,26 @@ fbd_feedback_vibra_periodic_serializable_deserialize_property (JsonSerializable 
     if (JSON_NODE_TYPE (property_node) == JSON_NODE_VALUE) {
       double magnitude = json_node_get_double (property_node);
 
+      /* Backward compat handling: Initially magnitude was given as [0, 0xFFFF] */
+      if (magnitude > 1.0) {
+        g_warning_once ("Too large magnitude %.2f detected, please update the theme", magnitude);
+        magnitude = magnitude / 0xFFFF;
+      }
+
+
       g_value_set_double (value, magnitude);
       return TRUE;
     }
   } else if (g_strcmp0 (property_name, "fade-in-level") == 0) {
     if (JSON_NODE_TYPE (property_node) == JSON_NODE_VALUE) {
       double fade_in_level = json_node_get_double (property_node);
+
+      /* Backward compat handling: Initially duration was given as [0, 0xFFFF] */
+      if (fade_in_level > 1.0) {
+        g_warning_once ("Too large fade-in-level %.2f detected, please update the theme",
+                        fade_in_level);
+        fade_in_level = fade_in_level / 0xFFFF;
+      }
 
       g_value_set_double (value, fade_in_level);
       return TRUE;
