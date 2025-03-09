@@ -35,9 +35,9 @@ static GParamSpec *props[PROP_LAST_PROP];
 typedef struct _FbdFeedbackVibraPeriodic {
   FbdFeedbackVibra parent;
 
-  double magnitude;
-  double fade_in_level;
-  guint fade_in_time;
+  double           magnitude;
+  double           fade_in_level;
+  guint            fade_in_time;
 } FbdFeedbackVibraPeriodic;
 
 G_DEFINE_TYPE (FbdFeedbackVibraPeriodic, fbd_feedback_vibra_periodic, FBD_TYPE_FEEDBACK_VIBRA);
@@ -151,12 +151,12 @@ fbd_feedback_vibra_periodic_class_init (FbdFeedbackVibraPeriodicClass *klass)
 
   props[PROP_FADE_IN_TIME] =
     g_param_spec_uint ("fade-in-time", "", "",
-                       0, G_MAXINT, 0,
+                       0, G_MAXINT, 500,
                        G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
   props[PROP_FADE_IN_LEVEL] =
     g_param_spec_double ("fade-in-level", "", "",
-                         0.0, 1.0, 0.5,
+                         0.0, 1.0, 0.0,
                          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
   g_object_class_install_properties (object_class, PROP_LAST_PROP, props);
@@ -165,4 +165,7 @@ fbd_feedback_vibra_periodic_class_init (FbdFeedbackVibraPeriodicClass *klass)
 static void
 fbd_feedback_vibra_periodic_init (FbdFeedbackVibraPeriodic *self)
 {
+  self->magnitude = 0.5;
+  self->fade_in_level = 0.0;
+  self->fade_in_time = 500;
 }

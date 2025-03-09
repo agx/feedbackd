@@ -283,15 +283,6 @@ fbd_dev_vibra_periodic (FbdDevVibra *self,
 
   g_return_val_if_fail (FBD_IS_DEV_VIBRA (self), FALSE);
 
-  if (!magnitude)
-    magnitude = 0.5;
-
-  if (!fade_in_level)
-    fade_in_level = magnitude;
-
-  if (!fade_in_time)
-    fade_in_time = duration;
-
   effect.type = FF_PERIODIC;
   effect.id = -1;
   effect.u.periodic.waveform = FF_SINE;
