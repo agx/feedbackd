@@ -272,8 +272,11 @@ fbd_dev_vibra_rumble (FbdDevVibra *self, double magnitude, guint duration, gbool
 
 /* TODO: fall back to multiple rumbles when sine not supported */
 gboolean
-fbd_dev_vibra_periodic (FbdDevVibra *self, guint duration, guint magnitude,
-                        guint fade_in_level, guint fade_in_time)
+fbd_dev_vibra_periodic (FbdDevVibra *self,
+                        guint        duration,
+                        double       magnitude,
+                        double       fade_in_level,
+                        guint        fade_in_time)
 {
   struct input_event event;
   struct ff_effect effect = { 0 };
@@ -281,7 +284,7 @@ fbd_dev_vibra_periodic (FbdDevVibra *self, guint duration, guint magnitude,
   g_return_val_if_fail (FBD_IS_DEV_VIBRA (self), FALSE);
 
   if (!magnitude)
-    magnitude = 0x7FFF;
+    magnitude = 0.5;
 
   if (!fade_in_level)
     fade_in_level = magnitude;
@@ -293,12 +296,12 @@ fbd_dev_vibra_periodic (FbdDevVibra *self, guint duration, guint magnitude,
   effect.id = -1;
   effect.u.periodic.waveform = FF_SINE;
   effect.u.periodic.period = 10;
-  effect.u.periodic.magnitude = magnitude;
+  effect.u.periodic.magnitude = 0x7FFF * magnitude;
   effect.u.periodic.offset = 0;
   effect.u.periodic.phase = 0;
   effect.direction = 0x4000;
   effect.u.periodic.envelope.attack_length = fade_in_time;
-  effect.u.periodic.envelope.attack_level = fade_in_level;;
+  effect.u.periodic.envelope.attack_level = 0x7FFF * fade_in_level;
   effect.u.periodic.envelope.fade_length = 0;
   effect.u.periodic.envelope.fade_level = 0;
   effect.trigger.button = 0;

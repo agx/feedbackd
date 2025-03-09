@@ -19,8 +19,11 @@ gboolean     fbd_dev_vibra_rumble (FbdDevVibra *device,
                                    double       magnitude,
                                    guint        duration,
                                    gboolean     upload);
-gboolean     fbd_dev_vibra_periodic (FbdDevVibra *self, guint duration, guint magnitude,
-				     guint fade_in_level, guint fade_in_time);
+gboolean     fbd_dev_vibra_periodic (FbdDevVibra *self,
+                                     guint        duration,
+                                     double       magnitude,
+                                     double       fade_in_level,
+                                     guint        fade_in_time);
 gboolean     fbd_dev_vibra_stop (FbdDevVibra *self);
 gboolean     fbd_dev_vibra_remove_effect (FbdDevVibra *self);
 GUdevDevice *fbd_dev_vibra_get_device(FbdDevVibra *self);
