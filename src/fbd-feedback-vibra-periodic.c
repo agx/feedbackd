@@ -11,10 +11,12 @@
 #include "fbd-feedback-vibra-periodic.h"
 #include "fbd-feedback-manager.h"
 
+#include <json-glib/json-glib.h>
+
 /**
- * SECTION:fbd-feedback-vibra-periodic
- * @short_description: Describes a periodic feedback via a haptic motor
- * @Title: FbdFeedbackVibraPeriodic
+ * FbdFeedbackVibraPeriodic:
+ *
+ * Describes a periodic feedback via a haptic motor
  *
  * The #FbdVibraVibraPeriodic describes the properties of a haptic feedback
  * event. It knows nothing about the hardware itself but calls
@@ -44,9 +46,9 @@ G_DEFINE_TYPE (FbdFeedbackVibraPeriodic, fbd_feedback_vibra_periodic, FBD_TYPE_F
 
 static void
 fbd_feedback_vibra_periodic_set_property (GObject      *object,
-					  guint         property_id,
-					  const GValue *value,
-					  GParamSpec   *pspec)
+                                          guint         property_id,
+                                          const GValue *value,
+                                          GParamSpec   *pspec)
 {
   FbdFeedbackVibraPeriodic *self = FBD_FEEDBACK_VIBRA_PERIODIC (object);
 
@@ -68,9 +70,9 @@ fbd_feedback_vibra_periodic_set_property (GObject      *object,
 
 static void
 fbd_feedback_vibra_periodic_get_property (GObject  *object,
-					  guint       property_id,
-					  GValue     *value,
-					  GParamSpec *pspec)
+                                          guint       property_id,
+                                          GValue     *value,
+                                          GParamSpec *pspec)
 {
   FbdFeedbackVibraPeriodic *self = FBD_FEEDBACK_VIBRA_PERIODIC (object);
 
@@ -145,28 +147,19 @@ fbd_feedback_vibra_periodic_class_init (FbdFeedbackVibraPeriodicClass *klass)
   vibra_class->end_vibra = fbd_feedback_vibra_periodic_end_vibra;
 
   props[PROP_MAGNITUDE] =
-    g_param_spec_uint (
-      "magnitude",
-      "Magnitude",
-      "total magnitude",
-      0, MAX_MAGNITUDE, 0x7FFF,
-      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+    g_param_spec_uint ("magnitude", "", "",
+                       0, MAX_MAGNITUDE, 0x7FFF,
+                       G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
   props[PROP_FADE_IN_TIME] =
-    g_param_spec_uint (
-      "fade-in-time",
-      "Fade in time",
-      "Fade in time until full strength",
-      0, G_MAXINT, 0,
-      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+    g_param_spec_uint ("fade-in-time", "", "",
+                       0, G_MAXINT, 0,
+                       G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
   props[PROP_FADE_IN_LEVEL] =
-    g_param_spec_uint (
-      "fade-in-level",
-      "Fade in level",
-      "Fade in start level",
-      0, MAX_MAGNITUDE, 0x7FFF,
-      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+    g_param_spec_uint ("fade-in-level", "", "",
+                       0, MAX_MAGNITUDE, 0x7FFF,
+                       G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
   g_object_class_install_properties (object_class, PROP_LAST_PROP, props);
 }
