@@ -40,7 +40,39 @@ typedef struct _FbdFeedbackVibraPeriodic {
   guint            fade_in_time;
 } FbdFeedbackVibraPeriodic;
 
-G_DEFINE_TYPE (FbdFeedbackVibraPeriodic, fbd_feedback_vibra_periodic, FBD_TYPE_FEEDBACK_VIBRA);
+static void json_serializable_iface_init (JsonSerializableIface *iface);
+
+G_DEFINE_TYPE_WITH_CODE (FbdFeedbackVibraPeriodic, fbd_feedback_vibra_periodic,
+                         FBD_TYPE_FEEDBACK_VIBRA,
+                         G_IMPLEMENT_INTERFACE (JSON_TYPE_SERIALIZABLE,
+                                                json_serializable_iface_init));
+
+static gboolean
+fbd_feedback_vibra_periodic_serializable_deserialize_property (JsonSerializable *serializable,
+                                                               const gchar      *property_name,
+                                                               GValue           *value,
+                                                               GParamSpec       *pspec,
+                                                               JsonNode         *property_node)
+{
+  if (g_strcmp0 (property_name, "magnitude") == 0) {
+    if (JSON_NODE_TYPE (property_node) == JSON_NODE_VALUE) {
+      double magnitude = json_node_get_double (property_node);
+
+      g_value_set_double (value, magnitude);
+      return TRUE;
+    }
+  } else if (g_strcmp0 (property_name, "fade-in-level") == 0) {
+    if (JSON_NODE_TYPE (property_node) == JSON_NODE_VALUE) {
+      double fade_in_level = json_node_get_double (property_node);
+
+      g_value_set_double (value, fade_in_level);
+      return TRUE;
+    }
+  }
+
+  return FALSE;
+}
+
 
 static void
 fbd_feedback_vibra_periodic_set_property (GObject      *object,
@@ -128,6 +160,14 @@ fbd_feedback_vibra_periodic_is_available (FbdFeedbackBase *base)
 
   return FBD_IS_DEV_VIBRA (dev);
 }
+
+
+static void
+json_serializable_iface_init (JsonSerializableIface *iface)
+{
+  iface->deserialize_property = fbd_feedback_vibra_periodic_serializable_deserialize_property;
+}
+
 
 static void
 fbd_feedback_vibra_periodic_class_init (FbdFeedbackVibraPeriodicClass *klass)

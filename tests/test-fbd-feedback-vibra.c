@@ -9,6 +9,7 @@
 #define GMOBILE_USE_UNSTABLE_API
 #include "fbd-feedback-manager.h"
 #include "fbd-feedback-vibra-pattern.h"
+#include "fbd-feedback-vibra-periodic.h"
 #include "fbd-feedback-vibra-rumble.h"
 
 #include <json-glib/json-glib.h>
@@ -95,6 +96,42 @@ test_fbd_feedback_vibra_pattern (void)
 }
 
 
+static void
+test_fbd_feedback_vibra_periodic (void)
+{
+  /* Create manager upfront so we can dispose it, otherwise creating
+   * any feedback would create it implicitly */
+  FbdFeedbackManager *manager = fbd_feedback_manager_get_default ();
+  g_autoptr (GError) err = NULL;
+  g_autoptr (JsonNode) node = NULL;
+  GObject *object;
+  double magnitude, fade_in_level;
+  guint fade_in_time;
+
+  node = json_from_string("{"
+                          " \"event-name\"    : \"button-pressed\","
+                          " \"type\"          : \"VibraPeriodic\","
+                          " \"magnitude\"     : 0.7,"
+                          " \"fade-in-level\" : 0.3"
+                          "}", &err);
+  g_assert_no_error (err);
+
+  object = json_gobject_deserialize (FBD_TYPE_FEEDBACK_VIBRA_PERIODIC, node);
+  g_object_get (object,
+                "magnitude", &magnitude,
+                "fade-in-level", &fade_in_level,
+                "fade-in-time", &fade_in_time,
+                NULL);
+
+  g_assert_cmpfloat_with_epsilon (magnitude, 0.7, FLT_EPSILON);
+  g_assert_cmpfloat_with_epsilon (fade_in_level, 0.3, FLT_EPSILON);
+  g_assert_cmpint (fade_in_time, ==, 500);
+
+  g_assert_finalize_object (object);
+  g_assert_finalize_object (manager);
+}
+
+
 gint
 main (gint argc, gchar *argv[])
 {
@@ -102,6 +139,7 @@ main (gint argc, gchar *argv[])
 
   g_test_add_func("/feedbackd/fbd/feedback-vibra/rumble", test_fbd_feedback_vibra_rumble);
   g_test_add_func("/feedbackd/fbd/feedback-vibra/pattern", test_fbd_feedback_vibra_pattern);
+  g_test_add_func("/feedbackd/fbd/feedback-vibra/periodic", test_fbd_feedback_vibra_periodic);
 
   return g_test_run();
 }
