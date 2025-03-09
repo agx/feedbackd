@@ -27,6 +27,7 @@ enum {
   PROP_0,
   PROP_COUNT,
   PROP_PAUSE,
+  PROP_MAGNITUDE,
   PROP_LAST_PROP,
 };
 static GParamSpec *props[PROP_LAST_PROP];
@@ -34,12 +35,13 @@ static GParamSpec *props[PROP_LAST_PROP];
 typedef struct _FbdFeedbackVibraRumble {
   FbdFeedbackVibra parent;
 
-  guint count;   /* number of rumbles */
-  guint pause;   /* pause in msecs */
+  guint            count;     /* number of rumbles */
+  guint            pause;     /* pause in msecs */
 
-  guint rumble;  /* rumble in msecs */
-  guint periods; /* number of periods to play */
-  guint timer_id;
+  double           magnitude; /* magnitude [0.0, 1.0] */
+  guint            rumble;    /* rumble in msecs */
+  guint            periods;   /* number of periods to play */
+  guint            timer_id;
 } FbdFeedbackVibraRumble;
 
 G_DEFINE_TYPE (FbdFeedbackVibraRumble, fbd_feedback_vibra_rumble, FBD_TYPE_FEEDBACK_VIBRA);
@@ -58,6 +60,9 @@ fbd_feedback_vibra_rumble_set_property (GObject      *object,
     break;
   case PROP_PAUSE:
     self->pause = g_value_get_uint (value);
+    break;
+  case PROP_MAGNITUDE:
+    self->magnitude = g_value_get_double (value);
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -79,6 +84,9 @@ fbd_feedback_vibra_rumble_get_property (GObject    *object,
     break;
   case PROP_PAUSE:
     g_value_set_uint (value, self->pause);
+    break;
+  case PROP_MAGNITUDE:
+    g_value_set_double (value, self->magnitude);
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -181,6 +189,11 @@ fbd_feedback_vibra_rumble_class_init (FbdFeedbackVibraRumbleClass *klass)
       0, G_MAXINT, 0,
       G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
+  props[PROP_MAGNITUDE] =
+    g_param_spec_double ("magnitude", "", "",
+                         0, 1.0, 0.5,
+                         G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
   g_object_class_install_properties (object_class, PROP_LAST_PROP, props);
 }
 
@@ -188,4 +201,5 @@ static void
 fbd_feedback_vibra_rumble_init (FbdFeedbackVibraRumble *self)
 {
   self->count = 1;
+  self->magnitude = 0.5;
 }
