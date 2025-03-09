@@ -103,7 +103,11 @@ on_period_ended (FbdFeedbackVibraRumble *self)
   g_return_val_if_fail (FBD_IS_FEEDBACK_VIBRA_RUMBLE (self), G_SOURCE_REMOVE);
 
   if (self->periods) {
-    fbd_dev_vibra_rumble (dev, 1.0, self->rumble, FALSE);
+    double max_strength = fbd_feedback_vibra_get_max_strength (FBD_FEEDBACK_VIBRA (self));
+    double magnitude;
+
+    magnitude = MIN (self->magnitude, max_strength);
+    fbd_dev_vibra_rumble (dev, magnitude, self->rumble, FALSE);
     self->periods--;
     return G_SOURCE_CONTINUE;
   }
@@ -128,7 +132,8 @@ fbd_feedback_vibra_rumble_start_vibra (FbdFeedbackVibra *vibra)
   FbdFeedbackManager *manager = fbd_feedback_manager_get_default ();
   FbdDevVibra *dev = fbd_feedback_manager_get_dev_vibra (manager);
   guint duration = fbd_feedback_vibra_get_duration (vibra);
-  double strength = fbd_feedback_vibra_get_max_strength (FBD_FEEDBACK_VIBRA (self));
+  double max_strength = fbd_feedback_vibra_get_max_strength (FBD_FEEDBACK_VIBRA (self));
+  double magnitude;
   guint period;
 
   self->rumble = (duration / self->count) - self->pause;
@@ -140,9 +145,10 @@ fbd_feedback_vibra_rumble_start_vibra (FbdFeedbackVibra *vibra)
   period = self->rumble + self->pause;
   self->periods = self->count;
 
-  g_debug ("Rumble Vibra event: duration %d, rumble: %d, pause: %d, period: %d, strength %f",
-           duration, self->rumble, self->pause, period, strength);
-  fbd_dev_vibra_rumble (dev, strength, self->rumble, TRUE);
+  magnitude = MIN (self->magnitude, max_strength);
+  g_debug ("Rumble Vibra event: magnitude: %f, duration %d, rumble: %d, pause: %d, period: %d",
+           magnitude, duration, self->rumble, self->pause, period);
+  fbd_dev_vibra_rumble (dev, magnitude, self->rumble, TRUE);
   self->periods--;
   if (self->periods) {
     self->timer_id = g_timeout_add (period, (GSourceFunc) on_period_ended, self);
