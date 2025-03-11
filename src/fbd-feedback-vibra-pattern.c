@@ -199,8 +199,12 @@ do_pattern_step (FbdFeedbackVibraPattern *self)
   /* Removing any pending effect */
   fbd_dev_vibra_remove_effect (dev);
 
-  if (*magnitude != 0.0)
+  if (*magnitude != 0.0) {
+    double max_strength = fbd_feedback_vibra_get_max_strength (FBD_FEEDBACK_VIBRA (self));
+
+    *magnitude = MIN (*magnitude, max_strength);
     fbd_dev_vibra_rumble (dev, *magnitude, *duration, TRUE);
+  }
 
   self->timer_id = g_timeout_add_once (*duration,
                                        on_timer_expired,

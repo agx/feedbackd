@@ -41,6 +41,16 @@
         setting the 'important' hint on the submitted event.
       </description>
     </key>
+
+    <key name="max-haptic-strength" type="d">
+      <range min="0.0" max="1.0"/>
+      <default>1.0</default>
+      <summary>Maximum haptic strength</summary>
+      <description>
+        The maximum haptic strength to use when providing feedback.
+      </description>
+    </key>
+
   </schema>
 
   <schema id="org.sigxcpu.feedbackd.application">
