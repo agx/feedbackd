@@ -22,7 +22,7 @@ dbus_inc = include_directories('.')
 install_data(dbus_interfaces, install_dir: ifacedir)
 
 schemas = ['org.sigxcpu.feedbackd.gschema.xml']
-compiled = gnome.compile_schemas(depend_files: schemas, build_by_default: true)
+compiled_schemas = gnome.compile_schemas(depend_files: schemas, build_by_default: true)
 
 compile_schemas = find_program('glib-compile-schemas', required: false)
 if compile_schemas.found()
