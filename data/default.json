@@ -109,8 +109,9 @@
         },
         {
           "event-name" : "button-pressed",
-          "type"       : "VibraRumble",
-          "duration"   : 15
+          "type"       : "VibraPattern",
+          "magnitudes" : [ 0.2 ],
+          "durations"  : [ 7 ]
         },
         {
           "event-name" : "button-released",
@@ -146,6 +147,12 @@
           "event-name" : "message-sent-instant",
           "type"       : "VibraRumble",
           "duration"   : 150
+        },
+        {
+          "event-name" : "notification-new-generic",
+          "type"       : "VibraPattern",
+          "magnitudes" : [ 0.25, 0.0, 0.25 ],
+          "durations"  : [ 50, 250, 50 ]
         },
         {
           "event-name" : "phone-incoming-call",
