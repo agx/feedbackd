@@ -91,7 +91,7 @@ if get_option('tests')
         include_directories: fbd_inc,
         dependencies: test_fbd_deps,
       )
-      test(test, t, env: test_env_fbd)
+      test(test, t, env: test_env_fbd, depends: compiled_schemas)
     endforeach
 
   endif  # daemon
