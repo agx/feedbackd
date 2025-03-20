@@ -243,7 +243,7 @@ fbd_dev_vibra_rumble (FbdDevVibra *self, double magnitude, guint duration, gbool
   memset(&effect, 0, sizeof(effect));
   effect.type = FF_RUMBLE;
   effect.id = -1;
-  effect.u.rumble.strong_magnitude = (0x8000 * magnitude);
+  effect.u.rumble.strong_magnitude = 0xFFFF * magnitude;
   effect.u.rumble.weak_magnitude = 0;
   effect.replay.length = duration;
   effect.replay.delay = 0;

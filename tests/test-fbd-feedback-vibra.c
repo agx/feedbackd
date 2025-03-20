@@ -9,8 +9,48 @@
 #define GMOBILE_USE_UNSTABLE_API
 #include "fbd-feedback-manager.h"
 #include "fbd-feedback-vibra-pattern.h"
+#include "fbd-feedback-vibra-rumble.h"
 
 #include <json-glib/json-glib.h>
+
+
+static void
+test_fbd_feedback_vibra_rumble (void)
+{
+  /* Create manager upfront so we can dispose it, otherwise creating
+   * any feedback would create it implicitly */
+  FbdFeedbackManager *manager = fbd_feedback_manager_get_default ();
+  g_autoptr (GError) err = NULL;
+  g_autoptr (JsonNode) node = NULL;
+  GObject *object;
+  double magnitude;
+  guint count, duration;
+
+  node = json_from_string("{"
+                          " \"event-name\" : \"button-pressed\","
+                          " \"type\"       : \"VibraRumble\","
+                          " \"magnitude\"  : 0.7,"
+                          " \"duration\"   : 100,"
+                          " \"count\"      : 2"
+                          "}", &err);
+  g_assert_no_error (err);
+
+  object = json_gobject_deserialize (FBD_TYPE_FEEDBACK_VIBRA_RUMBLE, node);
+  g_test_assert_expected_messages ();
+
+  g_object_get (object,
+                "magnitude", &magnitude,
+                "duration", &duration,
+                "count", &count,
+                NULL);
+
+  g_assert_cmpfloat_with_epsilon (magnitude, 0.7, FLT_EPSILON);
+  g_assert_cmpint (duration, ==, 100);
+  g_assert_cmpint (count, ==, 2);
+
+  g_assert_finalize_object (object);
+  g_assert_finalize_object (manager);
+}
 
 
 static void
@@ -60,6 +100,7 @@ main (gint argc, gchar *argv[])
 {
   g_test_init (&argc, &argv, NULL);
 
+  g_test_add_func("/feedbackd/fbd/feedback-vibra/rumble", test_fbd_feedback_vibra_rumble);
   g_test_add_func("/feedbackd/fbd/feedback-vibra/pattern", test_fbd_feedback_vibra_pattern);
 
   return g_test_run();
