@@ -1,3 +1,112 @@
+feedbackd (0.8.0) experimental; urgency=medium
+
+  [ Sam Day ]
+  * feedback-led: Ensure flash LED is stopped when prefer-flash gets disabled.
+    Fixes: #82
+
+  [ Guido Günther ]
+  * libfeedback: Make libfeedback.h only include other files.
+    Move the init functions to their own header so we don't clutter
+    libfeedback.h more in the future.
+  * ci: Update shared scripts and dot files to 0ed15ed
+  * build: Format meson files.
+    This will make adding future files less noisy.
+  * ci: Check meson file formats
+  * build: Make doc warnings fatal.
+    This restructure showed that we introduce them just so easily
+  * ci: Add consistency check.
+    Simplifies releases
+  * doc: Make mardown lint happy
+  * README: Add getting in touch section
+  * ci: Make yamllint happy
+  * treewide: Fix typos
+  * data/haptic: Document duration unit in the protocol
+  * vibra-pattern: Reset pos when done.
+    This allows to reuse the feedback.
+  * vibra-pattern: Check for NULL dev.
+    When running e.g. in the theme validator we might not have a vibra dev.
+  * vibra-pattern: End pending vibra when a new one is triggered.
+    This wasn't much of an issue for the DBus API but when using
+    it as event feedback it matters as we might start the new
+    feedback just before the old one ended due to timers being
+    slighlty late.
+  * fbd-feedback-vibra-pattern: Deserialize properties.
+    This allows us to use them in feedback themes
+  * doc: Document the `VibraPattern` feedback
+  * data: Refresh schema when it changed
+  * feedback-vibra: Add and track max-haptic-strength gsetting
+  * vibra-pattern: Honor max haptic strength
+  * vibra-rumble: Honor max haptic strength
+  * vibra-periodic: Honor max strength.
+    Since we scale down the magnitude we also scale down the fade in level
+    to keep the ratio between the two the same.
+    Closes: https://source.puri.sm/Librem5/feedbackd/-/issues/84
+  * data: Add an event for notification-new-generic.
+    We didn't do so until now to not make people go crazy with buzzing
+    phones. Now that we can fine tune the feedback strength better lets see
+    how this works.
+  * data: Make button press feedback less intrusive.
+    This way it can be kept enabled in more situations.
+  * vibra-rumble: Add magnitude property.
+    We add a magnitude property and set it to 0.5 by default. This ensure
+    the relative magnitude stays the same when switching from 0xFFFF to
+    0x7FFF in dev-vibra.
+  * dev-vibra: Allow full magnitude in rumble.
+    Lets not artificially cap the magnitude in the device specific
+    implementation.
+    Since the default magnitude for the common rumble feedback was set to
+    0.5 in the previous commit the effective magnitude in existing themes
+    remains unchanged for that event.
+    The pattern feedbacks didn't make it into a release yet so there's
+    nothing that could get broken.
+    The change doubles the effective when using the Vibra DBus API but as it
+    seems that libmanette didn't land support yet lets just ignore that
+    here.
+    Periodic feedback is unaffected as it uses a different internal API.
+  * doc: Mention theme reload on SIGHUP
+  * vibra-periodic: Modernize doc comment and property definitions.
+    Also untabify. No functional change.
+    Gpb-Dch: Ignore
+  * vibra-periodic: Use same range as in rumble and periodic.
+    We use [0.0, 1.0] in the other haptic feedbacks so let's make periodic
+    do the same.
+    We adjust dev-vibra to match that.
+    Closes: https://source.puri.sm/Librem5/feedbackd/-/issues/86
+  * vibra-periodic: Use better defaults for fade-in-*
+    Lets start at zero when not specified otherwise and also set an
+    arbitrary fade-in-time as setting it to the duration isn't very helpful.
+    While at that move the defaults to the feedback rather than the device
+    so we ensure consistency over different device implementations.
+  * vibra-periodic: Deserialize magnitude and fade-in-level manually.
+    This allows us to add proper fallbacks
+  * vibra-periodic: Add a fallback for the previous [0, 0xFFFF] range.
+    This keeps old themes working
+  * default/theme: Use [0.0, 1.0] for vibra-periodic.
+    We switch `message-new-cellbroadcast` to VibraPeriodic as that is better
+    recognizable than the periodic pattern.
+
+  [ Evangelos Ribeiro Tzaras ]
+  * tests: Depend on daemon for integration test.
+    The carefree developer might try running meson test
+    before meson compile, leaving them with a failing integration test:
+    Start of lfb-integration tests
+    dbus-daemon[326641]: [session uid=1000 pid=326641 pidfd=8] Activating service name='org.sigxcpu.Feedback' requested by ':1.0' (uid=1000 pid=326640 comm="$(pwd)/_build/tests/te")
+    + exec $(pwd)/_build/src/feedbackd
+    $(pwd)/_build/run: 18: exec: $(pwd)/_build/src/feedbackd: not found
+  * tests: Depend on compiled schemas.
+    The carefree developer might try running meson test
+    before meson compile, leaving them with failing
+    feedback-vibra and feedback-profile tests:
+    Start of feedbackd tests
+    Start of fbd tests
+    Start of feedback-vibra tests
+    fbd-feedback-manager-DEBUG: No vibra capable device found
+    fbd-feedback-manager-DEBUG: Failed to init leds device: No usable LEDs found
+    not ok /feedbackd/fbd/feedback-vibra/pattern - GLib-GIO-FATAL-ERROR: No GSettings schemas are installed on the system
+    Bail out!
+
+ -- Guido Günther <agx@sigxcpu.org>  Fri, 21 Mar 2025 19:15:49 +0100
+
 feedbackd (0.7.0) experimental; urgency=medium
 
   * packaging: Add symbols from 0.6.0

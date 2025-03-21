@@ -1,3 +1,23 @@
+feedbackd 0.8.0
+---------------
+Released March 2025
+* New `VibraPattern` feedbackd
+* Allow to configure max haptic strength
+* Allow to configure magnitude of `VibraRumble` feedback
+* Use `[0.0, 1.0]` as magnitude in `VibraPeriodic` too. Please adjust
+  any out of tree themes (old values continue to work for the moment).
+* Add haptic event for `notification-new-generic`
+* Make `button-press` feedback less intrusive
+* More internal fixes
+* Issues fixed:
+    * https://source.puri.sm/Librem5/feedbackd/-/issues/82
+    * https://source.puri.sm/Librem5/feedbackd/-/issues/84
+    * https://source.puri.sm/Librem5/feedbackd/-/issues/86
+* Contributors:
+    * Evangelos Ribeiro Tzaras
+    * Guido Günther
+    * Sam Day
+
 feedbackd 0.7.0
 ---------------
 Released February 2025
