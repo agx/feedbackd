@@ -112,7 +112,8 @@ lfb_uninit (void)
   _initted = FALSE;
 
   /* Cancel all feedbacks that the client forgot to clean up */
-  lfb_cancel_feedbacks ();
+  if (_active_ids)
+    lfb_cancel_feedbacks ();
   g_clear_pointer (&_active_ids, g_hash_table_destroy);
   g_clear_pointer (&_app_id, g_free);
   g_clear_object (&_proxy);

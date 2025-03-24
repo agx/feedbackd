@@ -44,16 +44,18 @@ if get_option('tests')
     test(test, t, env: test_env, depends: fbd_exe)
   endif
 
-  test = 'lfb-event'
-  t = executable(
-    'test-@0@'.format(test),
-    ['test-@0@.c'.format(test)],
-    c_args: test_lfb_cflags,
-    pie: true,
-    link_args: test_lfb_link_args,
-    dependencies: test_lfb_deps,
-  )
-  test(test, t, env: test_env)
+  unit_tests = ['lfb-event', 'lfb-main']
+  foreach test : unit_tests
+    t = executable(
+      'test-@0@'.format(test),
+      ['test-@0@.c'.format(test)],
+      c_args: test_lfb_cflags,
+      pie: true,
+      link_args: test_lfb_link_args,
+      dependencies: test_lfb_deps,
+    )
+    test(test, t, env: test_env)
+  endforeach
 
   # Daemon Unit tests
   if get_option('daemon')
