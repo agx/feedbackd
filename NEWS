@@ -1,3 +1,10 @@
+feedbackd 0.8.1
+---------------
+Released March 2025
+* Avoid critical when `lfb_uninit()` isn't paired with `lfb_init()`
+* Contributors:
+    * Guido Günther
+
 feedbackd 0.8.0
 ---------------
 Released March 2025

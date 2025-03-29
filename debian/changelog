@@ -1,3 +1,11 @@
+feedbackd (0.8.1) experimental; urgency=medium
+
+  * libfeedback: Only cancel feedbacks if ever inited.
+    If lfb_init() wasn't called before lfb_uninit() we'd otherwise raise a
+    critical which isn't nice for a library.
+
+ -- Guido Günther <agx@sigxcpu.org>  Sat, 29 Mar 2025 10:07:40 +0100
+
 feedbackd (0.8.0) experimental; urgency=medium
 
   [ Sam Day ]
