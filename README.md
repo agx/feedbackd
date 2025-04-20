@@ -302,6 +302,13 @@ a haptic device is found.
 - Issue tracker: <https://gitlab.freedesktop.org/agx/feedbackd/-/issues>
 - Matrix: <https://matrix.to/#/#phosh:sigxcpu.org>
 
+## Code of Conduct
+
+Note that as a project hosted on freedesktop.org, feedbackd follows its
+[Code of Conduct], based on the Contributor Covenant. Please conduct yourself
+in a respectful and civilized manner when communicating with community members
+on IRC and bug tracker.
+
 ## Documentation
 
 - [Libfeedback API](https://honk.sigxcpu.org/projects/feedbackd/doc/)
@@ -312,3 +319,4 @@ a haptic device is found.
 [debian/control]: ./debian/control#L5
 [1]: https://gitlab.freedesktop.org/agx/feedbackd-device-themes
 [feedback-themes]: ./doc/feedback-themes.rst
+[Code of Conduct]: https://www.freedesktop.org/wiki/CodeOfConduct/
