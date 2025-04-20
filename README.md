@@ -12,7 +12,7 @@ licensed under LGPL 2.1+.
 ## Getting the source
 
 ```sh
-git clone https://source.puri.sm/Librem5/feedbackd
+git clone https://gitlab.freedesktop.org/agx/feedbackd
 cd feedbackd
 ```
 
@@ -299,7 +299,7 @@ a haptic device is found.
 
 ## Getting in Touch
 
-- Issue tracker: <https://source.puri.sm/agx/feedbackd/-/issues>
+- Issue tracker: <https://gitlab.freedesktop.org/agx/feedbackd/-/issues>
 - Matrix: <https://matrix.to/#/#phosh:sigxcpu.org>
 
 ## Documentation
@@ -310,5 +310,5 @@ a haptic device is found.
 - [W3's vibration API draft](https://www.w3.org/TR/vibration/)
 
 [debian/control]: ./debian/control#L5
-[1]: https://source.puri.sm/Librem5/feedbackd-device-themes
+[1]: https://gitlab.freedesktop.org/agx/feedbackd-device-themes
 [feedback-themes]: ./doc/feedback-themes.rst

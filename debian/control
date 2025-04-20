@@ -24,7 +24,7 @@ Build-Depends:
  umockdev,
  valac,
 Standards-Version: 4.6.2
-Homepage: https://source.puri.sm/Librem5/feedbackd
+Homepage: https://gitlab.freedesktop.org/agx/feedbackd
 Rules-Requires-Root: no
 
 Package: feedbackd
