@@ -84,7 +84,8 @@ test:native-debian-trixie:
     - build:gcc:native-debian-trixie:full
   coverage: '/^\s+lines\.+:\s+([\d.]+\%)\s+/'
   script:
-    - dbus-run-session ninja -C _build test coverage
+    - dbus-run-session ninja -C _build test
+    - ninja -C _build coverage || true
   except:
     variables:
       - $PKG_ONLY == "1"
