@@ -17,7 +17,7 @@ be configured and overridden by so called themes. Feedback themes use a JSON
 format that can be validated with ``fbd-theme-validate``.
 
 For details on how to create or modify feedback themes see
-``feedbackd's documentation`` at https://source.puri.sm/Librem5/feedbackd#feedback-theme
+``feedbackd's documentation`` at https://gitlab.freedesktop.org/agx/feedbackd#feedback-theme
 
 Feedback types
 --------------
