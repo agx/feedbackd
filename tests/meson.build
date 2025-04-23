@@ -76,6 +76,7 @@ if get_option('tests')
     fbd_tests = [
       'fbd-feedback-led',
       'fbd-feedback-profile',
+      'fbd-feedback-sound',
       'fbd-feedback-vibra',
       'fbd-feedback-theme',
       'fbd-event',
