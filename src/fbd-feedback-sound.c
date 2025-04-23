@@ -143,14 +143,21 @@ fbd_feedback_sound_class_init (FbdFeedbackSoundClass *klass)
   base_class->end = fbd_feedback_sound_end;
   base_class->is_available = fbd_feedback_sound_is_available;
 
+  /**
+   * FbdFeedbackSound:effect:
+   *
+   * The sound effect name
+   */
   props[PROP_EFFECT] =
-    g_param_spec_string (
-      "effect",
-      "Effect",
-      "The sound effects name",
-      "",
-      G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
-
+    g_param_spec_string ("effect", "", "",
+                         NULL,
+                         G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+  /**
+   * FbdFeedbackSound:file-name:
+   *
+   * The file name to use for the sound effect. This overrides the
+   * effect name.
+   */
   props[PROP_FILE_NAME] =
     g_param_spec_string ("file-name", "", "",
                          NULL,
