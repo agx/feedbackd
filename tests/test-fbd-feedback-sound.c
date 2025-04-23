@@ -22,12 +22,13 @@ test_fbd_feedback_sound_event (void)
   g_autoptr (GError) err = NULL;
   g_autoptr (JsonNode) node = NULL;
   GObject *object;
-  g_autofree char *event_name = NULL, *file_name = NULL, *effect = NULL;
+  g_autofree char *event_name = NULL, *file_name = NULL, *effect = NULL, *media_role = NULL;
 
   node = json_from_string ("{"
                            " \"event-name\" : \"message-new-cellbroadcast\","
                            " \"type\"       : \"Sound\","
-                           " \"effect\"     : \"cellbroadcast\""
+                           " \"effect\"     : \"cellbroadcast\","
+                           " \"media-role\" : \"emergency\""
                            "}", &err);
   g_assert_no_error (err);
 
@@ -38,11 +39,13 @@ test_fbd_feedback_sound_event (void)
                 "event-name", &event_name,
                 "file-name", &file_name,
                 "effect", &effect,
+                "media-role", &media_role,
                 NULL);
 
   g_assert_cmpstr (event_name, ==, "message-new-cellbroadcast");
   g_assert_cmpstr (effect, ==, "cellbroadcast");
   g_assert_null (file_name);
+  g_assert_cmpstr (media_role, ==, "emergency");
 
   g_assert_finalize_object (object);
   g_assert_finalize_object (manager);
