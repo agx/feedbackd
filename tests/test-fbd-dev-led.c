@@ -93,6 +93,7 @@ test_fbd_dev_led_flash (FbdUmockdevFixture *fixture, gconstpointer unused)
   g_assert_cmpint (fbd_dev_led_get_max_brightness (led), ==, 255);
   g_assert_true (fbd_dev_led_supports_color (led, FBD_FEEDBACK_LED_COLOR_FLASH));
   g_assert_true (fbd_dev_led_start_periodic (led, 50, 50));
+  g_assert_true (fbd_dev_led_start_periodic (led, 50, 0));
 
   g_assert_finalize_object (led);
 }

@@ -115,25 +115,31 @@ fbd_dev_led_start_periodic_default (FbdDevLed *led,
                                     guint      freq)
 {
   FbdDevLedPrivate *priv;
-  g_autoptr (GError) err = NULL;
-  g_autofree gchar *str = NULL;
   gboolean success = FALSE;
   gdouble max;
-  gdouble t;
 
   g_return_val_if_fail (FBD_IS_DEV_LED (led), FALSE);
   g_return_val_if_fail (max_brightness_percentage <= 100, FALSE);
   priv = fbd_dev_led_get_instance_private (led);
 
   max =  priv->max_brightness * (max_brightness_percentage / 100.0);
-  /*  ms     mHz           T/2 */
-  t = 1000.0 * 1000.0 / freq / 2.0;
-  str = g_strdup_printf ("0 %d %d %d\n", (gint)t, (gint)max, (gint)t);
-  g_debug ("Freq %d mHz, Brightness: %d%%, Blink pattern: %s", freq, max_brightness_percentage, str);
+  if (freq) {
+    g_autofree gchar *str = NULL;
+    g_autoptr (GError) err = NULL;
+    gdouble t;
 
-  success = fbd_udev_set_sysfs_path_attr_as_string (priv->dev, LED_PATTERN_ATTR, str, &err);
-  if (!success)
-    g_warning ("Failed to set led pattern: %s", err->message);
+    /*  ms     mHz           T/2 */
+    t = 1000.0 * 1000.0 / freq / 2.0;
+    str = g_strdup_printf ("0 %d %d %d\n", (gint)t, (gint)max, (gint)t);
+    g_debug ("Freq %d mHz, Brightness: %d%%, Blink pattern: %s", freq, max_brightness_percentage,
+             str);
+    success = fbd_udev_set_sysfs_path_attr_as_string (priv->dev, LED_PATTERN_ATTR, str, &err);
+    if (!success)
+      g_warning ("Failed to set led pattern: %s", err->message);
+  } else {
+    g_debug ("Constant light, Brightness: %d%%", max_brightness_percentage);
+    success = fbd_dev_led_set_brightness (led, (gint)max);
+  }
 
   return success;
 }
