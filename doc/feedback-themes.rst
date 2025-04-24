@@ -36,6 +36,8 @@ Sound feedback
 Sound feedbacks specify an event name from a XDG sound theme. Sound themes
 are described in the ``Sound theme spec`` at https://freedesktop.org/wiki/Specifications/sound-theme-spec/
 
+- `event-name`: The sound event name to use.
+
 VibraRumble feedback
 ~~~~~~~~~~~~~~~~~~~~
 
