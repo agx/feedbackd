@@ -41,7 +41,10 @@ VibraRumble feedback
 
 The `VibraRumble` feedback uses a single property
 
+- `count`: The number of rumbles.
+- `pause`: The pause between each rumble in ms.
 - `duration`: The duration of the rumble in ms.
+- `mangitude`: The relative magnitude of the rumble (``[0, 1]``).
 
 VibraPattern feedback
 ~~~~~~~~~~~~~~~~~~~~~
