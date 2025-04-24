@@ -11,10 +11,18 @@ Theme configuration for feedbackd
 DESCRIPTION
 -----------
 
-In order to reflect device specifics and user overrides the feedback
-(such as sound, haptic or led) that is being triggered by an event can
-be configured and overridden by so called themes. Feedback themes use a JSON
-format that can be validated with ``fbd-theme-validate``.
+The feedback provided to the user for an event is determined by the
+feedback theme. Each theme consists of up to three profiles (`full`,
+`quiet` and `silent`) containing event names and their associated
+feedback.
+
+Events in the theme are named according to the
+`Event Naming Specifiaction
+<https://gitlab.freedesktop.org/agx/feedbackd/-/blob/main/doc/Event-naming-spec-0.0.0.md>`_
+
+Feedback themes use a JSON format that can be validated with
+``fbd-theme-validate(1)``. They can include other themes to avoid
+repetition.
 
 For details on how to create or modify feedback themes see
 ``feedbackd's documentation`` at https://gitlab.freedesktop.org/agx/feedbackd#feedback-theme
