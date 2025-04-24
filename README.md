@@ -194,8 +194,8 @@ examples:
 
 For available feeddback types see the [feedback-themes][](5) manpage.
 
-You can check the feedback theme and the classes (prefixed with Fbd)
-for available properties. Note that the feedback theme API (including
+You can check the feedback theme and the [feedbackd-themes manpage][]
+or available properties. Note that the feedback theme API (including
 the theme file format) is not stable but considered internal to the
 daemon.
 
@@ -320,3 +320,4 @@ on IRC and bug tracker.
 [1]: https://gitlab.freedesktop.org/agx/feedbackd-device-themes
 [feedback-themes]: ./doc/feedback-themes.rst
 [Code of Conduct]: https://www.freedesktop.org/wiki/CodeOfConduct/
+[feedbackd-themes manpage]: ./doc/feedbackd-themes.rst
