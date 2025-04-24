@@ -100,7 +100,7 @@ You can add your own themes in multiple ways:
    ```json
    {
       "name: "custom"
-      "parent-theme": "default"
+      "parent-name": "default"
       "profiles" : [
        ...(entries you want to change go here)...
       ]
