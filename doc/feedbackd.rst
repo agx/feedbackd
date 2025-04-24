@@ -21,14 +21,14 @@ event feedback such as playing a sound, trigger a haptic motor or blink
 a LED.
 
 The feedback triggered by a given event is determined by the feedback theme in
-use. Events are submitted via a DBus API.
+use (see `feedback-themes(5)`). Events are submitted via a DBus API.
 
 Any feedback triggered by a client via an event will be stopped latest when the
 client disconnects from DBus. This makes sure all feedbacks get canceled if the
 app that triggered it crashes.
 
 For details refer to the event and feedback theme specs at
-`<https://gitlab.freedesktop.org/agx/feedbackd/>`__
+`<https://gitlab.freedesktop.org/agx/feedbackd/>`__.
 
 Feedbackd reloads the feedback theme on `SIGHUP` (i.e. `pkill -HUP feedbackd`).
 
@@ -49,19 +49,21 @@ These gsettings are used by ``feedbackd``:
 
 - `org.sigxcpu.feedbackd`
 
-    - `profile`: The current overall feedback profile
+    - `profile`: The current overall feedback profile. Valid  values are
+      `full`, `quiet` and `silent`.
     - `allow-important`: List of apps that can override the feedback level
       (useful for e.g. allowing the alarm clock to also emit sound when
       device is in silent mode).
     - `prefer-flash`: Prefer camera flash over status LED
     - `theme`: The feedback theme to use. This can be used to override
       the feedback theme picked by feedbackd based on device information.
-    - `max-haptic-strength`: Limits th maximum strenght used for the
+    - `max-haptic-strength`: Limits th maximum strength used for the
       haptic motor `[0.0, 1.0]`.
 
 - `org.sigxcpu.feedbackd.application`
 
-   - `profile`: Per application profile levels
+   - `profile`: Per application profile levels. Valid  values are
+      `full`, `quiet` and `silent`.
 
 See also
 ========

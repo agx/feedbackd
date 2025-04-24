@@ -70,11 +70,9 @@ See `examples/` for a simple python example using GObject introspection.
 
 ## How it works
 
-We're using a [event naming spec](./doc/Event-naming-spec-0.0.0.md)
-similar to <http://0pointer.de/public/sound-naming-spec.html> to name
-events. This will allow us to act as a system sound library so
-applications only need to call into this library and things like
-the quiet and silent profile work out of the box.
+Whenever an event is submitted to the daemon by a client via the DBus API *feedbackd*
+looks up the corresponding feedbacks according to the current profile in the currently
+active feedback theme (taking per application profile settings into account).
 
 Any feedback triggered by a client via an event will be stopped latest when the
 client disconnects from DBus. This makes sure all feedbacks get canceled if the
@@ -82,9 +80,9 @@ app that triggered it crashes.
 
 ### Feedback theme
 
-Events are then mapped to a specific type of feedback (sound, led, vibra) via a
-device specific theme - since devices have different capabilities and
-different users different needs.
+As devices have varying capabilities and users different needs, events
+are mapped to a feedbacks (sound, LED, vibra) via a configurable
+theme.
 
 Feedbackd is shipped with a default theme `default.json`.
 You can add your own themes in multiple ways:
@@ -100,7 +98,7 @@ You can add your own themes in multiple ways:
    ```json
    {
       "name: "custom"
-      "parent-theme": "default"
+      "parent-name": "default"
       "profiles" : [
        ...(entries you want to change go here)...
       ]
@@ -194,8 +192,8 @@ examples:
 
 For available feeddback types see the [feedback-themes][](5) manpage.
 
-You can check the feedback theme and the classes (prefixed with Fbd)
-for available properties. Note that the feedback theme API (including
+You can check the feedback theme and the [feedbackd-themes manpage][]
+or available properties. Note that the feedback theme API (including
 the theme file format) is not stable but considered internal to the
 daemon.
 
@@ -320,3 +318,4 @@ on IRC and bug tracker.
 [1]: https://gitlab.freedesktop.org/agx/feedbackd-device-themes
 [feedback-themes]: ./doc/feedback-themes.rst
 [Code of Conduct]: https://www.freedesktop.org/wiki/CodeOfConduct/
+[feedbackd-themes manpage]: ./doc/feedbackd-themes.rst
