@@ -195,6 +195,7 @@ fbd_dev_led_multicolor_class_init (FbdDevLedMulticolorClass *klass)
 static void
 fbd_dev_led_multicolor_init (FbdDevLedMulticolor *self)
 {
+  fbd_dev_led_set_priority (FBD_DEV_LED (self), 50);
 }
 
 

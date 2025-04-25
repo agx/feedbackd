@@ -27,6 +27,7 @@ gboolean            fbd_dev_led_start_periodic (FbdDevLed      *led,
                                                 guint           max_brightness_percentage,
                                                 guint           freq);
 gboolean            fbd_dev_led_supports_color (FbdDevLed *led, FbdFeedbackLedColor color);
+int                 fbd_dev_led_get_priority (FbdDevLed *self);
 
 struct _FbdDevLedClass {
   GObjectClass parent_class;

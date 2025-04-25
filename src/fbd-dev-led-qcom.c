@@ -141,6 +141,7 @@ fbd_dev_led_qcom_class_init (FbdDevLedQcomClass *klass)
 static void
 fbd_dev_led_qcom_init (FbdDevLedQcom *self)
 {
+  fbd_dev_led_set_priority (FBD_DEV_LED (self), 20);
 }
 
 

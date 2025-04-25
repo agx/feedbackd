@@ -71,6 +71,7 @@ fbd_dev_led_flash_class_init (FbdDevLedFlashClass *klass)
 static void
 fbd_dev_led_flash_init (FbdDevLedFlash *self)
 {
+  fbd_dev_led_set_priority (FBD_DEV_LED (self), 5);
 }
 
 

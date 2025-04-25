@@ -1,5 +1,7 @@
 /*
  * Copyright (C) 2020 Purism SPC
+ *               2025 The Phosh Developers
+ *
  * SPDX-License-Identifier: GPL-3.0+
  * Author: Guido Günther <agx@sigxcpu.org>
  *
@@ -34,6 +36,7 @@ typedef struct _FbdDevLedPrivate {
   GUdevDevice        *dev;
   guint               max_brightness;
 
+  int                 priority;
   FbdFeedbackLedColor color;
 } FbdDevLedPrivate;
 
@@ -251,6 +254,7 @@ fbd_dev_led_class_init (FbdDevLedClass *klass)
 static void
 fbd_dev_led_init (FbdDevLed *self)
 {
+  fbd_dev_led_set_priority (self, 10);
 }
 
 
@@ -362,4 +366,28 @@ fbd_dev_led_set_max_brightness (FbdDevLed *led, guint max_brightness)
   priv = fbd_dev_led_get_instance_private (led);
 
   priv->max_brightness = max_brightness;
+}
+
+
+int
+fbd_dev_led_get_priority (FbdDevLed *self)
+{
+  FbdDevLedPrivate *priv;
+
+  g_return_val_if_fail (FBD_IS_DEV_LED (self), 0);
+  priv = fbd_dev_led_get_instance_private (self);
+
+  return priv->priority;
+}
+
+
+void
+fbd_dev_led_set_priority (FbdDevLed *self, int priority)
+{
+  FbdDevLedPrivate *priv;
+
+  g_return_if_fail (FBD_IS_DEV_LED (self));
+  priv = fbd_dev_led_get_instance_private (self);
+
+  priv->priority = priority;
 }
