@@ -50,8 +50,17 @@ fbd_dev_led_probe_default (FbdDevLed *led, GError **error)
   FbdDevLedPrivate *priv = fbd_dev_led_get_instance_private (led);
   const gchar *name, *path;
   gboolean success = FALSE;
+  const char *pattern;
 
   name = g_udev_device_get_name (priv->dev);
+  pattern = g_udev_device_get_sysfs_attr (priv->dev, LED_PATTERN_ATTR);
+  if (!pattern) {
+    g_set_error (error,
+                 G_FILE_ERROR, G_FILE_ERROR_FAILED,
+                 "LED %s can't use patterns", name);
+    return FALSE;
+  }
+
   for (int i = 0; i <= FBD_FEEDBACK_LED_COLOR_RGB; i++) {
     g_autofree char *color = NULL;
     g_autofree char *enum_name = NULL;
