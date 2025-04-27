@@ -37,7 +37,7 @@ Depends:
 Recommends:
  gsettings-desktop-schemas,
 Breaks:
- feedbackd-device-themes (>= 0.8.0~),
+ feedbackd-device-themes (<< 0.8.0~),
 Description: DBus service for haptic/visual/audio feedback
  Feedbackd is a DBus activated daemon that provides haptic/
  visual/audio feedback based on events selected from configurable
