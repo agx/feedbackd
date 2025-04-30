@@ -203,6 +203,7 @@ fbd_dev_sound_play (FbdDevSound *self, FbdFeedbackSound *feedback, FbdDevSoundPl
 {
   FbdAsyncData *data;
   const char *filename;
+  const char *role;
 
   g_return_val_if_fail (FBD_IS_DEV_SOUND (self), FALSE);
   g_return_val_if_fail (GSOUND_IS_CONTEXT (self->ctx), FALSE);
@@ -212,6 +213,10 @@ fbd_dev_sound_play (FbdDevSound *self, FbdFeedbackSound *feedback, FbdDevSoundPl
   if (!g_hash_table_insert (self->playbacks, feedback, data))
     g_warning ("Feedback %p already present", feedback);
 
+  role = fbd_feedback_sound_get_media_role (feedback);
+  if (!role)
+    role = "event";
+
   filename = fbd_feedback_sound_get_file_name (feedback);
   if (filename) {
     gsound_context_play_full (self->ctx, data->cancel,
@@ -219,7 +224,7 @@ fbd_dev_sound_play (FbdDevSound *self, FbdFeedbackSound *feedback, FbdDevSoundPl
                               data,
                               GSOUND_ATTR_MEDIA_FILENAME, filename,
                               GSOUND_ATTR_EVENT_DESCRIPTION, "Feedbackd custom sound feedback",
-                              GSOUND_ATTR_MEDIA_ROLE, "event",
+                              GSOUND_ATTR_MEDIA_ROLE, role,
                               NULL);
   } else {
     gsound_context_play_full (self->ctx, data->cancel,
@@ -227,7 +232,7 @@ fbd_dev_sound_play (FbdDevSound *self, FbdFeedbackSound *feedback, FbdDevSoundPl
                               data,
                               GSOUND_ATTR_EVENT_ID, fbd_feedback_sound_get_effect (feedback),
                               GSOUND_ATTR_EVENT_DESCRIPTION, "Feedbackd sound feedback",
-                              GSOUND_ATTR_MEDIA_ROLE, "event",
+                              GSOUND_ATTR_MEDIA_ROLE, role,
                               NULL);
   }
   return TRUE;
