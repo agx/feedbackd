@@ -196,7 +196,7 @@ do_pattern_step (FbdFeedbackVibraPattern *self)
            *magnitude,
            *duration);
 
-  /* Removing any pending effect */
+  /* Remove any pending effect */
   fbd_dev_vibra_remove_effect (dev);
 
   if (*magnitude != 0.0) {
