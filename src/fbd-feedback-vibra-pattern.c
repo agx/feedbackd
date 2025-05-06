@@ -184,29 +184,29 @@ do_pattern_step (FbdFeedbackVibraPattern *self)
 {
   FbdFeedbackManager *manager = fbd_feedback_manager_get_default ();
   FbdDevVibra *dev = fbd_feedback_manager_get_dev_vibra (manager);
-  double *magnitude;
-  guint *duration;
+  double magnitude;
+  guint duration;
 
-  magnitude = &g_array_index (self->magnitudes, double, self->pos);
-  duration = &g_array_index (self->durations, guint, self->pos);
+  magnitude = g_array_index (self->magnitudes, double, self->pos);
+  duration = g_array_index (self->durations, guint, self->pos);
 
   g_debug ("step: pos: %d/%d, magn: %f, timeout %u",
            self->pos,
            self->durations->len,
-           *magnitude,
-           *duration);
+           magnitude,
+           duration);
 
   /* Remove any pending effect */
   fbd_dev_vibra_remove_effect (dev);
 
-  if (*magnitude != 0.0) {
+  if (magnitude != 0.0) {
     double max_strength = fbd_feedback_vibra_get_max_strength (FBD_FEEDBACK_VIBRA (self));
 
-    *magnitude = MIN (*magnitude, max_strength);
-    fbd_dev_vibra_rumble (dev, *magnitude, *duration, TRUE);
+    magnitude = MIN (magnitude, max_strength);
+    fbd_dev_vibra_rumble (dev, magnitude, duration, TRUE);
   }
 
-  self->timer_id = g_timeout_add_once (*duration,
+  self->timer_id = g_timeout_add_once (duration,
                                        on_timer_expired,
                                        self);
   g_source_set_name_by_id (self->timer_id, "feedback-vibra-pattern-timer");
