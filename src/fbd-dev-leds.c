@@ -43,6 +43,7 @@ static void initable_iface_init (GInitableIface *iface);
 G_DEFINE_TYPE_WITH_CODE (FbdDevLeds, fbd_dev_leds, G_TYPE_OBJECT,
                          G_IMPLEMENT_INTERFACE (G_TYPE_INITABLE, initable_iface_init));
 
+
 static FbdDevLed *
 find_led_by_color (FbdDevLeds *self, FbdFeedbackLedColor color)
 {
@@ -109,6 +110,16 @@ probe_led (GUdevDevice *dev, GError **error) {
 }
 
 
+static int
+priority_cmp (gconstpointer a, gconstpointer b)
+{
+  int prio_a = fbd_dev_led_get_priority ((FbdDevLed *)a);
+  int prio_b = fbd_dev_led_get_priority ((FbdDevLed *)b);
+
+  return prio_b - prio_a;
+}
+
+
 static gboolean
 initable_init (GInitable    *initable,
                GCancellable *cancellable,
@@ -117,7 +128,7 @@ initable_init (GInitable    *initable,
   const gchar * const subsystems[] = { LED_SUBSYSTEM, NULL };
   FbdDevLeds *self = FBD_DEV_LEDS (initable);
   g_autolist (GUdevDevice) leds = NULL;
-  gboolean found = FALSE;
+  GSList *usable_leds = NULL;
 
   self->client = g_udev_client_new (subsystems);
 
@@ -135,21 +146,21 @@ initable_init (GInitable    *initable,
 
     led = probe_led (dev, &err);
 
-    if (led) {
-      self->leds = g_slist_append (self->leds, led);
-      found = TRUE;
-    }
+    if (led)
+      usable_leds = g_slist_append (usable_leds, led);
   }
 
   /* TODO: listen for new leds via udev events */
 
-  if (!found) {
+  if (usable_leds) {
+    self->leds = g_slist_sort (usable_leds, priority_cmp);
+  } else {
     g_set_error (error,
                  G_FILE_ERROR, G_FILE_ERROR_FAILED,
                  "No usable LEDs found");
   }
 
-  return found;
+  return !!usable_leds;
 }
 
 static void

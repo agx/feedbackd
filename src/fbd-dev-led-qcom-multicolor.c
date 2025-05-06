@@ -75,6 +75,7 @@ fbd_dev_led_qcom_multicolor_class_init (FbdDevLedQcomMulticolorClass *klass)
 static void
 fbd_dev_led_qcom_multicolor_init (FbdDevLedQcomMulticolor *self)
 {
+  fbd_dev_led_set_priority (FBD_DEV_LED (self), 60);
 }
 
 
