@@ -1,3 +1,18 @@
+feedbackd 0.8.2
+---------------
+Released May 2025
+* Ignore LEDs that don't support pattern (unbreaks PinePhone)
+* Allow to set media role for sound events
+* Sort LEDs by priority so we pick the most capable one
+* LED: Allow 0 frequency (constant on)
+* vibra: Preserve original feedback value when the user changed
+  strength
+* Issues fixed:
+    * https://gitlab.freedesktop.org/agx/feedbackd/-/issues/89
+* Contributors:
+    * Guido Günther
+    * knoppix knoppix
+
 feedbackd 0.8.1
 ---------------
 Released March 2025
