@@ -1,6 +1,9 @@
 /*
  * Copyright (C) 2020 Purism SPC
+ *               2024-2025 The Phosh Developers
+ *
  * SPDX-License-Identifier: GPL-3.0+
+ *
  * Author: Guido Günther <agx@sigxcpu.org>
  */
 
@@ -94,15 +97,15 @@ fbd_feedback_vibra_end (FbdFeedbackBase *base)
   g_return_if_fail (klass->end_vibra);
   klass->end_vibra (self);
   g_clear_handle_id (&priv->timer_id, g_source_remove);
-  fbd_feedback_base_done (FBD_FEEDBACK_BASE(self));
+  fbd_feedback_base_done (FBD_FEEDBACK_BASE (self));
 }
 
 
 static void
 fbd_feedback_vibra_set_property (GObject      *object,
-                                guint         property_id,
-                                const GValue *value,
-                                GParamSpec   *pspec)
+                                 guint         property_id,
+                                 const GValue *value,
+                                 GParamSpec   *pspec)
 {
   FbdFeedbackVibra *self = FBD_FEEDBACK_VIBRA (object);
   FbdFeedbackVibraPrivate *priv = fbd_feedback_vibra_get_instance_private (self);
