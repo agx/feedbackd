@@ -1,3 +1,66 @@
+feedbackd (0.8.2) experimental; urgency=medium
+
+  [ Guido Günther ]
+  * ci: Update for fdo. Drop the now unneeded tags and the arm64 build
+  * ci: Allow coverage collection to fail
+  * treewide: Update repo URLs.
+    We leave changelog and NEWS untouched as they track history.
+  * README: Add CoC
+  * ci: Add ci-fairy check.
+    This makes sure we have Signed-off-by:
+  * doc: Document missing VibraRumble properties.
+    Fixes f089ad2 ("vibra-rumble: Add magnitude property")
+  * doc: Document Sound properties
+  * doc: Reference manpage.
+    Refer to manpage rather than to the classes in the source code.
+  * doc: Fix parent-name reference.
+    Closes: https://gitlab.freedesktop.org/agx/feedbackd/-/issues/89
+  * doc: Clarify theme use
+  * packaging: Fix inverted Breaks
+  * fbd-dev-led-multicolor: Ignore LEDs that don't have three values.
+    We assume that multicolor LEDs are RGB so reject those that don't
+    have three components.
+    E.g. the Framework Laptop exposes a power button LED as multicolor
+    that only has a white component. This way it gets treated as single color LED.
+  * examples: Add example udev rule for Framework 13 Laptop
+  * tests: Test sound feedback
+  * feedback-sound: Allow to set media role.
+    This will allow us to specify the role when playing the sound.
+  * fbd-dev-sound: Set special media role when present.
+    We default to "event".
+  * doc: Document media-role property
+  * fbd-dev-led: Ignore leds that can't handle patterns.
+    While in theory we could have themes with only freq = 0 values we
+    currently assume there can be patterns.
+  * fbd-dev-led: Sort leds by priority.
+    This makes sure we e.g. prefer multicolor leds over single color ones
+    and those that can be on insuspend (qcom) over those that can't.
+    We can extend this to allow to set the priority via udev/hwdb in the
+    future.
+  * vibra: Some style and comment fixes
+  * vibra-pattern: Don't overwrite magnitudes.
+    When determining the value for the rumble we assigned the result to the
+    value in the array thus potentially overwriting the value from the theme.
+    This goes unnoticed as long as we don't lower the global `max_strength`
+    below the magnitude. But when we e.g. set the `max_strength` to
+    zero the device will fail to rumble when we increase `max_strength`
+    later on again.
+    Steps to reproduce:
+      - Use an event that used `VibraRumble`, e.g. `button-press`
+        in the oneplus,fajita device theme
+      - `fbcli -E button-pressed` -> works
+      - set haptic feedback to 0%:
+        `gsettings set org.sigxcpu.feedbackd max-haptic-strength 0.0`
+      - set it back to 100%:
+        `gsettings set org.sigxcpu.feedbackd max-haptic-strength 1.0`
+      - `fbcli -E button-pressed` -> no feedback
+
+  [ knoppix knoppix ]
+  * Allow constant lighting of notification LED through the setting of
+    frequency in theme.json to zero.
+
+ -- Guido Günther <agx@sigxcpu.org>  Fri, 09 May 2025 21:42:55 +0200
+
 feedbackd (0.8.1) experimental; urgency=medium
 
   * libfeedback: Only cancel feedbacks if ever inited.
@@ -899,7 +962,7 @@ feedbackd (0.0.0+git20200726) amber-phone; urgency=medium
   [ Arnaud Ferraris ]
   * debian: udev: add support for PinePhone front LEDs
   * fbd-dev-leds: store LED color when parsing devices.
-    Failing to do so will always select the first recognized LED (the blue 
+    Failing to do so will always select the first recognized LED (the blue
     one for the PinePhone).
 
   [ Guido Günther ]
