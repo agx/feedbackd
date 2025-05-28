@@ -61,20 +61,20 @@ These events are meant to be used by applications.
 
 #### Notifications
 
+- *alarm-clock-elapsed*: A user configured alarm elapsed.
 - *camera-focus*: The event used when the camera got focus.
 - *camera-shutter*: The event used when a photo was taken.
-- *message-new-instant*: The event used when a new IM is received.
-- *message-new-sms*: The event used when a new sms is received.
-- *message-new-email*: The event used when a new email is received.
 - *message-missed-email*: The event used when an email was received but not seen by the user.
 - *message-missed-instant*: The event used when a instant message was received but not seen by the user.
 - *message-missed-sms*: The event used when a sms message was received but not seen by the user.
+- *message-new-email*: The event used when a new email is received.
+- *message-new-instant*: The event used when a new IM is received.
+- *message-new-sms*: The event used when a new sms is received.
+- *phone-failure*: The event used when a phone/voip call is terminated because of a failure.
+- *phone-hangup*: The event used when a phone/voip call is hung up.
 - *phone-incoming-call*: The event used when a phone/voip call is coming in.
 - *phone-missed-call*: The event used when a phone/voip call is was incoming but not answered.
 - *phone-outgoing-busy*: The event used when for outgoing phone/voip call when the responder is busy/not available.
-- *phone-hangup*: The event used when a phone/voip call is hung up.
-- *phone-failure*: The event used when a phone/voip call is terminated because of a failure.
-- *alarm-clock-elapsed*: A user configured alarm elapsed.
 - *timeout-completed*: A user configured timeout completed (e.g. a stop watch).
 
 #### Actions
@@ -109,16 +109,16 @@ These events are meant to be used by system components.
 - *battery-caution*: The event used when the battery is nearing exhaustion (below 40%, for example).
 - *battery-full*: The event used when the battery is fully loaded up.
 - *device-added*: The event used when a device has become available to the desktop, i.e. due to USB plugging.
-- *message-new-cellbroadcast*: The event used when a new cell broadcast message is received.
-- *power-plug*: The power cable has been plugged in.
-- *power-unplug*: The power cable has been unplugged.
 - *message-missed-notification*: The event used when a notification was shown but not seen by the user. (*deprecated*)
+- *message-new-cellbroadcast*: The event used when a new cell broadcast message is received.
 - *notification-missed-generic*: The event used when a generic notification was
   shown but not seen by the user. This event is usually only used by
   the notification server.
 - *notification-new-generic*: The event used when a generic notification
   is shown to the user. This event is usually only used by the
   notification server.
+- *power-plug*: The power cable has been plugged in.
+- *power-unplug*: The power cable has been unplugged.
 
 #### Input Events
 
