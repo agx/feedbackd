@@ -43,8 +43,7 @@ libfeedback_c_args = [
   '-DLIBFEEDBACK_USE_UNSTABLE_API',
 ]
 
-libtype = 'shared_library'
-libfeedback = build_target(
+libfeedback = library(
   'feedback-' + apiversion,
   libfeedback_sources,
   soversion: 0,
@@ -53,7 +52,6 @@ libfeedback = build_target(
   link_args: libfeedback_link_args,
   install: true,
   install_dir: libfeedback_libdir,
-  target_type: libtype,
 )
 
 libfeedback_inc = include_directories('.')
