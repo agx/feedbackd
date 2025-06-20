@@ -7,12 +7,23 @@ ACTION=="remove", GOTO="feedbackd_end"
 #
 # Haptic
 #
-# Librem 5, PinePhone
+# Awinic AW8695 driver (not mainline)
+SUBSYSTEM=="input", KERNEL=="event*", ENV{ID_INPUT}=="1", SUBSYSTEMS=="input", ATTRS{name}=="aw8695-haptics", TAG+="uaccess", ENV{FEEDBACKD_TYPE}="vibra"
+# Generic gpio-vibra driver (e.g. Librem 5, PinePhone)
 SUBSYSTEM=="input", KERNEL=="event*", ENV{ID_INPUT}=="1", ENV{ID_PATH}=="platform-vibrator", TAG+="uaccess", ENV{FEEDBACKD_TYPE}="vibra"
-# Google Sargo (not mainline)
-SUBSYSTEM=="input", KERNEL=="event*", ENV{ID_INPUT}=="1", SUBSYSTEMS=="input", ATTRS{name}=="drv2624:haptics", TAG+="uaccess", ENV{FEEDBACKD_TYPE}="vibra"
-# Oneplus Enchilada, Fajita (not mainline)
+# Generic regulator-haptic driver
+SUBSYSTEM=="input", KERNEL=="event*", ENV{ID_INPUT}=="1", SUBSYSTEMS=="input", ATTRS{name}=="regulator-haptic", TAG+="uaccess", ENV{FEEDBACKD_TYPE}="vibra"
+# Maxim MAX77693 driver
+SUBSYSTEM=="input", KERNEL=="event*", ENV{ID_INPUT}=="1", SUBSYSTEMS=="input", ATTRS{name}=="max77693-haptic", TAG+="uaccess", ENV{FEEDBACKD_TYPE}="vibra"
+# Nokia TWL4030 driver
+SUBSYSTEM=="input", KERNEL=="event*", ENV{ID_INPUT}=="1", SUBSYSTEMS=="input", ATTRS{name}=="twl4030:vibrator", TAG+="uaccess", ENV{FEEDBACKD_TYPE}="vibra"
+# Qualcomm pm8xxx-vibrator driver
+SUBSYSTEM=="input", KERNEL=="event*", ENV{ID_INPUT}=="1", SUBSYSTEMS=="input", ATTRS{name}=="pm8xxx_vib_ffmemless", TAG+="uaccess", ENV{FEEDBACKD_TYPE}="vibra"
+# Qualcomm spmi-haptics driver (e.g. Oneplus Enchilada, Fajita) (not mainline)
 SUBSYSTEM=="input", KERNEL=="event*", ENV{ID_INPUT}=="1", SUBSYSTEMS=="input", ATTRS{name}=="spmi_haptics", TAG+="uaccess", ENV{FEEDBACKD_TYPE}="vibra"
+# Texas Instruments drivers
+SUBSYSTEM=="input", KERNEL=="event*", ENV{ID_INPUT}=="1", SUBSYSTEMS=="input", ATTRS{name}=="drv260x:haptics", TAG+="uaccess", ENV{FEEDBACKD_TYPE}="vibra"
+SUBSYSTEM=="input", KERNEL=="event*", ENV{ID_INPUT}=="1", SUBSYSTEMS=="input", ATTRS{name}=="drv2624:haptics", TAG+="uaccess", ENV{FEEDBACKD_TYPE}="vibra"
 
 
 #
