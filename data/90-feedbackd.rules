@@ -9,8 +9,10 @@ ACTION=="remove", GOTO="feedbackd_end"
 #
 # Awinic AW8695 driver (not mainline)
 SUBSYSTEM=="input", KERNEL=="event*", ENV{ID_INPUT}=="1", SUBSYSTEMS=="input", ATTRS{name}=="aw8695-haptics", TAG+="uaccess", ENV{FEEDBACKD_TYPE}="vibra"
-# Generic gpio-vibra driver (e.g. Librem 5, PinePhone)
-SUBSYSTEM=="input", KERNEL=="event*", ENV{ID_INPUT}=="1", ENV{ID_PATH}=="platform-vibrator", TAG+="uaccess", ENV{FEEDBACKD_TYPE}="vibra"
+# Generic gpio-vibra driver (e.g. PinePhone)
+SUBSYSTEM=="input", KERNEL=="event*", ENV{ID_INPUT}=="1", SUBSYSTEMS=="input", ATTRS{name}=="gpio-vibrator", TAG+="uaccess", ENV{FEEDBACKD_TYPE}="vibra"
+# Generic pwm-vibra driver (e.g. Librem 5)
+SUBSYSTEM=="input", KERNEL=="event*", ENV{ID_INPUT}=="1", SUBSYSTEMS=="input", ATTRS{name}=="pwm-vibrator", TAG+="uaccess", ENV{FEEDBACKD_TYPE}="vibra"
 # Generic regulator-haptic driver
 SUBSYSTEM=="input", KERNEL=="event*", ENV{ID_INPUT}=="1", SUBSYSTEMS=="input", ATTRS{name}=="regulator-haptic", TAG+="uaccess", ENV{FEEDBACKD_TYPE}="vibra"
 # Maxim MAX77693 driver
