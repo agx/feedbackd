@@ -1,3 +1,30 @@
+feedbackd (0.8.3) experimental; urgency=medium
+
+  [ Guido Günther ]
+  * build: Use gnome.post_install. Allows us to drop a custom script
+  * doc: Update fbcli manpage. There's some more options nowadays
+  * libfeedback: Indicate that the library is cross desktop.
+    The only non generic thing is that we pick up the sound
+    scheme from GNOME when available but we'd happily extend
+    that to other DEs.
+
+  [ Evangelos Ribeiro Tzaras ]
+  * build: Use library() instead of build_target() for libfeedback.
+    Originally raised in cellbroadcast, but applies here as well
+    (because cbd yoinked large parts of meson.build!)
+
+  [ Luca Weiss ]
+  * udev: Add more haptic driver rules.
+    Mostly a compilation of different rules added to postmarketOS over the
+    years.
+  * udev: Align rules for gpio/pwm-vibrator.
+    Update the rule for the "platform-vibrator" entry to be like all the other
+    rules, matching by ATTRS{name} instead of ENV{ID_PATH}. Since it was
+    matching for both gpio-vibrator and pwm-vibrator, add entries for both.
+    Tested on Fairphone 2 which uses the gpio-vibrator driver.
+
+ -- Guido Günther <agx@sigxcpu.org>  Wed, 25 Jun 2025 19:43:13 +0200
+
 feedbackd (0.8.2) experimental; urgency=medium
 
   [ Guido Günther ]
