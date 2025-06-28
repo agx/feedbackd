@@ -71,7 +71,7 @@ pkgconfig.generate(
   version: meson.project_version(),
   name: 'Feedback',
   filebase: 'libfeedback-@0@'.format(apiversion),
-  description: 'GNOME feedback library',
+  description: 'Cross desktop feedback library',
   requires: 'gio-2.0',
   install_dir: join_paths(libfeedback_libdir, 'pkgconfig'),
 )

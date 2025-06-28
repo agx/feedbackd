@@ -1,3 +1,12 @@
+feedbackd 0.8.3
+---------------
+Released June 2025
+* Add more haptic driver rules based on what pmOS added over time
+* Contributors:
+    * Evangelos Ribeiro Tzaras
+    * Guido Günther
+    * Luca Weiss
+
 feedbackd 0.8.2
 ---------------
 Released May 2025
