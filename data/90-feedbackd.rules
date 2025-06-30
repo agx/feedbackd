@@ -37,6 +37,13 @@ SUBSYSTEM=="leds", DEVPATH=="*/*:indicator", ENV{FEEDBACKD_TYPE}="led", RUN{buil
 # Camera Flash
 SUBSYSTEM=="leds", DEVPATH=="*/*:flash", ENV{FEEDBACKD_TYPE}="led", RUN{builtin}+="kmod load ledtrig-pattern", RUN+="/usr/libexec/fbd-ledctrl -p %S%p -t pattern -G feedbackd"
 SUBSYSTEM=="leds", DEVPATH=="*/*:torch", ENV{FEEDBACKD_TYPE}="led", RUN{builtin}+="kmod load ledtrig-pattern", RUN+="/usr/libexec/fbd-ledctrl -p %S%p -t pattern -G feedbackd"
+# Legacy LEDs
+### Motorola Droid 4
+SUBSYSTEM=="leds", DEVPATH=="*/status-led:*", ENV{FEEDBACKD_TYPE}="led", RUN{builtin}+="kmod load ledtrig-pattern", RUN+="/usr/libexec/fbd-ledctrl -p %S%p -t pattern -G feedbackd"
+### Nokia N900
+SUBSYSTEM=="leds", DEVPATH=="*/lp5523:r", ENV{FEEDBACKD_LED_COLOR}="red", ENV{FEEDBACKD_TYPE}="led", RUN{builtin}+="kmod load ledtrig-pattern", RUN+="/usr/libexec/fbd-ledctrl -p %S%p -t pattern -G feedbackd"
+SUBSYSTEM=="leds", DEVPATH=="*/lp5523:g", ENV{FEEDBACKD_LED_COLOR}="green", ENV{FEEDBACKD_TYPE}="led", RUN{builtin}+="kmod load ledtrig-pattern", RUN+="/usr/libexec/fbd-ledctrl -p %S%p -t pattern -G feedbackd"
+SUBSYSTEM=="leds", DEVPATH=="*/lp5523:b", ENV{FEEDBACKD_LED_COLOR}="blue", ENV{FEEDBACKD_TYPE}="led", RUN{builtin}+="kmod load ledtrig-pattern", RUN+="/usr/libexec/fbd-ledctrl -p %S%p -t pattern -G feedbackd"
 
 #
 # Alert sliders
