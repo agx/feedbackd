@@ -51,11 +51,12 @@ static gboolean
 fbd_dev_led_probe_default (FbdDevLed *led, GError **error)
 {
   FbdDevLedPrivate *priv = fbd_dev_led_get_instance_private (led);
-  const gchar *name, *path;
+  const gchar *name, *path, *hint;
   gboolean success = FALSE;
   const char *pattern;
 
   name = g_udev_device_get_name (priv->dev);
+  hint = g_udev_device_get_property (priv->dev, "FEEDBACKD_LED_COLOR");
   pattern = g_udev_device_get_sysfs_attr (priv->dev, LED_PATTERN_ATTR);
   if (!pattern) {
     g_set_error (error,
@@ -72,7 +73,7 @@ fbd_dev_led_probe_default (FbdDevLed *led, GError **error)
     enum_name = g_enum_to_string (FBD_TYPE_FEEDBACK_LED_COLOR, i);
     c = strrchr (enum_name, '_');
     color = g_ascii_strdown (c+1, -1);
-    if (g_strstr_len (name, -1, color)) {
+    if (g_strstr_len (name, -1, color) || !g_strcmp0 (hint, color)) {
       guint brightness = g_udev_device_get_sysfs_attr_as_int (priv->dev, LED_MAX_BRIGHTNESS_ATTR);
 
       if (!brightness)
