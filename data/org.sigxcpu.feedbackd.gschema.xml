@@ -35,7 +35,8 @@
     <key name="allow-important" type="as">
       <default>['mobi.phosh.Stevia',
                 'org.sigxcpu.FbdAlertSlider',
-                'org.gnome.clocks']</default>
+                'org.gnome.clocks',
+                'sm.puri.OSK0']</default>
       <summary>List of apps that can override the feedback level</summary>
       <description>
         Apps listed here can override the configured feedack level by
